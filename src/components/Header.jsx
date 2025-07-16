@@ -13,7 +13,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex flex-wrap items-center justify-between px-10 py-2 bg-white shadow-md sticky top-0 z-50">
+      <header className="flex flex-wrap items-center justify-between px-10 py-2 bg-white shadow-md sticky top-0 z-60">
         {/* Left - Logo */}
         <div className="flex items-center">
           <a href="home.html">
@@ -70,19 +70,19 @@ export default function Header() {
       {/* Mobile Nav Menu */}
       {showMobileNav && (
         <div className="flex flex-col md:hidden w-full bg-white text-gray-800 shadow-md px-4">
-          <a href="home.html" className="py-2 hover:bg-purple-700 hover:text-white">
+          <a href="/" className="py-2 hover:bg-purple-700 hover:text-white">
             Home
           </a>
-          <a href="about.html" className="py-2 hover:bg-purple-700 hover:text-white">
+          <a href="/about" className="py-2 hover:bg-purple-700 hover:text-white">
             About
           </a>
           <a href="services.html" className="py-2 hover:bg-purple-700 hover:text-white">
             Our Services
           </a>
-          <a href="branches.html" className="py-2 hover:bg-purple-700 hover:text-white">
-            Branches
+          <a href="/venues" className="py-2 hover:bg-purple-700 hover:text-white">
+            Venues
           </a>
-          <a href="contact.html" className="py-2 hover:bg-purple-700 hover:text-white">
+          <a href="/contact" className="py-2 hover:bg-purple-700 hover:text-white">
             Contact
           </a>
           <button
