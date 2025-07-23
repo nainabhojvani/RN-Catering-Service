@@ -3,6 +3,18 @@
 
 
 @layer utilities {
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+  }
+  .animate-marquee {
+    display: inline-block;
+    min-width: 200%;
+    animation: marquee 60s linear infinite;
+  }
+}
+
+@layer utilities {
   @keyframes fade {
     0% {
       opacity: 0;
