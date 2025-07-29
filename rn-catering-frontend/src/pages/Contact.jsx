@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import contactBanner from '../assets/images/contact.png';
 import { FaMapMarkerAlt, FaEnvelope, FaClock, FaPhoneAlt } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export default function ContactPage() {
   const contactDetails = [
@@ -19,7 +20,7 @@ export default function ContactPage() {
     message: ''
   });
 
-  const [success, setSuccess] = useState(false);
+  // const [success, setSuccess] = useState(false);
 
   // 🔹 Handle change
   const handleChange = (e) => {
@@ -28,25 +29,28 @@ export default function ContactPage() {
 
   // 🔹 Handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('http://localhost:5000/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+  e.preventDefault();
+  try {
+    const res = await fetch('http://localhost:5000/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
 
-      const result = await res.json();
-      if (res.ok) {
-        setSuccess(true);
-        setFormData({ name: '', email: '', eventName: '', phone: '', message: '' });
-      } else {
-        console.error(result.message);
-      }
-    } catch (err) {
-      console.error('Error submitting contact form:', err);
+    const result = await res.json();
+
+    if (res.ok) {
+      toast.success("Message sent successfully!");
+      setFormData({ name: '', email: '', eventName: '', phone: '', message: '' });
+      // setSuccess(true); // optional
+    } else {
+      toast.error(result.message || "Failed to send message");
     }
-  };
+  } catch (err) {
+    toast.error("Something went wrong. Please try again later.");
+    console.error('Error submitting contact form:', err);
+  }
+};
 
   return (
     <div>
@@ -116,8 +120,7 @@ export default function ContactPage() {
             Submit
           </button>
 
-          {/* ✅ Optional success message */}
-          {success && <p className="text-green-600 mt-4 text-xl font-medium">Message sent successfully!</p>}
+          
         </form>
 
         {/* Contact Info */}

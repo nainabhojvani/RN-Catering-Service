@@ -54,7 +54,7 @@ export default function ClientReviews() {
     setFormData({ name: "", type: "", text: "" });
 
     setSuccessMsg(true);
-  setTimeout(() => setSuccessMsg(false), 5000);
+  setTimeout(() => setSuccessMsg(false), 3000);
   };
 
   return (
@@ -136,7 +136,7 @@ export default function ClientReviews() {
     Thank you for your valuable feedback!
   </div>
 )}
-        <button
+        {/* <button
     onClick={() => {
       localStorage.removeItem("rn_reviews");
       setReviews([]);
@@ -145,7 +145,7 @@ export default function ClientReviews() {
     className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mt-4"
   >
     Clear All Reviews
-  </button>
+  </button> */}
       </div>
     </section>
   );
