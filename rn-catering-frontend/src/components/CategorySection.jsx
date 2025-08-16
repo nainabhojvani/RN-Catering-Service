@@ -47,7 +47,7 @@
 //           <div
 //             key={index}
 //             className="flex flex-col items-center"
-           
+
 //           >
 //             <div className="w-[100px] h-[100px] rounded-full shadow-md bg-white flex items-center justify-center mb-3">
 //               <img
@@ -86,6 +86,7 @@ import e9 from "../assets/images/Event_img/Event-9.svg";
 import e9h from "../assets/images/Event_img/Event-9-hover.svg";
 import e10 from "../assets/images/Event_img/Event-10.svg";
 import e10h from "../assets/images/Event_img/Event-10-hover.svg";
+import { useNavigate } from "react-router-dom";
 
 const events = [
   { title: "Wedding Catering", defaultImg: e1, hoverImg: e1h, desc: "Crafting unforgettable wedding menus that blend elegance and flavor to suit every tradition and taste." },
@@ -102,6 +103,9 @@ const events = [
 
 export default function CategorySection() {
   const [flippedIndex, setFlippedIndex] = useState(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const navigate = useNavigate();
+
 
   const toggleFlip = (index) => {
     setFlippedIndex(prev => (prev === index ? null : index));
@@ -118,20 +122,42 @@ export default function CategorySection() {
             onClick={() => toggleFlip(idx)}
           >
             <div className={`relative w-full h-full transition-transform duration-700 ${flippedIndex === idx ? "transform rotate-y-180" : ""}`} style={{ transformStyle: "preserve-3d" }}>
+
               {/* Front */}
               <div className="absolute w-full h-full backface-hidden bg-white rounded-2xl shadow-xl flex flex-col justify-center items-center p-4 text-center">
                 <img
-                  src={flippedIndex === idx ? event.hoverImg : event.defaultImg}
+                  src={hoveredIndex === idx ? event.hoverImg : event.defaultImg}
                   alt={event.title}
-                  className="w-20 h-20 mb-3 transition-transform duration-300"
+                  className="w-16 h-16 mb-6 transition-transform duration-300"
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 />
-                <h3 className="font-semibold text-lg text-gray-800">{event.title}</h3>
+                <h3 className="font-semibold text-lg mb-4 text-gray-800">{event.title}</h3>
+
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFlip(idx);
+                  }}
+                  className="text-[15px] font-medium text-purple-500 cursor-pointer 
+                              transition-all duration-300 hover:text-purple-700 
+                              flex items-center gap-1 mt-4
+                              relative after:content-[''] after:absolute after:w-0 after:h-[1.5px] after:left-0 after:-bottom-0.5 
+                              after:bg-purple-500 after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  View Details <span>→</span>
+                </span>
               </div>
 
               {/* Back */}
               <div className="absolute inset-0 bg-purple-700 text-white rounded-2xl p-6 shadow-2xl flex flex-col justify-between transition-transform duration-700 ease-in-out backface-hidden transform rotate-y-180">
                 <p className="text-2xl leading-relaxed text-white font-large text-center px-2 mt-6 font-['Dancing_Script',handwriting]">{event.desc}</p>
-                <button className="bg-white text-purple-800 px-5 py-2 rounded-full font-semibold text-sm  transition">Choose Menu</button>
+                <button
+                  onClick={() => navigate("/menu", { state: { eventName: event.title } })}
+                  className="px-4 py-2 bg-white text-purple-900 rounded-4xl transition-colors"
+                >
+                  Choose Menu
+                </button>
               </div>
             </div>
           </div>

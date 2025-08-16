@@ -30,3 +30,12 @@
     animation: fade 1s ease-in-out;
   }
 }
+
+@keyframes gradient-x {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 100% 0%; }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s linear infinite;
+}

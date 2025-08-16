@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import menuData from "./MenuData";
+import initialMenuData from "./MenuData"; // renamed import
 
 const events = [
   "Wedding Catering",
@@ -62,8 +62,7 @@ function EventDropdown({ selectedEvent, setSelectedEvent }) {
                 key={idx}
                 value={event}
                 className={({ active }) =>
-                  `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? "bg-purple-100 text-purple-900" : "text-gray-900"
-                  }`
+                  `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? "bg-purple-100 text-purple-900" : "text-gray-900"}`
                 }
               >
                 {({ selected }) => (
@@ -90,13 +89,7 @@ function EventDropdown({ selectedEvent, setSelectedEvent }) {
 function Menu() {
   const location = useLocation();
   const [selectedEvent, setSelectedEvent] = useState("");
-
-  useEffect(() => {
-    if (location.state?.eventName) {
-      setSelectedEvent(location.state.eventName);
-    }
-  }, [location]);
-
+  const [menuDataState, setMenuData] = useState(initialMenuData);
   const [region, setRegion] = useState("North");
   const [mealPlan, setMealPlan] = useState(
     Object.fromEntries(
@@ -106,8 +99,15 @@ function Menu() {
       ])
     )
   );
-
   const [openSubCategories, setOpenSubCategories] = useState({});
+  const [hiddenItems, setHiddenItems] = useState({});
+
+  useEffect(() => {
+    if (location.state?.eventName) {
+      setSelectedEvent(location.state.eventName);
+    }
+  }, [location]);
+
   const toggleSubCategory = (key) => {
     setOpenSubCategories((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -117,10 +117,12 @@ function Menu() {
     if (!destination) return;
 
     const destinationObj = destination.droppableId.split("|");
+
     if (destinationObj.length === 2) {
       const [meal, subCategory] = destinationObj;
       const { region: srcRegion, category, subCategory: srcSubCategory } = JSON.parse(source.droppableId);
-      const draggedDish = menuData[srcRegion][category][srcSubCategory][source.index];
+      const draggedDish = menuDataState[srcRegion][category][srcSubCategory][source.index];
+
       const newDish = { id: `${Date.now()}`, name: draggedDish };
 
       setMealPlan((prev) => ({
@@ -130,27 +132,77 @@ function Menu() {
           [subCategory]: [...prev[meal][subCategory], newDish],
         },
       }));
+
+      setHiddenItems((prev) => ({
+        ...prev,
+        [draggedDish]: true,
+      }));
+
+      setTimeout(() => {
+        setMenuData((prevMenu) => {
+          const updatedMenu = { ...prevMenu };
+          updatedMenu[srcRegion] = {
+            ...updatedMenu[srcRegion],
+            [category]: {
+              ...updatedMenu[srcRegion][category],
+              [srcSubCategory]: updatedMenu[srcRegion][category][srcSubCategory].filter(
+                (dish) => dish !== draggedDish
+              ),
+            },
+          };
+          return updatedMenu;
+        });
+
+        setHiddenItems((prev) => {
+          const copy = { ...prev };
+          delete copy[draggedDish];
+          return copy;
+        });
+      }, 200);
     }
+  };
+
+  const handleRemoveDish = (meal, subCategory, dish) => {
+    setMealPlan((prev) => ({
+      ...prev,
+      [meal]: {
+        ...prev[meal],
+        [subCategory]: prev[meal][subCategory].filter((d) => d.id !== dish.id),
+      },
+    }));
+
+    // Restore the dish to menu
+    setMenuData((prev) => {
+      const updated = { ...prev };
+      // Find where to put it back
+      for (let reg in updated) {
+        for (let cat in updated[reg]) {
+          for (let sub in updated[reg][cat]) {
+            if (!updated[reg][cat][sub].includes(dish.name)) {
+              updated[reg][cat][sub] = [...updated[reg][cat][sub], dish.name];
+            }
+          }
+        }
+      }
+      return updated;
+    });
   };
 
   return (
     <div className="p-8">
-      {/* Event Dropdown */}
       <label className="block text-lg font-semibold mb-2 text-purple-800">Select Event</label>
       <EventDropdown selectedEvent={selectedEvent} setSelectedEvent={setSelectedEvent} />
 
-      {/* Menu Section */}
       <div className="grid grid-cols-4 gap-6">
         <DragDropContext onDragEnd={onDragEnd}>
           {/* Region Selector */}
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-xl font-bold mb-4">Select Region</h2>
-            {Object.keys(menuData).map((r) => (
+            {Object.keys(menuDataState).map((r) => (
               <button
                 key={r}
                 onClick={() => setRegion(r)}
-                className={`w-full text-left px-3 py-2 mb-2 rounded-md ${region === r ? "bg-purple-700 text-white" : "bg-gray-100"
-                  }`}
+                className={`w-full text-left px-3 py-2 mb-2 rounded-md ${region === r ? "bg-purple-700 text-white" : "bg-gray-100"}`}
               >
                 {r} Indian
               </button>
@@ -162,12 +214,12 @@ function Menu() {
             <h2 className="text-2xl font-bold mb-6 text-purple-800">
               {selectedEvent ? `${selectedEvent} – ${region} Indian` : `${region} Indian`}
             </h2>
-            {Object.keys(menuData[region]).map((category) => (
+            {Object.keys(menuDataState[region]).map((category) => (
               <div key={category} className="mb-6">
                 <h3 className="text-xl font-semibold text-purple-700 border-b pb-2 mb-3">
                   {category}
                 </h3>
-                {Object.keys(menuData[region][category]).map((subCategory) => {
+                {Object.keys(menuDataState[region][category]).map((subCategory) => {
                   const key = `${category}-${subCategory}`;
                   const open = openSubCategories[key] || false;
                   return (
@@ -183,24 +235,23 @@ function Menu() {
                         <span className={`transform transition-transform text-purple-700 ${open ? "rotate-180" : "rotate-0"}`}>▼</span>
                       </button>
                       <div
-                        className={`transition-all duration-300 ease-in-out ${open ? "max-h-[500px] opacity-100 p-3" : "max-h-0 opacity-0 p-0"
-                          } overflow-hidden`}
+                        className={`transition-all duration-300 ease-in-out ${open ? "max-h-[500px] opacity-100 p-3" : "max-h-0 opacity-0 p-0"} overflow-hidden`}
                       >
                         <Droppable droppableId={JSON.stringify({ region, category, subCategory })} isDropDisabled>
                           {(provided) => (
-                            <div
-                              {...provided.droppableProps}
-                              ref={provided.innerRef}
-                              className="flex flex-wrap gap-2"
-                            >
-                              {menuData[region][category][subCategory].map((dish, index) => (
-                                <Draggable key={`${region}-${category}-${subCategory}-${index}`} draggableId={`${region}-${category}-${subCategory}-${index}`} index={index}>
+                            <div {...provided.droppableProps} ref={provided.innerRef} className="flex flex-wrap gap-2">
+                              {menuDataState[region][category][subCategory].map((dish, index) => (
+                                <Draggable key={dish} draggableId={dish} index={index}>
                                   {(provided) => (
                                     <div
+                                      ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      ref={provided.innerRef}
                                       className="bg-purple-100 border border-purple-300 rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-purple-200 hover:shadow transition-all duration-200 inline-block whitespace-nowrap"
+                                      style={{
+                                        ...provided.draggableProps.style,
+                                        display: hiddenItems[dish] ? "none" : "block",
+                                      }}
                                     >
                                       {dish}
                                     </div>
@@ -231,11 +282,7 @@ function Menu() {
                   {mealSections[meal].map((sub) => (
                     <Droppable droppableId={`${meal}|${sub}`} key={`${meal}-${sub}`}>
                       {(provided) => (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className="bg-purple-50 p-3 min-h-[80px] border-b border-purple-200"
-                        >
+                        <div {...provided.droppableProps} ref={provided.innerRef} className="bg-purple-50 p-3 min-h-[80px] border-b border-purple-200">
                           <h4 className="text-purple-700 font-medium mb-2">{sub}</h4>
                           {mealPlan[meal][sub].map((dish, index) => (
                             <Draggable key={dish.id} draggableId={dish.id} index={index}>
@@ -244,19 +291,11 @@ function Menu() {
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
                                   ref={provided.innerRef}
-                                  className=" items-center justify-between bg-purple-100 border border-purple-300 rounded-full px-2 py-0.5 text-xs shadow-sm hover:bg-purple-200 transition-all duration-200 inline-block whitespace-nowrap"
+                                  className="flex items-center gap-2 bg-purple-100 border border-purple-300 rounded-full px-3 py-1 text-sm shadow-sm whitespace-nowrap w-fit hover:bg-purple-200 transition-all duration-200"
                                 >
                                   <span>{dish.name}</span>
                                   <button
-                                    onClick={() => {
-                                      setMealPlan((prev) => ({
-                                        ...prev,
-                                        [meal]: {
-                                          ...prev[meal],
-                                          [sub]: prev[meal][sub].filter((_, i) => i !== index),
-                                        },
-                                      }));
-                                    }}
+                                    onClick={() => handleRemoveDish(meal, sub, dish)}
                                     className="ml-1 text-red-500 hover:text-red-700 font-bold text-sm"
                                   >
                                     ✕
@@ -277,7 +316,6 @@ function Menu() {
         </DragDropContext>
       </div>
 
-      {/* Proceed Button */}
       <div className="mt-10 flex justify-center">
         <button
           onClick={() => alert(`Proceeding to booking for ${selectedEvent || "selected event"}`)}
