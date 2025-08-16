@@ -12,22 +12,23 @@ app.use(express.json()); // Important to parse incoming JSON
 
 // ✅ MongoDB Connection
 mongoose
-  .connect(
-    "mongodb+srv://rnadmin:rnadmin@rn-catering.wkfishd.mongodb.net/?retryWrites=true&w=majority&appName=rn-catering",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  )
+  .connect("mongodb://127.0.0.1:27017/rncatring", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
 // ✅ Routes
-const authRoutes = require("./routes/auth");     // Handles /register, /login, /profile
+const authRoutes = require("./routes/auth"); // Handles /register, /login, /profile
 const contactRoutes = require("./routes/contact"); // Handles /contact form submission
+const reviewRoutes = require("./routes/reviewRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
-app.use("/api", authRoutes);           // /api/register, /api/login, /api/profile
+app.use("/api/bookings", bookingRoutes);
+app.use("/api", authRoutes); // /api/register, /api/login, /api/profile
 app.use("/api/contact", contactRoutes); // /api/contact/send or whatever you defined
+app.use("/api/reviews", reviewRoutes);
 
 // ✅ Server
 app.listen(5000, () => {
