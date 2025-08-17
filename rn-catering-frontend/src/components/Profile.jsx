@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 import React, { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
 import personImg from "../assets/images/person.png";
@@ -17,14 +19,11 @@ const Profile = () => {
     const fetchBookings = async () => {
       if (!user) return;
       try {
-        const res = await fetch(
-          "http://localhost:5000/api/bookings/my-bookings",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
+        const res = await fetch(`${API_URL}/api/bookings/my-bookings`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        );
+        });
         const data = await res.json();
         setBookings(data);
       } catch (err) {

@@ -1,10 +1,10 @@
-import HeroSlider from "../components/HeroSlider";
-import WelcomeSection from "../components/WelcomeSection";
-import CategorySection from "../components/CategorySection";
-import WeServeSection from "../components/WeServeSection";
-import Gallery from "../components/Gallery";
-import RegionalDishes from "../components/RegionalDishes";
-import ClientReviews from "../components/ClientReviews";
+import HeroSlider from "../components/HomeComponents/HeroSlider";
+import WelcomeSection from "../components/HomeComponents/WelcomeSection";
+import CategorySection from "../components/HomeComponents/CategorySection";
+import WeServeSection from "../components/HomeComponents/WeServeSection";
+import Gallery from "../components/HomeComponents/Gallery";
+import RegionalDishes from "../components/HomeComponents/RegionalDishes";
+import ClientReviews from "../components/HomeComponents/ClientReviews";
 
 export default function Home() {
   return (

@@ -1,7 +1,5 @@
-
-
 export default function TextSlider() {
-  const text = 
+  const text =
     "At RN Catering, we don’t just serve food — we craft experiences. From grand weddings to intimate family gatherings, our menus are customized to suit your taste and style. Freshly prepared, beautifully served, and made with love — we make your celebrations truly unforgettable.";
 
   return (

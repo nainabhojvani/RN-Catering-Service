@@ -1,10 +1,10 @@
 import React from "react";
-import mocktails from "../assets/images/mocktails.jpg";
-import fastfood from "../assets/images/fastfood.jpg";
-import desserts from "../assets/images/desserts.jpg";
-import sweets from "../assets/images/sweets.jpg";
-import indian from "../assets/images/indian-dishes.jpg";
-import counter from "../assets/images/counter.jpg";
+import mocktails from "../../assets/images/mocktails.jpg";
+import fastfood from "../../assets/images/fastfood.jpg";
+import desserts from "../../assets/images/desserts.jpg";
+import sweets from "../../assets/images/sweets.jpg";
+import indian from "../../assets/images/indian-dishes.jpg";
+import counter from "../../assets/images/counter.jpg";
 
 const serveItems = [
   { img: mocktails, label: "100+ Mocktails" },

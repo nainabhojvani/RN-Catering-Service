@@ -1,23 +1,37 @@
-import { useState } from 'react';
-import contactBanner from '../assets/images/contact.png';
-import { FaMapMarkerAlt, FaEnvelope, FaClock, FaPhoneAlt } from "react-icons/fa";
+const API_URL = import.meta.env.VITE_API_URL;
+import { useState } from "react";
+import contactBanner from "../assets/images/contact.png";
+import {
+  FaMapMarkerAlt,
+  FaEnvelope,
+  FaClock,
+  FaPhoneAlt,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 
 export default function ContactPage() {
   const contactDetails = [
-    { icon: <FaMapMarkerAlt />, label: "Address:", text: "RN Catering Services, Ahmedabad, Gujarat, India" },
+    {
+      icon: <FaMapMarkerAlt />,
+      label: "Address:",
+      text: "RN Catering Services, Ahmedabad, Gujarat, India",
+    },
     { icon: <FaPhoneAlt />, label: "Phone:", text: "+91-12345-67890" },
     { icon: <FaEnvelope />, label: "Email:", text: "info@rncatering.com" },
-    { icon: <FaClock />, label: "Working Hours:", text: "Mon – Sat, 9AM – 8PM" },
+    {
+      icon: <FaClock />,
+      label: "Working Hours:",
+      text: "Mon – Sat, 9AM – 8PM",
+    },
   ];
 
   // 🔹 Form state
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    eventName: '',
-    phone: '',
-    message: ''
+    name: "",
+    email: "",
+    eventName: "",
+    phone: "",
+    message: "",
   });
 
   // const [success, setSuccess] = useState(false);
@@ -29,34 +43,44 @@ export default function ContactPage() {
 
   // 🔹 Handle form submit
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch('http://localhost:5000/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (res.ok) {
-      toast.success("Message sent successfully!");
-      setFormData({ name: '', email: '', eventName: '', phone: '', message: '' });
-      // setSuccess(true); // optional
-    } else {
-      toast.error(result.message || "Failed to send message");
+      if (res.ok) {
+        toast.success("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          eventName: "",
+          phone: "",
+          message: "",
+        });
+        // setSuccess(true); // optional
+      } else {
+        toast.error(result.message || "Failed to send message");
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again later.");
+      console.error("Error submitting contact form:", err);
     }
-  } catch (err) {
-    toast.error("Something went wrong. Please try again later.");
-    console.error('Error submitting contact form:', err);
-  }
-};
+  };
 
   return (
     <div>
       {/* Header Banner */}
       <div className="relative w-full h-[400px] opacity-70">
-        <img src={contactBanner} alt="Contact Header" className="w-full h-full object-cover" />
+        <img
+          src={contactBanner}
+          alt="Contact Header"
+          className="w-full h-full object-cover"
+        />
         <h1 className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold text-6xl font-['Dancing_Script',cursive]">
           Contact Us
         </h1>
@@ -65,8 +89,13 @@ export default function ContactPage() {
       {/* Contact Section */}
       <section className="flex flex-wrap gap-x-20 px-5 py-12 max-w-7xl mx-auto sm:flex-row">
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex-1 min-w-[300px] max-w-[600px]">
-          <h1 className="text-4xl font-['Dancing_Script',cursive] font-semibold mt-10 ml-5">Get in Touch</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 min-w-[300px] max-w-[600px]"
+        >
+          <h1 className="text-4xl font-['Dancing_Script',cursive] font-semibold mt-10 ml-5">
+            Get in Touch
+          </h1>
 
           <input
             type="text"
@@ -119,22 +148,29 @@ export default function ContactPage() {
           >
             Submit
           </button>
-
-          
         </form>
 
         {/* Contact Info */}
         <div className="flex-1 min-w-[300px] mt-[150px]">
-          <h2 className="text-4xl font-bold font-['Dancing_Script',cursive] mb-6">Reach Us</h2>
+          <h2 className="text-4xl font-bold font-['Dancing_Script',cursive] mb-6">
+            Reach Us
+          </h2>
           <div className="grid gap-6">
             {contactDetails.map((info, i) => (
-              <div key={i} className="flex items-center gap-4 bg-[#f3f3f3] rounded-xl p-4 shadow-md max-w-[400px]">
+              <div
+                key={i}
+                className="flex items-center gap-4 bg-[#f3f3f3] rounded-xl p-4 shadow-md max-w-[400px]"
+              >
                 <div className="text-purple-700 text-[28px] sm:text-[24px] flex items-center justify-center w-8 h-8">
                   {info.icon}
                 </div>
                 <div>
-                  <strong className="text-[20px] sm:text-[18px] block">{info.label}</strong>
-                  <span className="text-[15px] sm:text-[14px]">{info.text}</span>
+                  <strong className="text-[20px] sm:text-[18px] block">
+                    {info.label}
+                  </strong>
+                  <span className="text-[15px] sm:text-[14px]">
+                    {info.text}
+                  </span>
                 </div>
               </div>
             ))}
@@ -144,7 +180,9 @@ export default function ContactPage() {
 
       {/* Map Section */}
       <div className="bg-black pb-12">
-        <h1 className="text-white text-center pt-6 text-[45px] font-dancing sm:text-[28px]">Address map</h1>
+        <h1 className="text-white text-center pt-6 text-[45px] font-dancing sm:text-[28px]">
+          Address map
+        </h1>
         <iframe
           src="https://www.google.com/maps?q=Indus+University,+Ahmedabad,+Gujarat,+India&output=embed"
           allowFullScreen=""

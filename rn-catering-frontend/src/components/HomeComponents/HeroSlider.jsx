@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import slide1 from "../assets/images/images(20).jpg";
-import slide2 from "../assets/images/images(21).png";
-import slide3 from "../assets/images/image (19).png";
-
-
+import slide1 from "../../assets/images/images(20).jpg";
+import slide2 from "../../assets/images/images(21).png";
+import slide3 from "../../assets/images/image (19).png";
 
 const slides = [
   {

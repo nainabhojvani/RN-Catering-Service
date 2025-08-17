@@ -6,13 +6,16 @@ const cors = require("cors");
 
 const app = express();
 
+const PORT = process.env.PORT;
+const MONGO_URI = process.env.MONGO_URI;
+
 // ✅ Middlewares
 app.use(cors());
 app.use(express.json()); // Important to parse incoming JSON
 
 // ✅ MongoDB Connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/rncatring", {
+  .connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -31,6 +34,6 @@ app.use("/api/contact", contactRoutes); // /api/contact/send or whatever you def
 app.use("/api/reviews", reviewRoutes);
 
 // ✅ Server
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+app.listen(PORT, () => {
+  console.log(`Server running at PORT: ${PORT}`);
 });

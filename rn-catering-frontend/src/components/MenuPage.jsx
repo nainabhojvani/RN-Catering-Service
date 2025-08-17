@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import MenuBanner from "../assets/images/ourservice.jpg";
@@ -222,7 +224,7 @@ function Menu() {
   const navigate = useNavigate();
   const handleBookingSubmit = async () => {
     try {
-      await axios.post("http://localhost:5000/api/bookings", {
+      await axios.post(`${API_URL}/api/bookings`, {
         ...formData,
         event: selectedEvent,
         mealPlan,
