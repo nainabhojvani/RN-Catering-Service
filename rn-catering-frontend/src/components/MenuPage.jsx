@@ -222,22 +222,31 @@ function Menu() {
     });
   };
   const navigate = useNavigate();
+
   const handleBookingSubmit = async () => {
     try {
-      await axios.post(`${API_URL}/api/bookings`, {
-        ...formData,
-        event: selectedEvent,
-        mealPlan,
-      });
+      await axios.post(
+        `${API_URL}/api/bookings`,
+        {
+          ...formData,
+          event: selectedEvent,
+          mealPlan,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // 👈 Add token
+          },
+        },
+      );
 
       setShowBookingForm(false);
-
       navigate("/");
     } catch (err) {
       alert("Failed to submit booking");
       console.log(err);
     }
   };
+
   return (
     <div className="p-8">
       <label className="block text-lg font-semibold mb-2 text-purple-800">

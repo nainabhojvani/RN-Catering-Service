@@ -1,13 +1,26 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
 import React, { useState, useEffect } from "react";
 import useAuth from "../context/useAuth";
+import {
+  Calendar,
+  MapPin,
+  Utensils,
+  Phone,
+  Mail,
+  UserCircle2,
+  Lock,
+  Trash2,
+  LogOut,
+  PartyPopper,
+} from "lucide-react";
 import personImg from "../assets/images/person.png";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Profile = () => {
   const { user, setUser } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedBooking, setExpandedBooking] = useState(null);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -19,7 +32,7 @@ const Profile = () => {
     const fetchBookings = async () => {
       if (!user) return;
       try {
-        const res = await fetch(`${API_URL}/api/bookings/my-bookings`, {
+        const res = await fetch(`${API_URL}/api/bookings/my`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -35,102 +48,162 @@ const Profile = () => {
     fetchBookings();
   }, [user]);
 
+  const toggleBookingDetails = (id) => {
+    setExpandedBooking(expandedBooking === id ? null : id);
+  };
+
   if (!user) {
     return (
-      <p className="text-center mt-10 text-gray-600">
-        Please login to view profile.
+      <p className="text-center mt-20 text-gray-500 text-lg font-semibold">
+        Please login to view your profile.
       </p>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto mt-10 mb-12 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-      <div className="flex flex-col md:flex-row">
-        {/* Left: Sidebar */}
-        <div className="md:w-1/3 bg-gradient-to-b from-blue-100 to-white p-6 flex flex-col items-center border-r">
-          <img
-            src={personImg}
-            alt="Profile"
-            className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
-          />
-          <h2 className="mt-4 text-2xl font-bold text-gray-800">
-            {user.fullName}
-          </h2>
-          <p className="text-gray-500">{user.email}</p>
-          <button className="mt-6 px-6 py-2 bg-blue-500 text-white font-medium rounded-lg shadow hover:bg-blue-600 transition">
-            Edit Profile
-          </button>
-        </div>
-
-        {/* Right: Content */}
-        <div className="md:w-2/3 p-8">
-          {/* Bookings */}
-          <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-4 border-b pb-2 text-gray-700">
-              My Bookings
-            </h3>
-            {loading ? (
-              <p className="text-gray-500">Loading bookings...</p>
-            ) : bookings.length === 0 ? (
-              <p className="text-gray-500">No bookings yet.</p>
-            ) : (
-              <ul className="space-y-4">
-                {bookings.map((b) => (
-                  <li
-                    key={b._id}
-                    className="p-4 border rounded-xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-md transition"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-800">
-                        Event: {b.event}
-                      </p>
-                      <p className="text-gray-500 text-sm">
-                        Date: {new Date(b.date).toLocaleDateString()}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Venue: {b.venue || "N/A"}
-                      </p>
-                      <p className="text-gray-600 text-sm">
-                        Meal Plan:{" "}
-                        {b.mealPlan && typeof b.mealPlan === "object"
-                          ? Object.values(b.mealPlan).join(", ")
-                          : "N/A"}
-                      </p>
-                      <p className="text-gray-500 text-sm">Phone: {b.phone}</p>
-                      {b.email && (
-                        <p className="text-gray-500 text-sm">
-                          Email: {b.email}
-                        </p>
-                      )}
-                    </div>
-                    <span className="mt-2 md:mt-0 px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
-                      Confirmed
-                    </span>
-                  </li>
-                ))}
-              </ul>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-10">
+      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-3xl overflow-hidden">
+        <div className="grid md:grid-cols-4 gap-10">
+          {/* Left Sidebar with profile and buttons */}
+          <div className="bg-white p-8 rounded-tl-3xl rounded-bl-3xl flex flex-col items-center shadow-sm border border-gray-200">
+            <img
+              src={personImg}
+              alt="Profile"
+              className="w-32 h-32 rounded-full border-2 border-gray-300 shadow-md object-cover"
+            />
+            <h2 className="mt-6 text-3xl font-extrabold tracking-wide flex items-center gap-3 text-gray-900">
+              Name: {" " + user.fullName}
+            </h2>
+            <p className="text-gray-500 mt-1 flex items-center gap-2 text-sm">
+              Email:
+              {" " + user.email}
+            </p>
+            {user.phone && (
+              <p className="text-gray-500 mt-1 flex items-center gap-2 text-sm">
+                <Phone className="w-4 h-4" />
+                {user.phone}
+              </p>
             )}
-          </div>
 
-          {/* Account Settings */}
-          <div className="border-t pt-6">
-            <h3 className="text-xl font-semibold mb-4 text-gray-700">
-              Account Settings
-            </h3>
-            <div className="space-y-3">
-              <button className="w-full px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+            <div className="mt-10 w-full space-y-4">
+              <button
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-700 font-semibold shadow-sm hover:shadow-md transition"
+                aria-label="Edit Profile"
+              >
+                <UserCircle2 className="w-5 h-5" />
+                Edit Profile
+              </button>
+              <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-700 font-semibold shadow-sm hover:shadow-md transition">
+                <Lock className="w-5 h-5" />
                 Change Password
               </button>
-              <button className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+              <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-red-600 font-semibold shadow-sm hover:shadow-md transition">
+                <Trash2 className="w-5 h-5" />
                 Delete Account
               </button>
               <button
                 onClick={handleLogout}
-                className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-800 font-semibold shadow-sm hover:shadow-md transition"
               >
+                <LogOut className="w-5 h-5" />
                 Logout
               </button>
             </div>
+          </div>
+
+          {/* Right Main Content: Bookings with toggle details */}
+          <div className="md:col-span-3 p-8">
+            <h3 className="text-3xl font-bold mb-8 text-gray-900 border-b pb-3">
+              My Bookings
+            </h3>
+
+            {loading ? (
+              <p className="text-gray-600">Loading bookings...</p>
+            ) : bookings.length === 0 ? (
+              <p className="text-gray-600">No bookings yet.</p>
+            ) : (
+              <div className="space-y-6">
+                {bookings.map((b) => {
+                  const isExpanded = expandedBooking === b._id;
+                  return (
+                    <div
+                      key={b._id}
+                      className="p-6 rounded-xl shadow border border-gray-300 bg-white hover:shadow-md transition"
+                    >
+                      {/* Summary info with toggle */}
+                      <div className="flex justify-between items-center mb-3">
+                        <div>
+                          <p className="flex items-center text-lg font-semibold gap-2 text-gray-800 ">
+                            <PartyPopper className="w-4 h-4" />{" "}
+                            {b.event || "N/A"}
+                          </p>
+                          <p className="flex items-center text-sm text-gray-500 gap-2 mt-1">
+                            <Calendar className="w-5 h-5 text-gray-600" />
+                            {new Date(b.date).toLocaleDateString()}
+                          </p>
+                          <p className="flex items-center text-sm text-gray-500 gap-2 mt-1">
+                            <MapPin className="w-4 h-4" /> {b.venue || "N/A"}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => toggleBookingDetails(b._id)}
+                          className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                        >
+                          {isExpanded ? "Hide Details" : "View Booking"}
+                        </button>
+                      </div>
+
+                      {/* Expanded detailed info */}
+                      {isExpanded && (
+                        <>
+                          {/* Meal Plan */}
+                          <div className="mb-3">
+                            <p className="font-semibold text-indigo-700 flex items-center gap-2">
+                              <Utensils className="w-5 h-5" />
+                              Meal Plan:
+                            </p>
+                            {Object.entries(b.mealPlan).map(
+                              ([mealType, categories]) => (
+                                <div key={mealType} className="ml-6 mt-1">
+                                  <strong className="text-indigo-600">
+                                    {mealType}:
+                                  </strong>
+                                  <ul className="list-disc list-inside text-gray-600 text-sm">
+                                    {Object.entries(categories).map(
+                                      ([category, items]) =>
+                                        items.length > 0 ? (
+                                          <li key={category}>
+                                            {category}:{" "}
+                                            {items
+                                              .map((item) => item.name)
+                                              .join(", ")}
+                                          </li>
+                                        ) : null,
+                                    )}
+                                  </ul>
+                                </div>
+                              ),
+                            )}
+                          </div>
+
+                          {/* Contact Info */}
+                          <div className="flex flex-col gap-1 text-gray-600 text-sm">
+                            <p className="flex items-center gap-2">
+                              <Phone className="w-4 h-4" /> {b.phone}
+                            </p>
+                            {b.email && (
+                              <p className="flex items-center gap-2">
+                                <Mail className="w-4 h-4" /> {b.email}
+                              </p>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

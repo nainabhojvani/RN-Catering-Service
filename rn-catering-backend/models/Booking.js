@@ -8,7 +8,8 @@ const bookingSchema = new mongoose.Schema(
     event: { type: String, required: true },
     date: { type: Date, required: true },
     venue: { type: String },
-    mealPlan: { type: Object, required: true }, // save full meal plan object
+    mealPlan: { type: Object, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true },
 );
