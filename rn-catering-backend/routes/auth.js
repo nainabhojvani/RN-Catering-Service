@@ -56,9 +56,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET);
 
     res.json({
       token,
@@ -75,9 +73,11 @@ router.post("/login", async (req, res) => {
 });
 
 // ✅ PROFILE (Protected Route)
-router.get("/profile", verifyToken, async (req, res) => {
+router.get("/profile/:username", async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findOne({ username: req.params.username }).select(
+      "-password",
+    );
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.json(user);

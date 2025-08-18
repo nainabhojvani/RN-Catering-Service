@@ -64,6 +64,37 @@ export default function Header() {
     }
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(`${API_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrUsername: email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        login(data.user, data.token); // save user + token
+        setEmail("");
+        setPassword("");
+        setShowDropdown(false);
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Something went wrong. Try again.");
+    }
+  };
+
   const popupRef = useRef();
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -105,16 +136,16 @@ export default function Header() {
                 <NavLink
                   to={link.to}
                   className={({ isActive }) =>
-                    `relative block px-5 py-2 font-semibold text-base rounded-lg transition-all duration-300 ease-in-out
+                    `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
    ${
      isActive
-       ? "bg-gradient-to-r from-purple-700 via-purple-800 to-purple-900 text-white shadow-lg shadow-purple-500/50 scale-105 z-10"
-       : "text-gray-800 hover:text-white hover:scale-105 hover:shadow-lg hover:shadow-purple-400/40 hover:bg-gradient-to-r hover:from-purple-600 hover:via-purple-700 hover:to-purple-800"
+       ? "bg-purple-500 text-white  z-10"
+       : "text-gray-800 hover:text-white hover:bg-purple-500"
    }
    
    /* UNDERLINE BELOW BOX WITH SPACE */
-   after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-1 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-purple-500 after:via-purple-600 after:to-purple-700
-   hover:after:w-3/4
+   after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-purple-500 after:via-purple-600 after:to-purple-700
+hover:after:w-full
 
    /* ACTIVE LINK UNDERLINE */
    ${isActive ? "after:w-full" : ""}`
@@ -137,7 +168,7 @@ export default function Header() {
             </button>
           ) : (
             <>
-              <Link to="/profile">
+              <Link to={`/profile/${user.username}`}>
                 <img
                   src={personImg}
                   className="w-8 h-8 rounded-full border-black border-1"
@@ -238,29 +269,7 @@ export default function Header() {
                   </h3>
                   <form
                     className="flex flex-col gap-3 font-semibold"
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      const res = await fetch(`${API_URL}/api/login`, {
-                        method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          emailOrUsername: email,
-                          password,
-                        }),
-                      });
-                      const data = await res.json();
-
-                      if (res.ok) {
-                        login(data.user, data.token); // ✅ replaced localStorage + setUser
-                        setEmail("");
-                        setPassword("");
-                        setShowDropdown(false);
-                      } else {
-                        alert(data.message);
-                      }
-                    }}
+                    onSubmit={handleLogin}
                   >
                     <label>Email</label>
                     <input
