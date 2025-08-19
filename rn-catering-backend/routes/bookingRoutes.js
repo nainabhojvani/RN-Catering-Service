@@ -30,4 +30,24 @@ router.get("/my", verifyToken, async (req, res) => {
   }
 });
 
+// DELETE /api/bookings/:id
+router.delete("/:id", async (req, res) => {
+  try {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+    });
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ message: "Booking not found or unauthorized" });
+    }
+
+    await Booking.deleteOne({ _id: req.params.id });
+    res.status(200).json({ message: "Booking deleted successfully" });
+  } catch (err) {
+    console.error("Delete booking error:", err);
+    res.status(500).json({ message: "Failed to delete booking" });
+  }
+});
+
 module.exports = router;

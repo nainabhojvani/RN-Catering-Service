@@ -16,17 +16,60 @@ import personImg from "../assets/images/person.png";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const CenteredMessageBox = ({ message, onClose }) => {
+  if (!message) return null;
+  return (
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white p-6 rounded shadow-lg max-w-sm text-center"
+        onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside box
+      >
+        <p className="text-green-600 text-lg">{message}</p>
+        <button
+          className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded"
+          onClick={onClose}
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const Profile = () => {
   const { user, setUser } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedBooking, setExpandedBooking] = useState(null);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    setUser(null);
-    window.location.href = "/";
-  };
+  // Edit Profile fields & visibility
+  const [editVisible, setEditVisible] = useState(false);
+  const [editUsername, setEditUsername] = useState("");
+  const [editFullName, setEditFullName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+
+  // Change Password fields & visibility
+  const [changePassVisible, setChangePassVisible] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Delete Account feedback
+  const [deleteAccountMsg, setDeleteAccountMsg] = useState("");
+
+  // Centered modal message state (for success messages)
+  const [centeredMsg, setCenteredMsg] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      setEditUsername(user.username || "");
+      setEditFullName(user.fullName || "");
+      setEditEmail(user.email || "");
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -50,6 +93,132 @@ const Profile = () => {
 
   const toggleBookingDetails = (id) => {
     setExpandedBooking(expandedBooking === id ? null : id);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    setUser(null);
+    window.location.href = "/";
+  };
+
+  // Edit Profile submit
+  const handleEditProfileSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/api/user/edit`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: editUsername,
+          fullName: editFullName,
+          email: editEmail,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUser(data);
+        localStorage.setItem("user", JSON.stringify(data));
+        setCenteredMsg("Profile updated successfully.");
+        setEditVisible(false);
+      } else {
+        alert(data.message || "Error updating profile.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error updating profile.");
+    }
+  };
+
+  // Change Password submit
+  const handleChangePasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      alert("New passwords do not match.");
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/api/user/change-password`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          oldPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCenteredMsg("Password changed successfully.");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setChangePassVisible(false);
+      } else {
+        alert(data.message || "Error changing password.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error changing password.");
+    }
+  };
+
+  // Delete Account submit
+  const handleDeleteAccount = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone.",
+      )
+    )
+      return;
+
+    setDeleteAccountMsg("");
+    try {
+      const res = await fetch(`${API_URL}/api/user/delete`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setDeleteAccountMsg("Account deleted successfully.");
+        localStorage.clear();
+        setUser(null);
+        window.location.href = "/";
+      } else {
+        setDeleteAccountMsg(data.message || "Error deleting account.");
+      }
+    } catch (err) {
+      console.error(err);
+      setDeleteAccountMsg("Server error deleting account.");
+    }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to delete this booking?"))
+      return;
+    try {
+      const res = await fetch(`${API_URL}/api/bookings/${bookingId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (res.ok) {
+        setBookings(bookings.filter((b) => b._id !== bookingId));
+      } else {
+        alert("Failed to delete booking.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting booking.");
+    }
   };
 
   if (!user) {
@@ -87,17 +256,30 @@ const Profile = () => {
 
             <div className="mt-10 w-full space-y-4">
               <button
+                onClick={() => {
+                  setEditVisible(!editVisible);
+                  setChangePassVisible(false);
+                }}
                 className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-700 font-semibold shadow-sm hover:shadow-md transition"
                 aria-label="Edit Profile"
               >
                 <UserCircle2 className="w-5 h-5" />
                 Edit Profile
               </button>
-              <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-700 font-semibold shadow-sm hover:shadow-md transition">
+              <button
+                onClick={() => {
+                  setChangePassVisible(!changePassVisible);
+                  setEditVisible(false);
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-gray-700 font-semibold shadow-sm hover:shadow-md transition"
+              >
                 <Lock className="w-5 h-5" />
                 Change Password
               </button>
-              <button className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-red-600 font-semibold shadow-sm hover:shadow-md transition">
+              <button
+                onClick={handleDeleteAccount}
+                className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg py-3 text-red-600 font-semibold shadow-sm hover:shadow-md transition"
+              >
                 <Trash2 className="w-5 h-5" />
                 Delete Account
               </button>
@@ -109,10 +291,116 @@ const Profile = () => {
                 Logout
               </button>
             </div>
+
+            {deleteAccountMsg && (
+              <p className="mt-4 text-red-600 text-center">
+                {deleteAccountMsg}
+              </p>
+            )}
           </div>
 
-          {/* Right Main Content: Bookings with toggle details */}
+          {/* Right Main Content: Bookings and Forms */}
           <div className="md:col-span-3 p-8">
+            {/* Edit Profile Form */}
+            {editVisible && (
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold mb-6 text-gray-900 border-b pb-3">
+                  Edit Profile
+                </h3>
+                <form
+                  onSubmit={handleEditProfileSubmit}
+                  className="flex flex-col gap-6 max-w-xl"
+                >
+                  <label className="flex flex-col">
+                    Username:
+                    <input
+                      type="text"
+                      value={editUsername}
+                      onChange={(e) => setEditUsername(e.target.value)}
+                      required
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    Full Name:
+                    <input
+                      type="text"
+                      value={editFullName}
+                      onChange={(e) => setEditFullName(e.target.value)}
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    Email:
+                    <input
+                      type="email"
+                      value={editEmail}
+                      onChange={(e) => setEditEmail(e.target.value)}
+                      required
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded"
+                  >
+                    Save Changes
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Change Password Form */}
+            {changePassVisible && (
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold mb-6 text-gray-900 border-b pb-3">
+                  Change Password
+                </h3>
+                <form
+                  onSubmit={handleChangePasswordSubmit}
+                  className="flex flex-col gap-6 max-w-xl"
+                >
+                  <label className="flex flex-col">
+                    Old Password:
+                    <input
+                      type="password"
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.target.value)}
+                      required
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    New Password:
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <label className="flex flex-col">
+                    Confirm New Password:
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      className="border rounded px-4 py-2 mt-2"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded"
+                  >
+                    Change Password
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Bookings Section */}
             <h3 className="text-3xl font-bold mb-8 text-gray-900 border-b pb-3">
               My Bookings
             </h3>
@@ -145,12 +433,21 @@ const Profile = () => {
                             <MapPin className="w-4 h-4" /> {b.venue || "N/A"}
                           </p>
                         </div>
-                        <button
-                          onClick={() => toggleBookingDetails(b._id)}
-                          className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                        >
-                          {isExpanded ? "Hide Details" : "View Booking"}
-                        </button>
+                        <div className="flex items-center justify-between w-36">
+                          <button
+                            onClick={() => toggleBookingDetails(b._id)}
+                            className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                          >
+                            {isExpanded ? "Hide Details" : "View Booking"}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBooking(b._id)}
+                            className="text-red-500 hover:text-red-700"
+                            title="Delete Booking"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
                       </div>
 
                       {/* Expanded detailed info */}
@@ -207,6 +504,12 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* Centered Modal Success Message */}
+      <CenteredMessageBox
+        message={centeredMsg}
+        onClose={() => setCenteredMsg("")}
+      />
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import initialMenuData from "./MenuData"; // renamed import
 import axios from "axios";
+import useAuth from "../context/useAuth";
 
 const events = [
   "Wedding Catering",
@@ -23,7 +24,6 @@ const events = [
   "Party Catering",
   "Home Catering",
 ];
-
 const mealSections = {
   Breakfast: ["Breakfast Items", "Hot Beverages"],
   Lunch: ["Starters", "Main Course", "Rice & Breads", "Desserts"],
@@ -130,6 +130,7 @@ function Menu() {
     date: "",
     venue: "",
   });
+  const { user } = useAuth();
 
   useEffect(() => {
     if (location.state?.eventName) {
@@ -240,7 +241,7 @@ function Menu() {
       );
 
       setShowBookingForm(false);
-      navigate("/");
+      navigate(`/profile/${user.username}`);
     } catch (err) {
       alert("Failed to submit booking");
       console.log(err);

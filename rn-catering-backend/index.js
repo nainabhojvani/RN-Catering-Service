@@ -29,25 +29,11 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const adminRoutes = require("./routes/adminRoutes.js");
 
-.
-.
-.
-.
-.
-.
-.
 app.use("/api/bookings", bookingRoutes);
 app.use("/api", authRoutes); // /api/register, /api/login, /api/profile
 app.use("/api/contact", contactRoutes); // /api/contact/send or whatever you defined
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
-.
-.
-.
-.
-.
-.
-.
 
 // ✅ Server
 app.listen(PORT, () => {
