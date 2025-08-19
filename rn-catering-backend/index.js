@@ -28,12 +28,14 @@ const contactRoutes = require("./routes/contact"); // Handles /contact form subm
 const reviewRoutes = require("./routes/reviewRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const adminRoutes = require("./routes/adminRoutes.js");
+const inquiriesRoutes = require("./routes/inquiryRoutes");
 
 app.use("/api/bookings", bookingRoutes);
 app.use("/api", authRoutes); // /api/register, /api/login, /api/profile
 app.use("/api/contact", contactRoutes); // /api/contact/send or whatever you defined
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/inquiries", inquiriesRoutes);
 
 // ✅ Server
 app.listen(PORT, () => {
