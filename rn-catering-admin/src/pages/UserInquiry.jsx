@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function UserInquiry() {
+  const sections = ["Pending", "Reviewed"];
+
+  // Local status map with persistence
+  const [localStatusMap, setLocalStatusMap] = useState(() => {
+    const saved = localStorage.getItem("inquiryStatusMap");
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [inquiries, setInquiries] = useState([]);
-  const [editStatus, setEditStatus] = useState({});
   const [expanded, setExpanded] = useState({
     Pending: [],
     Reviewed: [],
@@ -14,7 +23,6 @@ function UserInquiry() {
     setExpanded((prev) => {
       const sectionExpanded = prev[section] || [];
       const isAlreadyExpanded = sectionExpanded.includes(idx);
-
       return {
         ...prev,
         [section]: isAlreadyExpanded
@@ -26,32 +34,27 @@ function UserInquiry() {
 
   const isExpanded = (section, idx) => expanded[section]?.includes(idx);
 
-  const sections = ["Pending", "Reviewed"];
-
-  // Fetch inquiries and initialize status
+  // Fetch inquiries, merge with local status
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/inquiries/contacts");
-        setInquiries(res.data);
-
-        // Initialize all inquiries as Pending
-        const initialStatuses = {};
-        res.data.forEach((inq) => {
-          initialStatuses[inq._id] = "Pending";
-        });
-        setEditStatus(initialStatuses);
+        const res = await axios.get(`${API_URL}/api/inquiries/contacts`);
+        const mergedInquiries = res.data.map((inq) => ({
+          ...inq,
+          status: localStatusMap[inq._id] || "Pending",
+        }));
+        setInquiries(mergedInquiries);
       } catch (err) {
         console.error("Error fetching inquiries:", err);
       }
     };
     fetchInquiries();
-  }, []);
+  }, []); // Run once on mount
 
-  // Group inquiries by current UI status
+  // Group inquiries by status property
   const inquiriesByStatus = {
-    Pending: inquiries.filter((inq) => editStatus[inq._id] === "Pending"),
-    Reviewed: inquiries.filter((inq) => editStatus[inq._id] === "Reviewed"),
+    Pending: inquiries.filter((inq) => (inq.status || "Pending") === "Pending"),
+    Reviewed: inquiries.filter((inq) => (inq.status || "Pending") === "Reviewed"),
   };
 
   return (
@@ -69,7 +72,7 @@ function UserInquiry() {
           return (
             <div
               key={section}
-              className={`flex-1 min-w-[280px] max-w-[400px] p-5 rounded-3xl ${sectionBg}`}
+              className={`flex-1 min-w-[280px] max-w-[400px] p-5 rounded-3xl shadow-lg ${sectionBg}`}
             >
               <div className="flex items-center justify-between p-4 rounded-xl bg-opacity-50 mb-5">
                 <div className="flex items-center gap-3">
@@ -93,22 +96,30 @@ function UserInquiry() {
                   >
                     <div
                       onClick={() => toggleExpand(section, idx)}
-                      className={`p-5 flex justify-between items-center ${
-                        section === "Pending" ? "bg-yellow-100" : "bg-green-100"
-                      }`}
+                      className={`p-5 flex justify-between items-center ${section === "Pending" ? "bg-yellow-100" : "bg-green-100"
+                        }`}
                     >
-                      <span className="font-bold text-gray-900 text-lg md:text-xl">
-                        {inq.name}
-                      </span>
+                      <span className="font-bold text-gray-900 text-lg md:text-xl">{inq.name}</span>
 
                       <select
-                        value={editStatus[inq._id]}
-                        onChange={(e) =>
-                          setEditStatus((prev) => ({
-                            ...prev,
-                            [inq._id]: e.target.value,
-                          }))
-                        }
+                        value={localStatusMap[inq._id] || "Pending"}
+                        onChange={(e) => {
+                          const newStatus = e.target.value;
+
+                          // Update local status map with persistence
+                          setLocalStatusMap((prev) => {
+                            const updated = { ...prev, [inq._id]: newStatus };
+                            localStorage.setItem("inquiryStatusMap", JSON.stringify(updated));
+                            return updated;
+                          });
+
+                          // Update inquiries state to reflect UI immediately
+                          setInquiries((prev) =>
+                            prev.map((i) =>
+                              i._id === inq._id ? { ...i, status: newStatus } : i
+                            )
+                          );
+                        }}
                         className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border bg-white cursor-pointer max-w-[120px]"
                       >
                         <option value="Pending">Pending</option>
@@ -117,11 +128,10 @@ function UserInquiry() {
                     </div>
 
                     <div
-                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-gray-200 ${
-                        isExpanded(section, idx)
+                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-gray-200 ${isExpanded(section, idx)
                           ? "max-h-96 opacity-100 py-4"
                           : "max-h-0 opacity-0 py-0"
-                      }`}
+                        }`}
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
