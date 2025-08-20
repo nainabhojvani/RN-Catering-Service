@@ -6,11 +6,14 @@ import { Link, useNavigate, NavLink } from "react-router-dom";
 import personImg from "../assets/images/person.png";
 import useAuth from "../context/useAuth"; // ✅ NEW: use context
 import { toast } from "react-toastify";
+import CenteredMessageBox from "./centerMsgbox";
 
 export default function Header() {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [authForm, setAuthForm] = useState("signin");
+
+  const [centeredMsg, setCenteredMsg] = useState("");
 
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
@@ -26,7 +29,8 @@ export default function Header() {
   const toggleAuthForm = (form) => setAuthForm(form);
 
   const handleLogout = () => {
-    logout(); // ✅ replaces localStorage + setUser
+    logout();
+    setCenteredMsg("Logged out successfully.");
     navigate("/");
   };
 
@@ -70,28 +74,26 @@ export default function Header() {
     try {
       const res = await fetch(`${API_URL}/api/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           emailOrUsername: email,
           password,
         }),
       });
-
       const data = await res.json();
 
       if (res.ok) {
-        login(data.user, data.token); // save user + token
+        login(data.user, data.token);
         setEmail("");
         setPassword("");
         setShowDropdown(false);
+        setCenteredMsg("Login successful!");
       } else {
-        alert(data.message);
+        setCenteredMsg(data.message || "Login failed. Try again.");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Something went wrong. Try again.");
+      setCenteredMsg("Something went wrong. Try again.");
     }
   };
 
@@ -386,6 +388,10 @@ hover:after:w-full
           </div>
         </div>
       )}
+      <CenteredMessageBox
+        message={centeredMsg}
+        onClose={() => setCenteredMsg("")}
+      />
     </>
   );
 }
