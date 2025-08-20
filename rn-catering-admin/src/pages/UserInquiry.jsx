@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function UserInquiry() {
+function UserInquiry({ setInquiriesCount }) {
   const sections = ["Pending", "Reviewed"];
 
   // Local status map with persistence
@@ -33,7 +33,9 @@ function UserInquiry() {
   };
 
   const isExpanded = (section, idx) => expanded[section]?.includes(idx);
-
+  useEffect(() => {
+    setInquiriesCount(inquiries.length);
+  }, [inquiries, setInquiriesCount]);
   // Fetch inquiries, merge with local status
   useEffect(() => {
     const fetchInquiries = async () => {
@@ -56,6 +58,7 @@ function UserInquiry() {
     Pending: inquiries.filter((inq) => (inq.status || "Pending") === "Pending"),
     Reviewed: inquiries.filter((inq) => (inq.status || "Pending") === "Reviewed"),
   };
+
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -119,7 +122,8 @@ function UserInquiry() {
                               i._id === inq._id ? { ...i, status: newStatus } : i
                             )
                           );
-                        }}
+                        }
+                        }
                         className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border bg-white cursor-pointer max-w-[120px]"
                       >
                         <option value="Pending">Pending</option>
@@ -129,8 +133,8 @@ function UserInquiry() {
 
                     <div
                       className={`overflow-hidden transition-all duration-500 px-5 border-t border-gray-200 ${isExpanded(section, idx)
-                          ? "max-h-96 opacity-100 py-4"
-                          : "max-h-0 opacity-0 py-0"
+                        ? "max-h-96 opacity-100 py-4"
+                        : "max-h-0 opacity-0 py-0"
                         }`}
                     >
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

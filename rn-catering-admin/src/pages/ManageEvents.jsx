@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function ManageEvents() {
+function ManageEvents({ setBookingsCount }) {
   const statuses = ["Draft", "Active", "Complete"];
 
   // Load local status map from localStorage or start empty
@@ -114,6 +114,10 @@ function ManageEvents() {
       setExpanded({ Draft: [], Active: [], Complete: [] });
     }
   };
+  useEffect(() => {
+    // Whenever bookings change, update count:
+    setBookingsCount(bookings.length);
+  }, [bookings, setBookingsCount]);
 
   const toggleExpand = (section, id) => {
     setExpanded((prev) => {
@@ -152,10 +156,10 @@ function ManageEvents() {
             <div
               key={status}
               className={`flex-1 min-w-[280px] max-w-[400px] p-5 rounded-3xl shadow-lg min-h-[auto] ${status === "Draft"
-                  ? "bg-yellow-50"
-                  : status === "Active"
-                    ? "bg-blue-50"
-                    : "bg-green-50"
+                ? "bg-yellow-50"
+                : status === "Active"
+                  ? "bg-blue-50"
+                  : "bg-green-50"
                 } ${filtered.length === 0 ? "h-40" : "min-h-[400px]"}`}
             >
               <div className="flex justify-between items-center mb-5">
