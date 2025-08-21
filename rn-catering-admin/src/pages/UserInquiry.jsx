@@ -33,10 +33,7 @@ function UserInquiry({ setInquiriesCount }) {
   };
 
   const isExpanded = (section, idx) => expanded[section]?.includes(idx);
-  useEffect(() => {
-    setInquiriesCount(inquiries.length);
-  }, [inquiries, setInquiriesCount]);
-  // Fetch inquiries, merge with local status
+
   useEffect(() => {
     const fetchInquiries = async () => {
       try {
@@ -52,6 +49,10 @@ function UserInquiry({ setInquiriesCount }) {
     };
     fetchInquiries();
   }, []); // Run once on mount
+  useEffect(() => {
+    setInquiriesCount(inquiries.length);
+  }, [inquiries, setInquiriesCount]);
+  // Fetch inquiries, merge with local status
 
   // Group inquiries by status property
   const inquiriesByStatus = {
