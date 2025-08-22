@@ -11,7 +11,7 @@ export default function WelcomeSection() {
          Where flavor meets elegance and every meal becomes a celebration. At RN Catering, we’re passionate about creating memorable culinary experiences—crafted with care, beautifully served, and tailored to your unique occasion. Whether it’s an intimate gathering or a grand event, we bring you the perfect blend of taste, tradition, and hospitality.
         </p>
         <a
-            href="#"
+            href="/about"
             className="inline-block mt-4 text-l px-6 py-3 border-2 border-solid  border-purple-800  rounded-full hover:bg-purple-800 hover:text-white transition"
           >
             Learn More

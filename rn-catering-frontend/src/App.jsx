@@ -14,6 +14,7 @@ import ContactPage from "./pages/Contact";
 import OurServicesPage from "./pages/OurService";
 import MenuPage from "./components/MenuPage";
 import Profile from "./components/Profile";
+import PTOS from "./components/PTOS";
 import { AuthProvider } from "./context/AuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -46,6 +47,7 @@ function App() {
           <Route path="/services" element={<OurServicesPage />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/privacyTos" element={<PTOS />} />
         </Routes>
 
         <Footer />

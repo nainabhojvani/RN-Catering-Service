@@ -210,7 +210,7 @@ export default function RegionalDishes() {
       {/* View Menu Button */}
       <div className="mt-16">
         <a
-          href="menu.html"
+          href="/menu"
           className="inline-block px-9 py-3 text-lg font-semibold bg-purple-800 text-white rounded-full shadow-md hover:bg-purple-900 hover:scale-105 transition"
         >
           View Full Menu
