@@ -2,9 +2,9 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
+  useLocation,Navigate 
 } from "react-router-dom";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Header from "./components/Header";
@@ -15,45 +15,54 @@ import OurServicesPage from "./pages/OurService";
 import MenuPage from "./components/MenuPage";
 import Profile from "./components/Profile";
 import PTOS from "./components/PTOS";
-import { AuthProvider } from "./context/AuthProvider";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import NotFound from "./components/NotFound";
 
-// ✅ Scroll to Top Handler tostart the page from Top
-function ScrollToTop() {
-  const { pathname } = useLocation();
+function AppContent() {
+  const location = useLocation();
+  const [showLayout, setShowLayout] = useState(true);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    // List of paths where header/footer should be hidden
+    // Because wildcard route * matches anything, 404 is tricky to detect by pathname
+    // We hide layout if Location is unmatched and renders NotFound by checking pathname or flag
+    const hidePaths = ["/404"]; // if you have a legit 404 path
+    if (hidePaths.includes(location.pathname)) {
+      setShowLayout(false);
+    } else {
+      setShowLayout(true);
+    }
+  }, [location]);
 
-  return null;
-}
+  // Fallback: if you want to hide layout for all unmatched routes,
+  // consider adding explicit route for /404 and redirect * to it, see below
 
-function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Header />
-        <ToastContainer position="bottom-right" autoClose={3000} />
-        <ToastContainer position="bottom-left" autoClose={3000} />
+    <>
+      {showLayout && <Header />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/venues" element={<VenuePage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/services" element={<OurServicesPage />} />
+        <Route path="/menu" element={<MenuPage />} />
+        <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/privacyTos" element={<PTOS />} />
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/venues" element={<VenuePage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/services" element={<OurServicesPage />} />
-          <Route path="/menu" element={<MenuPage />} />
-          <Route path="/profile/:username" element={<Profile />} />
-          <Route path="/privacyTos" element={<PTOS />} />
-        </Routes>
-
-        <Footer />
-      </Router>
-    </AuthProvider>
+        {/* Define a dedicated 404 path */}
+        <Route path="/404" element={<NotFound />} />
+        {/* Redirect unmatched routes to /404 */}
+        <Route path="*" element={<Navigate replace to="/404" />} />
+      </Routes>
+      {showLayout && <Footer />}
+    </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
