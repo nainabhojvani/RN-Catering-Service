@@ -2,8 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import MenuBanner from "../assets/images/ourservice.jpg";
-import TextSlider from "./TextSlider";
+
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
 import { Listbox } from "@headlessui/react";
@@ -30,30 +29,6 @@ const mealSections = {
   "Evening Snacks": ["Snacks", "Drinks"],
   Dinner: ["Starters", "Main Course", "Rice & Breads", "Desserts"],
 };
-
-function MenuHero() {
-  return (
-    <div className="relative w-full h-[500px]">
-      <img
-        src={MenuBanner}
-        alt="Select Menu"
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 z-20">
-        <p className="text-white text-4xl font-semibold font-[Dancing_Script]">
-          Select Menu
-        </p>
-        <h1 className="text-4xl md:text-5xl font-bold mt-2">
-          RN CATERING FOR YOUR SPECIAL DAY.
-        </h1>
-      </div>
-      <div className="absolute bottom-0 left-0 w-full z-30">
-        <TextSlider />
-      </div>
-    </div>
-  );
-}
 
 function EventDropdown({ selectedEvent, setSelectedEvent }) {
   return (
@@ -515,7 +490,6 @@ function Menu() {
 export default function MenuPage() {
   return (
     <>
-      <MenuHero />
       <Menu />
     </>
   );

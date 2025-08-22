@@ -17,6 +17,7 @@ import Profile from "./components/Profile";
 import { AuthProvider } from "./context/AuthProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Packages from "./components/Packages";
 
 // ✅ Scroll to Top Handler tostart the page from Top
 function ScrollToTop() {
@@ -45,6 +46,8 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/services" element={<OurServicesPage />} />
           <Route path="/menu" element={<MenuPage />} />
+          <Route path="/packages" element={<Packages />} />
+
           <Route path="/profile/:username" element={<Profile />} />
         </Routes>
 
