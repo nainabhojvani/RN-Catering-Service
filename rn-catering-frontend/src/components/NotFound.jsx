@@ -1,9 +1,9 @@
 import React from "react";
-<<<<<<< HEAD
+
 import { Link } from "react-router-dom";
-=======
+
 import { useNavigate } from "react-router-dom";
->>>>>>> fc23d07 (Upadated)
+
 import cartoon from "../assets/images/cartoon.png";
 
 const NotFound = () => {
