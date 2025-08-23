@@ -50,8 +50,10 @@ function UserInquiry({ setInquiriesCount }) {
     fetchInquiries();
   }, []); // Run once on mount
   useEffect(() => {
-    setInquiriesCount(inquiries.length);
+    const pendingCount = inquiries.filter((i) => (i.status || "Pending") === "Pending").length;
+    setInquiriesCount(pendingCount);
   }, [inquiries, setInquiriesCount]);
+
   // Fetch inquiries, merge with local status
 
   // Group inquiries by status property
@@ -72,6 +74,7 @@ function UserInquiry({ setInquiriesCount }) {
           const sectionIcon = section === "Pending" ? "⏳" : "✅";
           const sectionBg = section === "Pending" ? "bg-yellow-50" : "bg-green-50";
           const filteredInquiries = inquiriesByStatus[section] || [];
+
 
           return (
             <div
@@ -105,31 +108,43 @@ function UserInquiry({ setInquiriesCount }) {
                     >
                       <span className="font-bold text-gray-900 text-lg md:text-xl">{inq.name}</span>
 
-                      <select
-                        value={localStatusMap[inq._id] || "Pending"}
-                        onChange={(e) => {
-                          const newStatus = e.target.value;
+                      {(localStatusMap[inq._id] || "Pending") === "Pending" ? (
+                        <select
+                          value={localStatusMap[inq._id] || "Pending"}
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
 
-                          // Update local status map with persistence
-                          setLocalStatusMap((prev) => {
-                            const updated = { ...prev, [inq._id]: newStatus };
-                            localStorage.setItem("inquiryStatusMap", JSON.stringify(updated));
-                            return updated;
-                          });
+                            // Update local status map with persistence
+                            setLocalStatusMap((prev) => {
+                              const updated = { ...prev, [inq._id]: newStatus };
+                              localStorage.setItem("inquiryStatusMap", JSON.stringify(updated));
+                              return updated;
+                            });
 
-                          // Update inquiries state to reflect UI immediately
-                          setInquiries((prev) =>
-                            prev.map((i) =>
-                              i._id === inq._id ? { ...i, status: newStatus } : i
-                            )
-                          );
-                        }
-                        }
-                        className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border bg-white cursor-pointer max-w-[120px]"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Reviewed">Reviewed</option>
-                      </select>
+                            // Update inquiries state to reflect UI immediately
+                            setInquiries((prev) =>
+                              prev.map((i) => (i._id === inq._id ? { ...i, status: newStatus } : i))
+                            );
+
+                            // Optionally collapse expanded card here if needed
+                            setExpanded((prev) => {
+                              const sectionExpanded = prev[section] || [];
+                              return {
+                                ...prev,
+                                [section]: sectionExpanded.filter((i) => i !== idx),
+                              };
+                            });
+                          }}
+                          className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border bg-white cursor-pointer max-w-[120px]"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Reviewed">Reviewed</option>
+                        </select>
+                      ) : (
+                        <span className="text-green-700 font-semibold px-3 py-1 rounded-full bg-green-100 border border-green-300 max-w-[120px] inline-block text-center cursor-default">
+                          Reviewed
+                        </span>
+                      )}
                     </div>
 
                     <div

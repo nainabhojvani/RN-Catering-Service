@@ -115,8 +115,8 @@ function ManageEvents({ setBookingsCount }) {
     }
   };
   useEffect(() => {
-    // Whenever bookings change, update count:
-    setBookingsCount(bookings.length);
+    const draftCount = bookings.filter((b) => (b.status || "Draft") === "Draft").length;
+    setBookingsCount(draftCount);
   }, [bookings, setBookingsCount]);
 
   const toggleExpand = (section, id) => {

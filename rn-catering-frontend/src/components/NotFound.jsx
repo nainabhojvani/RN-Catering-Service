@@ -1,5 +1,9 @@
 import React from "react";
+<<<<<<< HEAD
 import { Link } from "react-router-dom";
+=======
+import { useNavigate } from "react-router-dom";
+>>>>>>> fc23d07 (Upadated)
 import cartoon from "../assets/images/cartoon.png";
 
 const NotFound = () => {
@@ -24,18 +28,21 @@ const NotFound = () => {
       </p>
 
       {/* Back Home Button */}
-      <Link
-        to="/"
+      <button
+        onClick={() => {
+          console.log("Button clicked, navigating home");
+          navigate("/");
+        }}
         className="mt-6 px-6 py-3 bg-purple-600 text-white font-bold rounded-lg shadow-lg hover:bg-purple-700 transition transform hover:scale-105"
       >
         Go Back Home
-      </Link>
+      </button>
 
-      <div className="absolute top-0 left-0 w-full h-full">
-        <span className="absolute w-6 h-6 bg-purple-200 rounded-full opacity-40 animate-float top-10 left-10"></span>
-        <span className="absolute w-8 h-8 bg-pink-200 rounded-full opacity-30 animate-float delay-1000 top-32 left-72"></span>
-        <span className="absolute w-4 h-4 bg-yellow-200 rounded-full opacity-50 animate-float delay-2000 top-60 left-40"></span>
-      </div>
+
+      <span className="absolute w-6 h-6 bg-purple-200 rounded-full opacity-40 animate-float top-10 left-10"></span>
+      <span className="absolute w-8 h-8 bg-pink-200 rounded-full opacity-30 animate-float delay-1000 top-32 left-72"></span>
+      <span className="absolute w-4 h-4 bg-yellow-200 rounded-full opacity-50 animate-float delay-2000 top-60 left-40"></span>
+
     </div>
   );
 };

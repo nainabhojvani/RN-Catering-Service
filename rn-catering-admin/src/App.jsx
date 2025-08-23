@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
@@ -6,8 +6,26 @@ import ManageEvents from "./pages/ManageEvents";
 import UserInquiry from "./pages/UserInquiry";
 
 function App() {
-  const [bookingsCount, setBookingsCount] = useState(0);
-  const [inquiriesCount, setInquiriesCount] = useState(0);
+  // Initialize counts from localStorage or 0
+  const [bookingsCount, setBookingsCount] = useState(() => {
+    const saved = localStorage.getItem("bookingsCount");
+    return saved ? Number(saved) : 0;
+  });
+
+  const [inquiriesCount, setInquiriesCount] = useState(() => {
+    const saved = localStorage.getItem("inquiriesCount");
+    return saved ? Number(saved) : 0;
+  });
+
+  // Persist bookingsCount to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("bookingsCount", bookingsCount);
+  }, [bookingsCount]);
+
+  // Persist inquiriesCount to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem("inquiriesCount", inquiriesCount);
+  }, [inquiriesCount]);
 
   return (
     <Router>
@@ -18,7 +36,12 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<Dashboard totalEvents={bookingsCount} totalInquiries={inquiriesCount} />}
+              element={
+                <Dashboard
+                  totalEvents={bookingsCount}
+                  totalInquiries={inquiriesCount}
+                />
+              }
             />
             <Route
               path="/events"
