@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import cartoon from "../assets/images/cartoon.png";
 
 const NotFound = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white relative overflow-hidden">
       <div className="text-9xl font-extrabold text-gray-800 animate-bounce">
@@ -38,11 +39,9 @@ const NotFound = () => {
         Go Back Home
       </button>
 
-
       <span className="absolute w-6 h-6 bg-purple-200 rounded-full opacity-40 animate-float top-10 left-10"></span>
       <span className="absolute w-8 h-8 bg-pink-200 rounded-full opacity-30 animate-float delay-1000 top-32 left-72"></span>
       <span className="absolute w-4 h-4 bg-yellow-200 rounded-full opacity-50 animate-float delay-2000 top-60 left-40"></span>
-
     </div>
   );
 };

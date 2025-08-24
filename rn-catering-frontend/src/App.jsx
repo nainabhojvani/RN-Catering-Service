@@ -17,7 +17,17 @@ import MenuPage from "./components/MenuPage";
 import Profile from "./components/Profile";
 import PTOS from "./components/PTOS";
 import NotFound from "./components/NotFound";
-import Packages from "./components/Packages";
+import BookingForm from "./components/BookingForm";
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to top whenever pathname changes
+  }, [pathname]);
+
+  return null;
+};
 
 function AppContent() {
   const location = useLocation();
@@ -41,6 +51,7 @@ function AppContent() {
   return (
     <>
       {showLayout && <Header />}
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -48,8 +59,8 @@ function AppContent() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/services" element={<OurServicesPage />} />
         <Route path="/menu" element={<MenuPage />} />
-        <Route path="/packages" element={<Packages />} />
 
+        <Route path="/bookingform" element={<BookingForm />} />
         <Route path="/profile/:username" element={<Profile />} />
         <Route path="/privacyTos" element={<PTOS />} />
 

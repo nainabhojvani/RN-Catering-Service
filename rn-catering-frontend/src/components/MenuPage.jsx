@@ -1,496 +1,289 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
-import { Listbox } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import initialMenuData from "./MenuData"; // renamed import
-import axios from "axios";
-import useAuth from "../context/useAuth";
+import initialMenuData from "./MenuData";
 
-const events = [
-  "Wedding Catering",
-  "Birthday Party Catering",
-  "Engagement Catering",
-  "Social Function Catering",
-  "School College Event Catering",
-  "Indoor Catering",
-  "Outdoor Gathering",
-  "Event Catering",
-  "Party Catering",
-  "Home Catering",
-];
-const mealSections = {
-  Breakfast: ["Breakfast Items", "Hot Beverages"],
-  Lunch: ["Starters", "Main Course", "Rice & Breads", "Desserts"],
-  "Evening Snacks": ["Snacks", "Drinks"],
-  Dinner: ["Starters", "Main Course", "Rice & Breads", "Desserts"],
-};
-
-function EventDropdown({ selectedEvent, setSelectedEvent }) {
-  return (
-    <div className="w-full mb-6">
-      <Listbox value={selectedEvent} onChange={setSelectedEvent}>
-        <div className="relative mt-1">
-          <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-3 pl-3 pr-10 text-left shadow-md border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 sm:text-sm">
-            <span className="block truncate text-gray-700">
-              {selectedEvent || "Select Event"}
-            </span>
-            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-              <ChevronUpDownIcon
-                className="h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            </span>
-          </Listbox.Button>
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {events.map((event, idx) => (
-              <Listbox.Option
-                key={idx}
-                value={event}
-                className={({ active }) =>
-                  `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                    active ? "bg-purple-100 text-purple-900" : "text-gray-900"
-                  }`
-                }
-              >
-                {({ selected }) => (
-                  <>
-                    <span
-                      className={`block truncate ${
-                        selected ? "font-medium" : "font-normal"
-                      }`}
-                    >
-                      {event}
-                    </span>
-                    {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-purple-600">
-                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                      </span>
-                    ) : null}
-                  </>
-                )}
-              </Listbox.Option>
-            ))}
-          </Listbox.Options>
-        </div>
-      </Listbox>
-    </div>
-  );
-}
+const mealOrder = ["Breakfast", "Lunch", "Evening Snacks", "Dinner"];
 
 function Menu() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const [selectedEvent, setSelectedEvent] = useState("");
   const [menuDataState, setMenuData] = useState(initialMenuData);
-  const [region, setRegion] = useState("North");
+  const [hiddenItems, setHiddenItems] = useState({});
+  const [step, setStep] = useState(0); // current step index
+
   const [mealPlan, setMealPlan] = useState(
     Object.fromEntries(
-      Object.keys(mealSections).map((meal) => [
+      mealOrder.map((meal) => [
         meal,
-        Object.fromEntries(mealSections[meal].map((sub) => [sub, []])),
+        Object.fromEntries(
+          Object.keys(initialMenuData[meal]).map((cat) => [cat, []]),
+        ),
       ]),
     ),
   );
-  const [openSubCategories, setOpenSubCategories] = useState({});
-  const [hiddenItems, setHiddenItems] = useState({});
-  const [showBookingForm, setShowBookingForm] = useState(false);
-  const [formData, setFormData] = useState({
-    customerName: "",
-    phone: "",
-    email: "",
-    date: "",
-    venue: "",
-  });
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (location.state?.eventName) {
-      setSelectedEvent(location.state.eventName);
-    }
+    if (location.state?.eventName) setSelectedEvent(location.state.eventName);
   }, [location]);
 
-  const toggleSubCategory = (key) => {
-    setOpenSubCategories((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
+  const currentMeal = mealOrder[step]; // current step meal
 
   const onDragEnd = (result) => {
     const { source, destination } = result;
     if (!destination) return;
 
-    const destinationObj = destination.droppableId.split("|");
+    const [meal, category] = destination.droppableId.split("|");
+    const { meal: srcMeal, category: srcCategory } = JSON.parse(
+      source.droppableId,
+    );
+    const draggedDish = menuDataState[srcMeal][srcCategory][source.index];
+    const newDish = { id: `${Date.now()}`, name: draggedDish };
 
-    if (destinationObj.length === 2) {
-      const [meal, subCategory] = destinationObj;
-      const {
-        region: srcRegion,
-        category,
-        subCategory: srcSubCategory,
-      } = JSON.parse(source.droppableId);
-      const draggedDish =
-        menuDataState[srcRegion][category][srcSubCategory][source.index];
-
-      const newDish = { id: `${Date.now()}`, name: draggedDish };
-
-      setMealPlan((prev) => ({
-        ...prev,
-        [meal]: {
-          ...prev[meal],
-          [subCategory]: [...prev[meal][subCategory], newDish],
-        },
-      }));
-
-      setHiddenItems((prev) => ({
-        ...prev,
-        [draggedDish]: true,
-      }));
-
-      setTimeout(() => {
-        setMenuData((prevMenu) => {
-          const updatedMenu = { ...prevMenu };
-          updatedMenu[srcRegion] = {
-            ...updatedMenu[srcRegion],
-            [category]: {
-              ...updatedMenu[srcRegion][category],
-              [srcSubCategory]: updatedMenu[srcRegion][category][
-                srcSubCategory
-              ].filter((dish) => dish !== draggedDish),
-            },
-          };
-          return updatedMenu;
-        });
-
-        setHiddenItems((prev) => {
-          const copy = { ...prev };
-          delete copy[draggedDish];
-          return copy;
-        });
-      }, 200);
-    }
-  };
-
-  const handleRemoveDish = (meal, subCategory, dish) => {
     setMealPlan((prev) => ({
       ...prev,
       [meal]: {
         ...prev[meal],
-        [subCategory]: prev[meal][subCategory].filter((d) => d.id !== dish.id),
+        [category]: [...(prev[meal][category] || []), newDish],
       },
     }));
 
-    // Restore the dish to menu
+    setHiddenItems((prev) => ({ ...prev, [draggedDish]: true }));
+
+    setTimeout(() => {
+      setMenuData((prev) => {
+        const updated = { ...prev };
+        updated[srcMeal][srcCategory] = updated[srcMeal][srcCategory].filter(
+          (dish) => dish !== draggedDish,
+        );
+        return updated;
+      });
+
+      setHiddenItems((prev) => {
+        const copy = { ...prev };
+        delete copy[draggedDish];
+        return copy;
+      });
+    }, 200);
+  };
+
+  const handleRemoveDish = (meal, category, dish) => {
+    setMealPlan((prev) => ({
+      ...prev,
+      [meal]: {
+        ...prev[meal],
+        [category]: prev[meal][category].filter((d) => d.id !== dish.id),
+      },
+    }));
+
     setMenuData((prev) => {
       const updated = { ...prev };
-      // Find where to put it back
-      for (let reg in updated) {
-        for (let cat in updated[reg]) {
-          for (let sub in updated[reg][cat]) {
-            if (!updated[reg][cat][sub].includes(dish.name)) {
-              updated[reg][cat][sub] = [...updated[reg][cat][sub], dish.name];
-            }
-          }
-        }
+      if (!updated[meal][category].includes(dish.name)) {
+        updated[meal][category] = [...updated[meal][category], dish.name];
       }
       return updated;
     });
   };
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.state?.eventName) setSelectedEvent(location.state.eventName);
+  }, [location]);
 
-  const handleBookingSubmit = async () => {
-    try {
-      await axios.post(
-        `${API_URL}/api/bookings`,
-        {
-          ...formData,
-          event: selectedEvent,
-          mealPlan,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // 👈 Add token
-          },
-        },
-      );
-
-      setShowBookingForm(false);
-      navigate(`/profile/${user.username}`);
-    } catch (err) {
-      alert("Failed to submit booking");
-      console.log(err);
-    }
-  };
+  // ⬇️ Add this
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
 
   return (
-    <div className="p-8">
-      <label className="block text-lg font-semibold mb-2 text-purple-800">
-        Select Event
-      </label>
-      <EventDropdown
-        selectedEvent={selectedEvent}
-        setSelectedEvent={setSelectedEvent}
-      />
+    <div className="p-8 min-h-screen bg-[#fffdf3]">
+      <h1 className="text-2xl font-bold mb-6 text-[#195237]">
+        {selectedEvent || "Select Your Event"}
+      </h1>
 
-      <div className="grid grid-cols-4 gap-6">
-        <DragDropContext onDragEnd={onDragEnd}>
-          {/* Region Selector */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Select Region</h2>
-            {Object.keys(menuDataState).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`w-full text-left px-3 py-2 mb-2 rounded-md ${
-                  region === r ? "bg-purple-700 text-white" : "bg-gray-100"
-                }`}
-              >
-                {r} Indian
-              </button>
-            ))}
+      {/* Progress Bar */}
+      <div className="flex justify-between mb-6">
+        {mealOrder.map((meal, i) => (
+          <div
+            key={meal}
+            className={`flex-1 text-center py-2 rounded mx-1 ${
+              i === step ? "bg-[#d9e45a] font-bold" : "bg-gray-200"
+            }`}
+          >
+            {meal}
           </div>
+        ))}
+      </div>
 
-          {/* Region Dishes */}
-          <div className="col-span-2 bg-white p-4 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-6 text-purple-800">
-              {selectedEvent
-                ? `${selectedEvent} – ${region} Indian`
-                : `${region} Indian`}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 h-[100vh]">
+          {/* Left: Current Meal Menu */}
+          <div className="bg-white p-4 rounded-lg shadow overflow-y-auto md:col-span-2">
+            <h2 className="text-xl font-semibold mb-4 text-[#306344]">
+              {currentMeal}
             </h2>
-            {Object.keys(menuDataState[region]).map((category) => (
-              <div key={category} className="mb-6">
-                <h3 className="text-xl font-semibold text-purple-700 border-b pb-2 mb-3">
-                  {category}
-                </h3>
-                {Object.keys(menuDataState[region][category]).map(
-                  (subCategory) => {
-                    const key = `${category}-${subCategory}`;
-                    const open = openSubCategories[key] || false;
-                    return (
-                      <div
-                        key={subCategory}
-                        className="mb-3 rounded-lg border border-purple-200 shadow-sm overflow-hidden"
-                      >
-                        <button
-                          onClick={() => toggleSubCategory(key)}
-                          className="w-full flex justify-between items-center px-4 py-3 bg-purple-50 hover:bg-purple-100 transition-colors text-gray-800 font-medium"
-                        >
-                          <span>{subCategory}</span>
-                          <span
-                            className={`transform transition-transform text-purple-700 ${
-                              open ? "rotate-180" : "rotate-0"
-                            }`}
-                          >
-                            ▼
-                          </span>
-                        </button>
-                        <div
-                          className={`transition-all duration-300 ease-in-out ${
-                            open
-                              ? "max-h-[500px] opacity-100 p-3"
-                              : "max-h-0 opacity-0 p-0"
-                          } overflow-hidden`}
-                        >
-                          <Droppable
-                            droppableId={JSON.stringify({
-                              region,
-                              category,
-                              subCategory,
-                            })}
-                            isDropDisabled
+
+            {Object.keys(menuDataState[currentMeal]).map((category) => (
+              <div key={category} className="mb-3">
+                <h3 className="font-medium text-[#195237] mb-2">{category}</h3>
+                <Droppable
+                  droppableId={JSON.stringify({ meal: currentMeal, category })}
+                  isDropDisabled
+                >
+                  {(provided) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {menuDataState[currentMeal][category].map(
+                        (dish, index) => (
+                          <Draggable
+                            key={dish}
+                            draggableId={dish}
+                            index={index}
                           >
                             {(provided) => (
                               <div
-                                {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                className="flex flex-wrap gap-2"
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className="bg-[#d9e45a] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-[#306344] hover:text-white"
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  display: hiddenItems[dish] ? "none" : "block",
+                                }}
                               >
-                                {menuDataState[region][category][
-                                  subCategory
-                                ].map((dish, index) => (
-                                  <Draggable
-                                    key={dish}
-                                    draggableId={dish}
-                                    index={index}
-                                  >
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className="bg-purple-100 border border-purple-300 rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-purple-200 hover:shadow transition-all duration-200 inline-block whitespace-nowrap"
-                                        style={{
-                                          ...provided.draggableProps.style,
-                                          display: hiddenItems[dish]
-                                            ? "none"
-                                            : "block",
-                                        }}
-                                      >
-                                        {dish}
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
-                                {provided.placeholder}
+                                {dish}
                               </div>
                             )}
-                          </Droppable>
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
+                          </Draggable>
+                        ),
+                      )}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
               </div>
             ))}
           </div>
 
-          {/* Meal Plan */}
-          <div className="bg-white p-4 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Your Meal Plan</h2>
-            <div className="grid gap-4">
-              {Object.keys(mealSections).map((meal) => (
-                <div
-                  key={meal}
-                  className="border rounded-lg shadow-sm overflow-hidden"
-                >
-                  <h3 className="bg-purple-100 px-3 py-2 text-lg font-semibold text-purple-800">
-                    {meal}
-                  </h3>
-                  {mealSections[meal].map((sub) => (
-                    <Droppable
-                      droppableId={`${meal}|${sub}`}
-                      key={`${meal}-${sub}`}
-                    >
-                      {(provided) => (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          className="bg-purple-50 p-3 min-h-[80px] border-b border-purple-200"
-                        >
-                          <h4 className="text-purple-700 font-medium mb-2">
-                            {sub}
-                          </h4>
-                          {mealPlan[meal][sub].map((dish, index) => (
-                            <Draggable
-                              key={dish.id}
-                              draggableId={dish.id}
-                              index={index}
+          {/* Right: Meal Plan for current meal */}
+          <div className="bg-white p-4 rounded-lg  shadow overflow-y-autoshadow">
+            <h2 className="text-xl font-bold mb-4 text-[#306344]">
+              Your {currentMeal} Plan
+            </h2>
+            {Object.keys(mealPlan[currentMeal]).map((category) => (
+              <Droppable
+                droppableId={`${currentMeal}|${category}`}
+                key={category}
+              >
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className="bg-[#fef8e0] p-3 min-h-[80px] border-b border-[#d1dcd5] mb-3"
+                  >
+                    <h4 className="mb-2 text-[#306344] font-medium">
+                      {category}
+                    </h4>
+                    {mealPlan[currentMeal][category].map((dish, index) => (
+                      <Draggable
+                        key={dish.id}
+                        draggableId={dish.id}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            ref={provided.innerRef}
+                            className="flex items-center gap-2 bg-[#d9e45a] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm w-fit hover:bg-[#306344] hover:text-white"
+                          >
+                            <span>{dish.name}</span>
+                            <button
+                              onClick={() =>
+                                handleRemoveDish(currentMeal, category, dish)
+                              }
+                              className="ml-1 text-red-500 hover:text-red-300 font-bold"
                             >
-                              {(provided) => (
-                                <div
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  ref={provided.innerRef}
-                                  className="flex items-center gap-2 bg-purple-100 border border-purple-300 rounded-full px-3 py-1 text-sm shadow-sm whitespace-nowrap w-fit hover:bg-purple-200 transition-all duration-200"
-                                >
-                                  <span>{dish.name}</span>
-                                  <button
-                                    onClick={() =>
-                                      handleRemoveDish(meal, sub, dish)
-                                    }
-                                    className="ml-1 text-red-500 hover:text-red-700 font-bold text-sm"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  ))}
-                </div>
-              ))}
-            </div>
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ))}
           </div>
-        </DragDropContext>
-        {showBookingForm && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-xl font-bold mb-4">Booking Details</h2>
-              <input
-                type="text"
-                placeholder="Your Name"
-                className="w-full border p-2 mb-2"
-                value={formData.customerName}
-                onChange={(e) =>
-                  setFormData({ ...formData, customerName: e.target.value })
-                }
-              />
-              <input
-                type="text"
-                placeholder="Phone Number"
-                className="w-full border p-2 mb-2"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full border p-2 mb-2"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-              />
-              <input
-                type="date"
-                className="w-full border p-2 mb-2"
-                value={formData.date}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
-              />
-              <input
-                type="text"
-                placeholder="Venue"
-                className="w-full border p-2 mb-4"
-                value={formData.venue}
-                onChange={(e) =>
-                  setFormData({ ...formData, venue: e.target.value })
-                }
-              />
+        </div>
+      </DragDropContext>
 
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setShowBookingForm(false)}
-                  className="px-4 py-2 bg-gray-300 rounded"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleBookingSubmit}
-                  className="px-4 py-2 bg-purple-600 text-white rounded"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          </div>
+      {/* Navigation */}
+      <div className="mt-8 flex justify-between">
+        <button
+          disabled={step === 0}
+          onClick={() => setStep((s) => s - 1)}
+          className="px-6 py-3 bg-[#195237] text-white cursor-pointer rounded-lg disabled:opacity-50"
+        >
+          Previous
+        </button>
+
+        {step < mealOrder.length - 1 && (
+          <button
+            onClick={() => setStep((s) => s + 1)}
+            className="px-6 py-3 bg-[#195237] cursor-pointer text-white rounded-lg"
+          >
+            Next
+          </button>
         )}
       </div>
+      {step === mealOrder.length - 1 && (
+        <div className="bg-white p-6 mt-8 rounded-lg shadow">
+          <h2 className="text-2xl font-bold text-[#195237] mb-4">Summary</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Object.keys(mealPlan).map((meal) => (
+              <div key={meal} className="bg-gray-50 p-4 rounded-lg shadow-sm">
+                <h3 className="text-lg font-semibold text-[#306344] mb-2">
+                  {meal}
+                </h3>
+                {Object.keys(mealPlan[meal]).map((category) => (
+                  <div key={category} className="mb-2">
+                    <p className="font-medium text-[#195237]">{category}:</p>
+                    <ul className="list-disc list-inside ml-4 text-gray-700 text-sm">
+                      {mealPlan[meal][category].length > 0 ? (
+                        mealPlan[meal][category].map((dish) => (
+                          <li key={dish.id}>{dish.name}</li>
+                        ))
+                      ) : (
+                        <li className="text-gray-400">No items selected</li>
+                      )}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
 
-      <div className="mt-10 flex justify-center">
-        <button
-          onClick={() => setShowBookingForm(true)}
-          className="px-8 py-4 bg-gradient-to-r from-purple-700 via-purple-600 to-pink-600 text-white text-lg font-bold rounded-full shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 ease-in-out"
-        >
-          Proceed to Book
-        </button>
-      </div>
+          <div className="flex justify-end mt-6">
+            <button
+              onClick={() =>
+                navigate("/bookingform", { state: { selectedEvent, mealPlan } })
+              }
+              className="px-6 py-3 bg-[#195237] text-white rounded-lg shadow hover:bg-[#14472f]"
+            >
+              Confirm & Book
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function MenuPage() {
-  return (
-    <>
-      <Menu />
-    </>
-  );
+  return <Menu />;
 }

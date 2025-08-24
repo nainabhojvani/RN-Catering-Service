@@ -1,0 +1,19 @@
+text = #19522f dark green
+text = #759782 light green
+text = #d9e45a ligt green (dh00dhi)
+header = #306344
+body background = #fef8e0 creem
+white color
+#fffdf3 light white creemy type
+#d1dcd5
+
+
+rgb(217,228,90)
+rgb(255,255,255)
+rgb(254,248,224)
+rgb(255,253,243)
+rgb(25,82,47)
+rgb(48,99,68)
+rgb(117,151,130)
+rgb(209,220,213)
+

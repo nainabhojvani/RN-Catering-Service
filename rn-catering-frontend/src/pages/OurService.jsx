@@ -91,7 +91,7 @@ function OurServicesHero() {
 
         {/* Button */}
         <Link
-          to="/packages"
+          to="/menu"
           state={{ eventName: "" }}
           className="mt-6 px-6 py-2 bg-purple-800 text-white font-semibold z-10 rounded-md hover:bg-white hover:text-purple-800 transition"
         >

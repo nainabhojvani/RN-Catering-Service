@@ -6,11 +6,11 @@ const CenteredMessageBox = ({ message, onClose }) => {
   if (!message) return null;
   return (
     <div
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+      className="fixed inset-0 flex items-center justify-center  bg-black/70 z-50"
       onClick={onClose}
     >
       <div
-        className="bg-white p-6 rounded shadow-lg max-w-sm text-center"
+        className="bg-white p-6 rounded shadow-lg w-[448px] text-center"
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside box
       >
         <p className="text-green-600 text-lg">{message}</p>
