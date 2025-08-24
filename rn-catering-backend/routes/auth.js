@@ -3,8 +3,38 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmails");
-
+const jwt = require("jsonwebtoken");
 const router = express.Router();
+
+// -----------------------------
+// Check username availability
+router.get("/check-username", async (req, res) => {
+  try {
+    const { username } = req.query;
+    if (!username) return res.status(400).json({ message: "Username required" });
+
+    const user = await User.findOne({ username });
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Username check error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Check email availability
+router.get("/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ message: "Email required" });
+
+    const user = await User.findOne({ email });
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Email check error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+// -----------------------------
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -35,17 +65,17 @@ router.post("/register", async (req, res) => {
 
     await newUser.save();
 
-const verificationLink = `${process.env.SERVER_URL}/api/verify/${verificationToken}`;
+    const verificationLink = `${process.env.SERVER_URL}/api/verify/${verificationToken}`;
 
-await sendEmail(
-  email,
-  "Verify Your RN Catering Account ✅",
-  `<h2>Hello ${fullName},</h2>
-   <p>Thank you for registering! Click the link below to verify your email:</p>
-   <p><a href="${verificationLink}" target="_blank" style="color: blue; text-decoration: underline;">
-     Verify Email
-   </a></p>`
-);
+    await sendEmail(
+      email,
+      "Verify Your RN Catering Account ✅",
+      `<h2>Hello ${fullName},</h2>
+       <p>Thank you for registering! Click the link below to verify your email:</p>
+       <p><a href="${verificationLink}" target="_blank" style="color: blue; text-decoration: underline;">
+         Verify Email
+       </a></p>`
+    );
 
     res.status(201).json({
       message:
@@ -56,6 +86,8 @@ await sendEmail(
     res.status(500).json({ message: "Server error. Try again later." });
   }
 });
+
+// LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { emailOrUsername, password } = req.body;
@@ -83,9 +115,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 // VERIFY EMAIL
-app.get("/api/verify/:token", async (req, res) => {
+router.get("/verify/:token", async (req, res) => {
   const { token } = req.params;
 
   try {
@@ -96,7 +127,6 @@ app.get("/api/verify/:token", async (req, res) => {
     user.verificationToken = undefined;
     await user.save();
 
-    // Redirect to frontend verification page
     return res.redirect(`${process.env.CLIENT_URL}/verified-success`);
   } catch (err) {
     console.error("Email verification error:", err);

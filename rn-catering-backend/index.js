@@ -23,6 +23,32 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
+  app.get("/api/check-username", async (req, res) => {
+  try {
+    const { username } = req.query;
+    if (!username) return res.status(400).json({ message: "Username required" });
+
+    const user = await User.findOne({ username });
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Username check error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Email availability
+app.get("/api/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ message: "Email required" });
+
+    const user = await User.findOne({ email });
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Email check error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 // Test email
 app.get("/test-mail", async (req, res) => {
   try {
@@ -56,6 +82,7 @@ app.get("/api/verify/:token", async (req, res) => {
     return res.status(500).send("Something went wrong.");
   }
 });
+
 
 // API routes
 app.use("/api/bookings", bookingRoutes);
