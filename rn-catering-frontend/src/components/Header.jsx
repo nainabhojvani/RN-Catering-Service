@@ -1,12 +1,12 @@
-const API_URL = import.meta.env.VITE_API_URL;
-
 import React, { useState, useRef, useEffect } from "react";
-import RNLogo from "../assets/images/RN_logo.png";
-import { Link, useNavigate, NavLink } from "react-router-dom";
-import personImg from "../assets/images/person.png";
-import useAuth from "../context/useAuth"; // ✅ NEW: use context
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import RNLogo from "../assets/images/RN_logo.png";
+import personImg from "../assets/images/person.png";
+import useAuth from "../context/useAuth";
 import CenteredMessageBox from "./centerMsgbox";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Header() {
   const [showMobileNav, setShowMobileNav] = useState(false);
@@ -21,7 +21,7 @@ export default function Header() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const { user, login, logout } = useAuth(); // ✅ use context
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
@@ -30,73 +30,77 @@ export default function Header() {
 
   const handleLogout = () => {
     logout();
-    setCenteredMsg("Logged out successfully.");
+    setCenteredMsg("Logged out successfully ✅");
     navigate("/");
   };
 
+  // Sign Up Handler
   const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  e.preventDefault();
+  try {
     const res = await fetch(`${API_URL}/api/register`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        fullName,
-        email,
-        password,
-        confirmPassword,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, fullName, email, password, confirmPassword }),
     });
 
     const data = await res.json();
 
-    // Show toast instead of alert
-    if (res.ok) {
-      toast.success(data.message); // ✅ success toast
-      setUsername("");
-      setFullName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      setShowDropdown(false);
-      setAuthForm("signin");
-    } else {
-      toast.error(data.message); // ❌ error toast
+    if (!res.ok) {
+      setCenteredMsg(data.message || "Registration failed. Try again.");
+      return;
     }
-  };
 
+    setCenteredMsg(
+      "✅ Registration successful! Please check your email to verify your account."
+    );
+    setUsername("");
+    setFullName("");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setShowDropdown(false);
+    setAuthForm("signin");
+  } catch (err) {
+    console.error("Registration error:", err);
+    setCenteredMsg("Something went wrong. Try again.");
+  }
+};
+  // Login Handler with email verification check
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await fetch(`${API_URL}/api/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          emailOrUsername: email,
-          password,
-        }),
-      });
-      const data = await res.json();
+  try {
+    const res = await fetch(`${API_URL}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emailOrUsername: email, password }),
+    });
 
-      if (res.ok) {
-        login(data.user, data.token);
-        setEmail("");
-        setPassword("");
-        setShowDropdown(false);
-        setCenteredMsg("Login successful!");
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (data.message === "Email not verified") {
+        setCenteredMsg(
+          "⚠️ Please verify your email before logging in. Check inbox/spam."
+        );
       } else {
         setCenteredMsg(data.message || "Login failed. Try again.");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-      setCenteredMsg("Something went wrong. Try again.");
+      return;
     }
-  };
 
+    // Success
+    login(data.user, data.token);
+    setCenteredMsg("Login successful ✅");
+    setEmail("");
+    setPassword("");
+    setShowDropdown(false);
+  } catch (err) {
+    console.error("Login error:", err);
+    setCenteredMsg("Something went wrong. Try again.");
+  }
+};
   const popupRef = useRef();
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -118,6 +122,7 @@ export default function Header() {
 
   return (
     <>
+      {/* Header */}
       <header className="flex flex-wrap items-center justify-between px-10 py-2 bg-white shadow-md sticky top-0 z-60">
         <div className="flex items-center">
           <Link to="/">
@@ -144,12 +149,8 @@ export default function Header() {
        ? "bg-purple-500 text-white  z-10"
        : "text-gray-800 hover:text-white hover:bg-purple-500"
    }
-   
-   /* UNDERLINE BELOW BOX WITH SPACE */
    after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-purple-500 after:via-purple-600 after:to-purple-700
-hover:after:w-full
-
-   /* ACTIVE LINK UNDERLINE */
+   hover:after:w-full
    ${isActive ? "after:w-full" : ""}`
                   }
                 >
@@ -160,6 +161,7 @@ hover:after:w-full
           </ul>
         </nav>
 
+        {/* Right Header Buttons */}
         <div className="hidden md:flex items-center justify-end gap-4">
           {!user ? (
             <button
@@ -177,16 +179,11 @@ hover:after:w-full
                   alt="Profile"
                 />
               </Link>
-              {/* <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-              >
-                Logout
-              </button> */}
             </>
           )}
         </div>
 
+        {/* Mobile menu toggle */}
         <div
           className="md:hidden text-3xl cursor-pointer ml-auto"
           onClick={toggleMobile}
@@ -195,35 +192,20 @@ hover:after:w-full
         </div>
       </header>
 
+      {/* Mobile Navigation */}
       {showMobileNav && (
         <div className="flex flex-col md:hidden w-full bg-white text-gray-800 shadow-md px-4">
-          <Link to="/" className="py-2 hover:bg-purple-700 hover:text-white">
-            Home
-          </Link>
-          <Link
-            to="/about"
-            className="py-2 hover:bg-purple-700 hover:text-white"
-          >
-            About
-          </Link>
-          <Link
-            to="/services"
-            className="py-2 hover:bg-purple-700 hover:text-white"
-          >
-            Our Services
-          </Link>
-          <Link
-            to="/venues"
-            className="py-2 hover:bg-purple-700 hover:text-white"
-          >
-            Venues
-          </Link>
-          <Link
-            to="/contact"
-            className="py-2 hover:bg-purple-700 hover:text-white"
-          >
-            Contact
-          </Link>
+          {["Home", "About", "Our Services", "Venues", "Contact"].map(
+            (link) => (
+              <Link
+                key={link}
+                to={`/${link === "Home" ? "" : link.toLowerCase()}`}
+                className="py-2 hover:bg-purple-700 hover:text-white"
+              >
+                {link}
+              </Link>
+            )
+          )}
           {!user ? (
             <button
               onClick={toggleDropdown}
@@ -250,6 +232,7 @@ hover:after:w-full
         </div>
       )}
 
+      {/* Auth Popup */}
       {showDropdown && (
         <div className="relative z-50">
           <div
@@ -258,17 +241,13 @@ hover:after:w-full
           >
             <div
               className="absolute inset-0 opacity-20 bg-no-repeat bg-center bg-[length:29em]"
-              style={{
-                backgroundImage: `url("images/log-sign.png")`,
-                zIndex: 1,
-              }}
+              style={{ backgroundImage: `url("images/log-sign.png")`, zIndex: 1 }}
             />
             <div className="relative z-10">
+              {/* Sign In */}
               {authForm === "signin" && (
                 <>
-                  <h3 className="text-lg font-bold text-center mb-4">
-                    Sign In
-                  </h3>
+                  <h3 className="text-lg font-bold text-center mb-4">Sign In</h3>
                   <form
                     className="flex flex-col gap-3 font-semibold"
                     onSubmit={handleLogin}
@@ -311,11 +290,10 @@ hover:after:w-full
                 </>
               )}
 
+              {/* Sign Up */}
               {authForm === "signup" && (
                 <>
-                  <h3 className="text-lg font-bold text-center mb-4">
-                    Sign Up
-                  </h3>
+                  <h3 className="text-lg font-bold text-center mb-4">Sign Up</h3>
                   <form
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-3 font-semibold"
@@ -376,7 +354,7 @@ hover:after:w-full
                       <button
                         type="button"
                         onClick={() => toggleAuthForm("signin")}
-                        className="text-purple-700 hover:underline hover:cursor-pointer "
+                        className="text-purple-700 hover:underline hover:cursor-pointer"
                       >
                         Sign In
                       </button>
@@ -388,6 +366,8 @@ hover:after:w-full
           </div>
         </div>
       )}
+
+      {/* Centered Message Box */}
       <CenteredMessageBox
         message={centeredMsg}
         onClose={() => setCenteredMsg("")}
