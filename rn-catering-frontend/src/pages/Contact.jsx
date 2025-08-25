@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+
 import { useState } from "react";
 import contactBanner from "../assets/images/contact.png";
 import {
@@ -10,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 
 export default function ContactPage() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const contactDetails = [
     {
       icon: <FaMapMarkerAlt />,

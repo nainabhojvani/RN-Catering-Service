@@ -79,7 +79,7 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({
       message:
-        "Registration successful! Check your email to verify your account.",
+        "Registration successful! Check your email to verify your account. Check inbox/spam",
     });
   } catch (err) {
     console.error("Register error:", err);

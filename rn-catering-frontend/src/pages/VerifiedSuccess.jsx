@@ -35,13 +35,7 @@ export default function VerifiedSuccess() {
         explore our services without any restrictions.
       </p>
 
-      {/* Button */}
-      <button
-        onClick={() => navigate("/")}
-        className="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition"
-      >
-        Go to Home
-      </button>
+
     </div>
   );
 }

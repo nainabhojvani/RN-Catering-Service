@@ -23,7 +23,7 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log("MongoDB connection error:", err));
 
-  app.get("/api/check-username", async (req, res) => {
+app.get("/api/check-username", async (req, res) => {
   try {
     const { username } = req.query;
     if (!username) return res.status(400).json({ message: "Username required" });
@@ -92,6 +92,6 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/inquiries", inquiriesRoutes);
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running at http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running at ${PORT}`);
 });
