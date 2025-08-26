@@ -107,7 +107,7 @@ function Menu() {
           <div
             key={meal}
             className={`flex-1 text-center py-2 rounded mx-1 ${
-              i === step ? "bg-[#d9e45a] font-bold" : "bg-gray-200"
+              i === step ? "bg-[#fef8e0] font-bold" : "bg-gray-200"
             }`}
           >
             {meal}
@@ -148,7 +148,7 @@ function Menu() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="bg-[#d9e45a] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-[#306344] hover:text-white"
+                                className="bg-[#fef8e0] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-[#306344] hover:text-white"
                                 style={{
                                   ...provided.draggableProps.style,
                                   display: hiddenItems[dish] ? "none" : "block",

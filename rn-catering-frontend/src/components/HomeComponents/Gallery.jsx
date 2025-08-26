@@ -12,7 +12,7 @@ import logo from "../../assets/images/RN_logo.png";
 export default function Gallery() {
   return (
     <section className="text-center bg-white py-16 px-4">
-      <h2 className="text-[2.75rem] font-semibold mb-12 text-purple-800 font-['Dancing_Script',cursive]">
+      <h2 className="text-[2.75rem] font-semibold mb-12 text-[#19522F] font-['Dancing_Script',cursive]">
         Our Gallery
       </h2>
 

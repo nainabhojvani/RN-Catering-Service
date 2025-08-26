@@ -18,7 +18,7 @@ const serveItems = [
 export default function WeServeSection() {
   return (
     <section className="we-serve-section py-16 px-4 bg-white text-center">
-      <h2 className="text-3xl md:text-5xl font-bold text-purple-800 mb-12 font-['Dancing_Script',cursive]">
+      <h2 className="text-3xl md:text-5xl font-bold text-[#19522F] mb-12 font-['Dancing_Script',cursive]">
         We Serve Variety
       </h2>
 

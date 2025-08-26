@@ -13,7 +13,7 @@ export default function Header() {
   const [authForm, setAuthForm] = useState("signin");
   const [centeredMsg, setCenteredMsg] = useState("");
 
-  const { user, login, logout } = useAuth();
+  const { user, login } = useAuth();
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const toggleMobile = () => setShowMobileNav(!showMobileNav);
@@ -26,14 +26,15 @@ export default function Header() {
         setShowDropdown(false);
       }
     };
-    if (showDropdown) document.addEventListener("mousedown", handleClickOutside);
+    if (showDropdown)
+      document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showDropdown]);
 
   return (
     <>
       {/* Header */}
-      <header className="flex flex-wrap items-center justify-between px-10 py-2 bg-[#306344] shadow-md sticky top-0 z-60">
+      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2  shadow-md sticky top-0 z-60">
         <div className="flex items-center">
           <Link to="/">
             <img src={RNLogo} alt="logo" className="h-[70px]" />
@@ -55,9 +56,10 @@ export default function Header() {
                   to={link.to}
                   className={({ isActive }) =>
                     `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
-                    ${isActive
-                      ? "bg-[#19522f] text-[#d9e45a]" // active dark green bg
-                      : "text-[#d9e45a] hover:text-[#fffdf3] hover:bg-[#19522f]" // normal & hover (yellow-green highlight)
+                    ${
+                      isActive
+                        ? "bg-[#19522f] text-[#d9e45a]" // active dark green bg
+                        : "text-[#19522f] " // normal & hover (yellow-green highlight)
                     }
                     after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-[#19522f] after:via-[#759782] after:to-[#d9e45a]
                     hover:after:w-full ${isActive ? "after:w-full" : ""}`
@@ -73,11 +75,7 @@ export default function Header() {
         {/* Right */}
         <div className="hidden md:flex items-center justify-end gap-4">
           {!user ? (
-            <button
-              onClick={toggleDropdown}
-              className="px-4 py-2 bg-[#759782] text-[#d9e45a] rounded-md transition cursor-pointer
-                         hover:bg-[#19522f] hover:text-[#fffdf3]"
-            >
+            <button onClick={toggleDropdown} className="btn">
               Sign In
             </button>
           ) : (
@@ -134,7 +132,10 @@ export default function Header() {
       )}
 
       {/* Message Box */}
-      <CenteredMessageBox message={centeredMsg} onClose={() => setCenteredMsg("")} />
+      <CenteredMessageBox
+        message={centeredMsg}
+        onClose={() => setCenteredMsg("")}
+      />
     </>
   );
 }

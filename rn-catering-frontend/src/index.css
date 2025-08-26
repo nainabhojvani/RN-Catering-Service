@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap");
 
+:root {
+  --color-yellow: 217, 228, 90; /* #D9E45A */
+  --color-white: 255, 255, 255; /* #FFFFFF */
+  --color-light-cream: 254, 248, 224; /* #FEF8E0 */
+  --color-cream: 255, 253, 243; /* #FFFDF3 */
+  --color-dark-green: 25, 82, 47; /* #19522F */
+  --color-green-1: 48, 99, 68; /* #306344 */
+  --color-green-2: 117, 151, 130; /* #759782 */
+  --color-green-3: 209, 220, 213; /* #D1DCD5 */
+}
+
 @layer utilities {
   @keyframes marquee {
     0% {
@@ -75,4 +86,27 @@
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+body {
+  background-color: #fef8e0;
+  color: white;
+}
+
+.btn {
+  background-color: #d9e45a;
+  font-size: large;
+  color: #19522f;
+  font-family: serif;
+  padding: 0.75rem 3rem;
+  border-radius: 50% / 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  color: #d9e45a;
+  background-color: #19522f;
 }

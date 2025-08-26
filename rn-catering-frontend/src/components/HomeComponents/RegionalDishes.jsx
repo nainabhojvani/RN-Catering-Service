@@ -147,8 +147,8 @@ export default function RegionalDishes() {
   const [active, setActive] = useState("north");
 
   return (
-    <section className="bg-[#fefefe] py-10 px-5 text-center">
-      <h2 className="text-[2.5rem] mb-8 text-purple-800 font-['Dancing_Script',cursive] font-bold">
+    <section className="bg-[#fef8e0] py-10 px-5 text-center">
+      <h2 className="text-[2.5rem] mb-8 text-[#19522f] font-['Dancing_Script',cursive] font-bold">
         Popular Vegetarian Dishes Across India
       </h2>
 
@@ -159,8 +159,8 @@ export default function RegionalDishes() {
             key={region}
             className={`px-6 py-2 border-2 text-lg font-semibold rounded-full transition-all duration-300 font-['Poppins',sans-serif] ${
               active === region
-                ? "bg-purple-800 text-white border-purple-800"
-                : "text-purple-800 bg-white border-purple-800 hover:bg-purple-800 hover:text-white"
+                ? "bg-[#19522f] text-[#ffffff] border-[#19522f]"
+                : "text-[#19522f] bg-[#fef8e0] border-[#19522f] hover:bg-[#19522f] hover:text-[#ffffff]"
             }`}
             onClick={() => setActive(region)}
           >
@@ -174,23 +174,23 @@ export default function RegionalDishes() {
         {regions[active].map((dish, idx) => (
           <div
             key={idx}
-            className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-white transition-transform duration-300 hover:scale-[1.02]"
+            className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-[#ffffff] transition-transform duration-300 hover:scale-[1.02]"
           >
             {/* Text */}
             <div className="flex flex-col justify-center w-[45%] px-6 py-8 text-left">
-              <h3 className="text-xl font-bold text-[#3b2d2d] mb-2">
+              <h3 className="text-xl font-bold text-[#306344] mb-2">
                 {dish.title} <br />
                 {dish.best && (
-                  <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded ml-2 align-middle">
+                  <span className="bg-orange-400 text-[#ffffff] text-xs px-2 py-1 rounded ml-2 align-middle">
                     Best Seller
                   </span>
                 )}
               </h3>
-              <div className="text-yellow-600 mb-2">{dish.rating}</div>
-              <p className="text-gray-700 leading-relaxed mb-1 text-sm">
+              <div className="text-orange-400 mb-2">{dish.rating}</div>
+              <p className="text-[#759782] leading-relaxed mb-1 text-sm">
                 {dish.desc}
               </p>
-              <p className="italic text-gray-500 text-sm mt-2">
+              <p className="italic text-[#a0aea5] text-sm mt-2">
                 “{dish.review}”
               </p>
             </div>
@@ -211,7 +211,7 @@ export default function RegionalDishes() {
       <div className="mt-16">
         <a
           href="/menu"
-          className="inline-block px-9 py-3 text-lg font-semibold bg-purple-800 text-white rounded-full shadow-md hover:bg-purple-900 hover:scale-105 transition"
+          className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] hover:scale-105 transition"
         >
           View Full Menu
         </a>

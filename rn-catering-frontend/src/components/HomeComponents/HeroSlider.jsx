@@ -67,13 +67,13 @@ export default function HeroSlider() {
       {/* Arrows */}
       <button
         onClick={() => setCurrent((current - 1 + total) % total)}
-        className="absolute top-1/2 left-4 -translate-y-1/2 text-white text-4xl z-20"
+        className="absolute top-1/2 left-4 -translate-y-1/2 p-3 rounded-md  cursor-pointer text-white text-4xl z-20 hover:bg-slate-400/20"
       >
-        ‹
+        &lsaquo;
       </button>
       <button
         onClick={() => setCurrent((current + 1) % total)}
-        className="absolute top-1/2 right-4 -translate-y-1/2 text-white text-4xl z-20"
+        className="absolute top-1/2 right-4 -translate-y-1/2 text-white text-4xl  z-20 hover:bg-slate-400/20 p-3 rounded-md cursor-pointer"
       >
         ›
       </button>
