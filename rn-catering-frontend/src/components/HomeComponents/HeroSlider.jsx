@@ -44,7 +44,7 @@ export default function HeroSlider() {
           />
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/60 via-[#306344]/40 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/70 via-[#306344]/40 to-[#759782]/20"></div>
 
           {/* Text Container */}
           <div className="absolute inset-0 flex items-center justify-center text-center px-6 md:px-12">
@@ -57,7 +57,8 @@ export default function HeroSlider() {
               ${index === current
                           ? "opacity-100 translate-y-0 animate-fadeSlideUp"
                           : "opacity-0 translate-y-6 animate-fadeSlideOut"
-                        }`}
+                        }`}style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}
+              
             >
               {slide.text}
             </h1>

@@ -11,48 +11,66 @@ import g7 from "../../assets/images/Gallery/G-7.jpg";
 import g8 from "../../assets/images/Gallery/G-8.png";
 import logo from "../../assets/images/RN_logo(1).png";
 
-const galleryItems = [g1, g2, g3, g4, logo, g5, g6, g7, g8];
+const galleryItems = [g1, g2, g3, g4, g5, g6, g7, g8];
 
 export default function Gallery() {
+  const radius = 250; // keep radius same
   return (
-    <section className="text-center bg-white py-16 px-4">
+    <section className="relative w-full h-[800px] flex flex-col items-center bg-[#fef8e0] pt-10">
+      {/* Heading */}
       <motion.h2
-        className="text-[2.75rem] font-semibold mb-12 text-[#19522F] font-['Dancing_Script',cursive]"
+        className="fade-in text-[3rem] font-semibold mb-30 text-[#19522F] font-['Dancing_Script',cursive]"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        viewport={{ once: false }}
         transition={{ duration: 0.6 }}
       >
-        Our Gallery
+      Moments We Capture..
       </motion.h2>
 
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-[1000px] mx-auto"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.15 } },
-        }}
-      >
-        {galleryItems.map((img, idx) => (
-          <motion.img
-            key={idx}
-            src={img}
-            alt={idx === 4 ? "Logo" : `Dish ${idx + 1}`}
-            className={`w-full h-[200px] object-cover rounded-xl shadow-lg ${
-              idx === 4 ? "object-contain border-[2px] border-purple-800 bg-white p-5" : ""
-            }`}
-            variants={{
-              hidden: { opacity: 0, y: 30, scale: 0.95 },
-              visible: { opacity: 1, y: 0, scale: 1 },
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.05 }}
-          />
-        ))}
-      </motion.div>
+      <div className="relative w-full h-[500px] flex justify-center items-center">
+        {/* Center Logo */}
+        <motion.img
+          src={logo}
+          alt="Logo"
+          className="absolute w-[200px] h-[200px] object-contain rounded-full border-4 border-purple-800 bg-white p-2 shadow-lg z-10"
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 12 }}
+        />
+
+        {/* Circular Images */}
+        {galleryItems.map((img, idx) => {
+          const angle = (idx / galleryItems.length) * 2 * Math.PI;
+          const x = radius * Math.cos(angle);
+          const y = radius * Math.sin(angle);
+
+          return (
+            <motion.img
+  key={idx}
+  src={img}
+  alt={`Dish ${idx + 1}`}
+  className="absolute w-[180px] h-[180px] rounded-full object-cover shadow-lg"
+  initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+  whileInView={{ x, y, opacity: 1, scale: 1 }}
+  viewport={{ once: true }}
+  transition={{
+    duration: 1,
+    type: "spring",
+    stiffness: 120,
+    damping: 12,
+    delay: idx * 0.15, // only for entrance animation
+  }}
+  whileHover={{
+    scale: 1.2,
+    rotate: 10,
+    borderRadius: "50%",
+    transition: { type: "spring", stiffness: 300, damping: 20 } // immediate hover
+  }}
+/>
+          );
+        })}
+      </div>
     </section>
   );
 }

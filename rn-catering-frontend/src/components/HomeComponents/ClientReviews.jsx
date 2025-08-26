@@ -56,7 +56,7 @@ export default function ClientReviews() {
   return (
      <section className="bg-[#fffdf3] py-14 px-5 text-center -mt-8">
       <motion.h2
-        className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12"
+        className="fade-in text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}

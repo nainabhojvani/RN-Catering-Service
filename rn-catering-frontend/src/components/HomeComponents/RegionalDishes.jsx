@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
+
+// 🔽 Import dish images
 import PBM from "../../assets/images/Popular/PBM.jpg";
 import DM from "../../assets/images/Popular/DM.jpg";
 import CB from "../../assets/images/Popular/CB.jpg";
@@ -15,8 +18,8 @@ import DH from "../../assets/images/Popular/DH.jpg";
 import Undhiyu from "../../assets/images/Popular/Undhiyu.jpg";
 import MP from "../../assets/images/Popular/MP.jpeg";
 import SK from "../../assets/images/Popular/SK.jpg";
-import { motion } from "framer-motion";
 
+// 🔽 Dishes Data
 const regions = {
   north: [
     {
@@ -147,95 +150,123 @@ const regions = {
 export default function RegionalDishes() {
   const [active, setActive] = useState("north");
 
+  const directions = [
+    { y: -150, x: 0 }, // from top
+    { y: 0, x: 150 },  // from right
+    { y: 0, x: -150 }, // from left
+    { y: 150, x: 0 },  // from bottom
+  ];
+
   return (
-    <section className="bg-[#fef8e0] py-10 px-5 text-center">
+    <div className="text-center mt-10 px-6 py-16 bg-[#fef8e0]">
+      {/* 🔥 Heading */}
       <motion.h2
-        className="text-[2.5rem] mb-8 text-[#19522f] font-['Dancing_Script',cursive] font-bold"
-        initial={{ opacity: 0, y: 30 }}
+        className="fade-in text-3xl md:text-5xl font-bold text-[#19522F] mb-10 font-['Dancing_Script',cursive]"
+        initial={{ opacity: 0, y: -50 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
         Popular Vegetarian Dishes Across India
       </motion.h2>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap justify-center gap-4 mb-10">
+      {/* 🔥 Tabs */}
+      <motion.div
+        className="flex justify-center gap-6 mb-14 flex-wrap"
+        initial={{ opacity: 0, y: -40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+      >
         {Object.keys(regions).map((region) => (
           <button
             key={region}
-            className={`px-6 py-2 border-2 text-lg font-semibold rounded-full transition-all duration-300 font-['Poppins',sans-serif] ${
-              active === region
-                ? "bg-[#19522f] text-[#ffffff] border-[#19522f]"
-                : "text-[#19522f] bg-[#fef8e0] border-[#19522f] hover:bg-[#19522f] hover:text-[#ffffff]"
-            }`}
             onClick={() => setActive(region)}
+            className={`px-6 py-2 rounded-full font-semibold text-lg transition-all duration-300 ${
+              active === region
+                ? "bg-[#19522f] text-white shadow-md"
+                : "bg-[#d9e45a] text-[#19522f] hover:bg-[#759782] hover:text-white"
+            }`}
           >
             {region.charAt(0).toUpperCase() + region.slice(1)}
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Dish Grid */}
+      {/* 🔥 Dish Cards */}
       <motion.div
+        key={active}
         className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true }}
+        viewport={{ once: false, amount: 0.2 }}
         variants={{
           hidden: {},
-          visible: { transition: { staggerChildren: 0.15 } },
+          visible: { transition: { staggerChildren: 0.25 } },
         }}
       >
-        {regions[active].map((dish, idx) => (
-          <motion.div
-            key={idx}
-            className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-[#ffffff]"
-            variants={{
-              hidden: { opacity: 0, y: 30, scale: 0.95 },
-              visible: { opacity: 1, y: 0, scale: 1 },
-            }}
-            transition={{ duration: 0.6 }}
-            whileHover={{ scale: 1.02 }}
-          >
-            {/* Text */}
-            <div className="flex flex-col justify-center w-[45%] px-6 py-8 text-left">
-              <h3 className="text-xl font-bold text-[#306344] mb-2">
-                {dish.title}{" "}
-                {dish.best && (
-                  <span className="bg-orange-400 text-[#ffffff] text-xs px-2 py-1 rounded ml-2 align-middle">
-                    Best Seller
-                  </span>
-                )}
-              </h3>
-              <div className="text-orange-400 mb-2">{dish.rating}</div>
-              <p className="text-[#759782] leading-relaxed mb-1 text-sm">
-                {dish.desc}
-              </p>
-              <p className="italic text-[#a0aea5] text-sm mt-2">“{dish.review}”</p>
-            </div>
+        {regions[active].map((dish, idx) => {
+          const dir = directions[idx % 4];
+          return (
+            <motion.div
+              key={idx}
+              className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-[#fffdf3]"
+              variants={{
+                hidden: { opacity: 0, x: dir.x, y: dir.y },
+                visible: { opacity: 1, x: 0, y: 0 },
+              }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              whileHover={{ scale: 1.02 }}
+              viewport={{ once: false, amount: 0.3 }}
+            >
+              {/* Text */}
+              <div className="flex flex-col justify-center w-[45%] px-6 py-8 text-left">
+                <h3 className="text-xl font-bold text-[#306344] mb-2">
+                  {dish.title}{" "}
+                  {dish.best && (
+                    <span className="bg-[#d9e45a] text-[#19522f] text-xs px-2 py-1 rounded ml-2 align-middle">
+                      Best Seller
+                    </span>
+                  )}
+                </h3>
+                <div className="text-[#d9e45a] mb-2">{dish.rating}</div>
+                <p className="text-[#759782] leading-relaxed mb-1 text-sm">
+                  {dish.desc}
+                </p>
+                <p className="italic text-[#a0aea5] text-sm mt-2">
+                  “{dish.review}”
+                </p>
+              </div>
 
-            {/* Image */}
-            <div className="w-[55%] h-full overflow-hidden">
-              <img
-                src={dish.img}
-                alt={dish.title}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
-            </div>
-          </motion.div>
-        ))}
+              {/* Image */}
+              <div className="w-[55%] h-full overflow-hidden">
+                <img
+                  src={dish.img}
+                  alt={dish.title}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              </div>
+            </motion.div>
+          );
+        })}
       </motion.div>
 
-      {/* View Menu Button */}
-      <div className="mt-16">
+      {/* 🔥 View Menu Button */}
+      <motion.div
+        className="mt-16"
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+        key={`btn-${active}`}
+      >
         <a
           href="/menu"
           className="btn"
         >
           View Full Menu
         </a>
-      </div>
-    </section>
+      </motion.div>
+    </div>
   );
 }

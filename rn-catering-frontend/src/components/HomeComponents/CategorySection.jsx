@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import AnimateOnScroll from "../AnimateSection";
+
 
 // 🔽 Import images
 import e1 from "../../assets/images/Event_img/Event-1.svg";
@@ -40,82 +41,100 @@ const events = [
 
 export default function CategorySection() {
   const [flippedIndex, setFlippedIndex] = useState(null);
-  const [hoveredIndex, setHoveredIndex] = useState(null);
   const navigate = useNavigate();
 
-  const toggleFlip = (index) => {
-    setFlippedIndex((prev) => (prev === index ? null : index));
-  };
+  const toggleFlip = (index) => setFlippedIndex((prev) => (prev === index ? null : index));
 
   return (
     <div className="px-6 md:px-16 py-16 bg-[#FFFDF3]">
       <AnimateOnScroll>
-        <h2 className="text-center text-4xl md:text-5xl font-bold mb-12 font-['Dancing_Script',cursive] text-[#19522F]">
+        <h2 className="fade-in text-center text-4xl md:text-5xl font-bold mb-12 font-['Dancing_Script',cursive] text-[#19522F]">
           Delightful Events We Cater . . .
         </h2>
       </AnimateOnScroll>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 justify-items-center">
         {events.map((event, idx) => (
-          <motion.div
+          <Card
             key={idx}
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.6, delay: idx * 0.1 }}
-            viewport={{ once: true, amount: 0.2 }}
-            whileHover={{ y: -6, scale: 1.02 }}
-            className="w-[240px] h-[320px] cursor-pointer perspective"
-            onClick={() => toggleFlip(idx)}
-          >
-            <div
-              className={`relative w-full h-full transition-transform duration-700 ${
-                flippedIndex === idx ? "rotate-y-180" : ""
-              }`}
-              style={{ transformStyle: "preserve-3d" }}
-            >
-              {/* Front Side */}
-              <div className="absolute w-full h-full rounded-2xl shadow-lg flex flex-col justify-center items-center p-5 text-center bg-white backface-hidden">
-                <motion.img
-                  src={hoveredIndex === idx ? event.hoverImg : event.defaultImg}
-                  alt={event.title}
-                  className="w-16 h-16 mb-6"
-                  whileHover={{ scale: 1.15 }}
-                  onMouseEnter={() => setHoveredIndex(idx)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                />
-                <h3 className="font-semibold text-lg mb-4 text-[#19522F]">{event.title}</h3>
-                <span
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFlip(idx);
-                  }}
-                  className="text-sm font-medium text-[#306344] mt-4 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:left-0 after:-bottom-1 after:bg-[#D9E45A] hover:after:w-full transition-all"
-                >
-                  View Details →
-                </span>
-              </div>
-
-              {/* Back Side */}
-              <div className="absolute inset-0 rounded-2xl shadow-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180 bg-[#306344] text-[#FFFDF3]">
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: flippedIndex === idx ? 1 : 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="text-2xl leading-relaxed text-center px-2 mt-6 font-['Dancing_Script',cursive]"
-                >
-                  {event.desc}
-                </motion.p>
-                <button
-                  onClick={() => navigate("/menu", { state: { eventName: event.title } })}
-                  className="px-4 py-2 rounded-full bg-[#D9E45A] text-[#19522F] font-semibold transition hover:bg-[#19522F] hover:text-[#D9E45A]"
-                >
-                  Choose Menu
-                </button>
-              </div>
-            </div>
-          </motion.div>
+            event={event}
+            index={idx}
+            flipped={flippedIndex === idx}
+            toggleFlip={() => toggleFlip(idx)}
+            navigate={navigate}
+          />
         ))}
       </div>
     </div>
+  );
+}
+
+function Card({ event, index, flipped, toggleFlip, navigate }) {
+  // For 3D tilt effect on hover
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-50, 50], [15, -15]);
+  const rotateY = useTransform(x, [-50, 50], [-15, 15]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.7, delay: index * 0.1, type: "spring", stiffness: 120 }}
+      viewport={{ once: false }}
+      style={{ rotateX, rotateY, perspective: 1000 }}
+      className="w-[240px] h-[320px] cursor-pointer"
+      onClick={toggleFlip}
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        x.set(e.clientX - rect.left - rect.width / 2);
+        y.set(e.clientY - rect.top - rect.height / 2);
+      }}
+      onMouseLeave={() => {
+        x.set(0);
+        y.set(0);
+      }}
+    >
+      <div
+        className={`relative w-full h-full transition-transform duration-700 ${flipped ? "rotate-y-180" : ""}`}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Front */}
+        <div className="absolute w-full h-full rounded-2xl shadow-lg flex flex-col justify-center items-center p-5 text-center bg-white backface-hidden">
+          <motion.img
+            src={event.defaultImg}
+            alt={event.title}
+            className="w-16 h-16 mb-6"
+            whileHover={{ scale: 1.2 }}
+          />
+          <h3 className="font-semibold text-lg mb-4 text-[#19522F]">{event.title}</h3>
+          <span
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFlip();
+            }}
+            className="text-sm font-medium text-[#306344] mt-4 relative after:content-[''] after:absolute after:w-0 after:h-[2px] after:left-0 after:-bottom-1 after:bg-[#D9E45A] hover:after:w-full transition-all"
+          >
+            View Details →
+          </span>
+        </div>
+
+        {/* Back */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl shadow-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180 bg-[#306344] text-[#FFFDF3]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: flipped ? 1 : 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p className="text-2xl leading-relaxed text-center px-2 mt-6 font-['Dancing_Script',cursive]">{event.desc}</p>
+          <button
+            onClick={() => navigate("/menu", { state: { eventName: event.title } })}
+            className="px-4 py-2 rounded-full bg-[#D9E45A] text-[#19522F] font-semibold transition hover:bg-[#19522F] hover:text-[#D9E45A]"
+          >
+            Choose Menu
+          </button>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 }

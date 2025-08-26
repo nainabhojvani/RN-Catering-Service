@@ -5,20 +5,20 @@ export default {
     extend: {
       animation: {
         "gradient-x": "gradient-x 15s ease-in-out infinite",
-        slideUpFade: "slideUpFade 1s ease-out forwards", // 🌟 for slider text
+        fadeIn: "fadeIn 1.2s ease-out forwards",  // 🌟 new fade in
         slowZoom: "slowZoom 8s ease-in-out forwards",
         fadeSlideUp: "fadeSlideUp 1.2s ease-out forwards",
-        fadeSlideOut: "fadeSlideOut 1.2s ease-in forwards",     // 🌟 background zoom
+        fadeSlideOut: "fadeSlideOut 1.2s ease-in forwards", 
+        waveFloat: "waveFloat 6s ease-in-out infinite",     
       },
       keyframes: {
-
         "gradient-x": {
           "0%": { "background-position": "0% 0%" },
           "100%": { "background-position": "100% 0%" },
         },
-        slideUpFade: {
-          "0%": { opacity: "0", transform: "translateY(30px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
         slowZoom: {
           "0%": { transform: "scale(1)" },
@@ -32,6 +32,10 @@ export default {
           "0%": { opacity: 1, transform: "translateY(0)" },
           "100%": { opacity: 0, transform: "translateY(-20px)" },
         },
+        waveFloat: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
       },
       colors: {
         primary: "#d9e45a",   // yellow-green
@@ -40,7 +44,7 @@ export default {
         greenMuted: "#759782",
         greenLight: "#d1dcd5",
         cream: "#fef8e0",
-        whiteCream: "#fffdf3", // 💡 you had this earlier
+        whiteCream: "#fffdf3",
         whitePure: "#ffffff",
       },
     },
