@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 const API_URL = import.meta.env.VITE_API_URL;
+import { motion } from "framer-motion";
 
 export default function ClientReviews() {
   const [reviews, setReviews] = useState([]);
@@ -53,17 +54,37 @@ export default function ClientReviews() {
   };
 
   return (
-    <section className="bg-[#fffdf3] py-14 px-5 text-center -mt-8">
-      <h2 className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12">
+     <section className="bg-[#fffdf3] py-14 px-5 text-center -mt-8">
+      <motion.h2
+        className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
         What Our Clients Say....
-      </h2>
+      </motion.h2>
 
-      {/* Reviews */}
-      <div className="flex flex-wrap justify-center gap-10">
+      {/* Reviews Grid */}
+      <motion.div
+        className="flex flex-wrap justify-center gap-10"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.15 } },
+        }}
+      >
         {reviews.slice(0, visibleCount).map((review, idx) => (
-          <div
+          <motion.div
             key={review._id || idx}
             className="max-w-sm text-center relative pb-5 hover:-translate-y-2 transition duration-300"
+            variants={{
+              hidden: { opacity: 0, y: 30, scale: 0.95 },
+              visible: { opacity: 1, y: 0, scale: 1 },
+            }}
+            transition={{ duration: 0.6 }}
           >
             <div className="relative bg-[#ffffff] border-[2px] border-[#d9e45a] px-6 pt-10 pb-7 rounded-[18px] shadow-md mb-8">
               <span className="absolute top-4 left-4 text-[2.5rem] font-bold text-[#d9e45a] leading-none font-serif">
@@ -72,7 +93,7 @@ export default function ClientReviews() {
               <p className="text-base text-[#306344] leading-relaxed font-['Poppins',sans-serif] relative z-10">
                 {review.text}
               </p>
-              <span className="absolute -bottom-3 right-[40px] w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent border-t-[#d9e45a]"></span>
+              <span className="-bottom-3 right-[40px] w-0 h-0 border-l-[12px] border-r-[12px] border-t-[12px] border-l-transparent border-r-transparent border-t-[#d9e45a] absolute"></span>
             </div>
             <div className="-mt-3">
               <h4 className="text-base text-right font-semibold text-[#19522f] font-['Poppins',sans-serif] mb-1">
@@ -82,14 +103,14 @@ export default function ClientReviews() {
                 {review.type}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
-      {/* View More Button */}
+      {/* View More */}
       {visibleCount < reviews.length && (
         <button
-          className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] hover:scale-105 transition"
+          className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] hover:scale-105 transition mt-6"
           onClick={() => setVisibleCount((c) => c + 3)}
         >
           View More Reviews
@@ -101,10 +122,7 @@ export default function ClientReviews() {
         <h3 className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12">
           Add Your Review
         </h3>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col text-[#19522f] gap-4"
-        >
+        <form onSubmit={handleSubmit} className="flex flex-col text-[#19522f] gap-4">
           <input
             type="text"
             placeholder="Your Name"
@@ -128,7 +146,7 @@ export default function ClientReviews() {
           />
           <button
             type="submit"
-            className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] transition"
+            className="btn"
           >
             Submit Review
           </button>

@@ -297,11 +297,12 @@ export default function SignUpForm({
         <button
           type="submit"
           disabled={loadingRegister}
-          className={`mt-3 rounded-full py-2 text-[#fef8e0] font-semibold transition-colors ${
-            loadingRegister
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-[#19522f] hover:bg-[#306344]"
-          }`}
+
+          className={`mt-3 rounded-full py-2 text-white font-semibold transition-colors ${loadingRegister
+            ? "bg-[#306344] cursor-not-allowed"
+            : "bg-[#d9e45a] text-[#19522f] hover:bg-[#306344] hover:text-[#d9e45a]"
+            }`}
+
         >
           {loadingRegister ? "Registering..." : "Register"}
         </button>
@@ -311,7 +312,7 @@ export default function SignUpForm({
           <button
             type="button"
             onClick={() => setAuthForm("signin")}
-            className="text-[#19522f] hover:cursor-pointer"
+            className="text-[#d9e45a] font-semibold hover:underline"
           >
             Sign In
           </button>

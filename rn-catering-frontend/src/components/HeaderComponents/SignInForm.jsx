@@ -98,18 +98,19 @@ export default function SignInForm({
           <p className="text-red-500 text-sm">{errors.server}</p>
         )}
 
-        {/* Submit */}
-        <button
-          type="submit"
-          disabled={loadingLogin}
-          className={`mt-3 rounded-full py-2 text-[#fef8e0] font-semibold transition-colors ${
-            loadingLogin
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-[#19522f] hover:bg-[#306344]"
-          }`}
-        >
-          {loadingLogin ? "Signing In..." : "Sign In"}
-        </button>
+
+                {/* Submit */}
+                <button
+                    type="submit"
+                    disabled={loadingLogin}
+                    className={`mt-3 rounded-full py-2 text-white font-semibold transition-colors ${loadingLogin
+                            ? "bg-[#306344] cursor-not-allowed"
+                            : "bg-[#d9e45a] text-[#19522f] hover:bg-[#306344] hover:text-[#d9e45a]"
+                        }`}
+                >
+                    {loadingLogin ? "Signing In..." : "Sign In"}
+                </button>
+
 
         {/* Switch form */}
         <p className="text-center mt-2 text-[#19522f]">

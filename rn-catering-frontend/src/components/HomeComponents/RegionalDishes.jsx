@@ -15,6 +15,7 @@ import DH from "../../assets/images/Popular/DH.jpg";
 import Undhiyu from "../../assets/images/Popular/Undhiyu.jpg";
 import MP from "../../assets/images/Popular/MP.jpeg";
 import SK from "../../assets/images/Popular/SK.jpg";
+import { motion } from "framer-motion";
 
 const regions = {
   north: [
@@ -148,9 +149,15 @@ export default function RegionalDishes() {
 
   return (
     <section className="bg-[#fef8e0] py-10 px-5 text-center">
-      <h2 className="text-[2.5rem] mb-8 text-[#19522f] font-['Dancing_Script',cursive] font-bold">
+      <motion.h2
+        className="text-[2.5rem] mb-8 text-[#19522f] font-['Dancing_Script',cursive] font-bold"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+      >
         Popular Vegetarian Dishes Across India
-      </h2>
+      </motion.h2>
 
       {/* Tabs */}
       <div className="flex flex-wrap justify-center gap-4 mb-10">
@@ -170,16 +177,31 @@ export default function RegionalDishes() {
       </div>
 
       {/* Dish Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.15 } },
+        }}
+      >
         {regions[active].map((dish, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-[#ffffff] transition-transform duration-300 hover:scale-[1.02]"
+            className="flex rounded-[18px] shadow-lg overflow-hidden min-h-[300px] bg-[#ffffff]"
+            variants={{
+              hidden: { opacity: 0, y: 30, scale: 0.95 },
+              visible: { opacity: 1, y: 0, scale: 1 },
+            }}
+            transition={{ duration: 0.6 }}
+            whileHover={{ scale: 1.02 }}
           >
             {/* Text */}
             <div className="flex flex-col justify-center w-[45%] px-6 py-8 text-left">
               <h3 className="text-xl font-bold text-[#306344] mb-2">
-                {dish.title} <br />
+                {dish.title}{" "}
                 {dish.best && (
                   <span className="bg-orange-400 text-[#ffffff] text-xs px-2 py-1 rounded ml-2 align-middle">
                     Best Seller
@@ -190,9 +212,7 @@ export default function RegionalDishes() {
               <p className="text-[#759782] leading-relaxed mb-1 text-sm">
                 {dish.desc}
               </p>
-              <p className="italic text-[#a0aea5] text-sm mt-2">
-                “{dish.review}”
-              </p>
+              <p className="italic text-[#a0aea5] text-sm mt-2">“{dish.review}”</p>
             </div>
 
             {/* Image */}
@@ -203,15 +223,15 @@ export default function RegionalDishes() {
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* View Menu Button */}
       <div className="mt-16">
         <a
           href="/menu"
-          className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] hover:scale-105 transition"
+          className="btn"
         >
           View Full Menu
         </a>
