@@ -4,7 +4,11 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMsg }) {
+export default function SignUpForm({
+  setAuthForm,
+  setShowDropdown,
+  setCenteredMsg,
+}) {
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +25,9 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
   const checkAvailability = async (field, value) => {
     if (!value) return;
     try {
-      const res = await fetch(`${API_URL}/api/check-${field}?${field}=${value}`);
+      const res = await fetch(
+        `${API_URL}/api/check-${field}?${field}=${value}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch availability");
       const data = await res.json();
       setErrors((prev) => ({
@@ -37,12 +43,17 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
 
   const validateField = (name, value) => {
     let error = "";
-    if (name === "email" && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    if (
+      name === "email" &&
+      value &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+    ) {
       error = "Invalid email format.";
     }
     if (name === "password") {
       if (!value) error = "Password is required.";
-      else if (value.length < 6) error = "Password must be at least 6 characters.";
+      else if (value.length < 6)
+        error = "Password must be at least 6 characters.";
     }
     if (name === "confirmPassword" && value && value !== password) {
       error = "Passwords do not match.";
@@ -53,7 +64,8 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
   const checkPasswordStrength = (pw) => {
     if (!pw) return "";
     if (pw.length < 6) return "weak";
-    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9!@#$%^&*]/.test(pw)) return "strong";
+    if (/[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9!@#$%^&*]/.test(pw))
+      return "strong";
     return "medium";
   };
 
@@ -70,15 +82,24 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
   const handleChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case "username": setUsername(value); break;
-      case "fullName": setFullName(value); break;
-      case "email": setEmail(value); break;
+      case "username":
+        setUsername(value);
+        break;
+      case "fullName":
+        setFullName(value);
+        break;
+      case "email":
+        setEmail(value);
+        break;
       case "password":
         setPassword(value);
         setPasswordStrength(checkPasswordStrength(value));
         break;
-      case "confirmPassword": setConfirmPassword(value); break;
-      default: break;
+      case "confirmPassword":
+        setConfirmPassword(value);
+        break;
+      default:
+        break;
     }
     if (touched[name]) {
       setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
@@ -108,8 +129,14 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
         return;
       }
 
-      setCenteredMsg("✅ Registration successful! Please check your email to verify your account.");
-      setUsername(""); setFullName(""); setEmail(""); setPassword(""); setConfirmPassword("");
+      setCenteredMsg(
+        "✅ Registration successful! Please check your email to verify your account.",
+      );
+      setUsername("");
+      setFullName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
       setShowDropdown(false);
       setAuthForm("signin");
     } catch (err) {
@@ -122,8 +149,13 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
 
   return (
     <>
-      <h3 className="text-lg font-bold text-center mb-4 text-[#19522f]">Sign Up</h3>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 font-semibold">
+      <h3 className="text-lg font-bold text-center mb-4 text-[#19522f]">
+        Sign Up
+      </h3>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3 font-semibold"
+      >
         {/* Username */}
         <label className="text-[#19522f]">Username</label>
         <input
@@ -137,7 +169,9 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
                bg-[#fffdf3] text-[#19522f] placeholder:text-[#d1dcd5]
                focus:outline-none focus:ring-2 focus:ring-[#d9e45a] focus:border-transparent"
         />
-        {errors.username && touched.username && <p className="text-red-500 text-sm">{errors.username}</p>}
+        {errors.username && touched.username && (
+          <p className="text-red-500 text-sm">{errors.username}</p>
+        )}
 
         {/* Full Name */}
         <label className="text-[#19522f]">Full Name</label>
@@ -152,7 +186,9 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
                bg-[#fffdf3] text-[#19522f] placeholder:text-[#d1dcd5]
                focus:outline-none focus:ring-2 focus:ring-[#d9e45a] focus:border-transparent"
         />
-        {errors.fullName && touched.fullName && <p className="text-red-500 text-sm">{errors.fullName}</p>}
+        {errors.fullName && touched.fullName && (
+          <p className="text-red-500 text-sm">{errors.fullName}</p>
+        )}
 
         {/* Email */}
         <label className="text-[#19522f]">Email</label>
@@ -167,13 +203,17 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
                bg-[#fffdf3] text-[#19522f] placeholder:text-[#d1dcd5]
                focus:outline-none focus:ring-2 focus:ring-[#d9e45a] focus:border-transparent"
         />
-        {errors.email && touched.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && touched.email && (
+          <p className="text-red-500 text-sm">{errors.email}</p>
+        )}
 
         {/* Password */}
         <div className="relative w-full">
           <label className="text-[#19522f]">Password</label>
-          <div className="flex items-center justify-between w-full rounded-full border border-[#759782] px-4 py-2 
-                  bg-[#fffdf3] text-[#19522f] focus-within:ring-2 focus-within:ring-[#d9e45a] focus-within:border-transparent">
+          <div
+            className="flex items-center justify-between w-full rounded-full border border-[#759782] px-4 py-2 
+                  bg-[#fffdf3] text-[#19522f] focus-within:ring-2 focus-within:ring-[#d9e45a] focus-within:border-transparent"
+          >
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -188,7 +228,11 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
               onClick={() => setShowPassword(!showPassword)}
               className="text-gray-500 hover:text-[#19522f]"
             >
-              {showPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              {showPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
             </button>
           </div>
           {password && (
@@ -198,22 +242,26 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
                   passwordStrength === "weak"
                     ? "text-red-500"
                     : passwordStrength === "medium"
-                      ? "text-yellow-500"
-                      : "text-green-500"
+                    ? "text-yellow-500"
+                    : "text-green-500"
                 }
               >
                 Strength: {passwordStrength}
               </p>
             </div>
           )}
-          {errors.password && touched.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+          {errors.password && touched.password && (
+            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+          )}
         </div>
 
         {/* Confirm Password */}
         <div className="relative w-full mt-4">
           <label className="text-[#19522f]">Confirm Password</label>
-          <div className="flex items-center justify-between w-full rounded-full border border-[#759782] px-4 py-2 
-                  bg-[#fffdf3] text-[#19522f] focus-within:ring-2 focus-within:ring-[#d9e45a] focus-within:border-transparent">
+          <div
+            className="flex items-center justify-between w-full rounded-full border border-[#759782] px-4 py-2 
+                  bg-[#fffdf3] text-[#19522f] focus-within:ring-2 focus-within:ring-[#d9e45a] focus-within:border-transparent"
+          >
             <input
               type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
@@ -228,23 +276,32 @@ export default function SignUpForm({ setAuthForm, setShowDropdown, setCenteredMs
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="text-gray-500 hover:text-[#19522f]"
             >
-              {showConfirmPassword ? <AiOutlineEyeInvisible size={20} /> : <AiOutlineEye size={20} />}
+              {showConfirmPassword ? (
+                <AiOutlineEyeInvisible size={20} />
+              ) : (
+                <AiOutlineEye size={20} />
+              )}
             </button>
           </div>
           {errors.confirmPassword && touched.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+            <p className="text-red-500 text-sm mt-1">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
 
-        {errors.server && <p className="text-red-500 text-sm">{errors.server}</p>}
+        {errors.server && (
+          <p className="text-red-500 text-sm">{errors.server}</p>
+        )}
 
         <button
           type="submit"
           disabled={loadingRegister}
-          className={`mt-3 rounded-full py-2 text-white font-semibold transition-colors ${loadingRegister
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-[#19522f] hover:bg-[#306344]"
-            }`}
+          className={`mt-3 rounded-full py-2 text-[#fef8e0] font-semibold transition-colors ${
+            loadingRegister
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#19522f] hover:bg-[#306344]"
+          }`}
         >
           {loadingRegister ? "Registering..." : "Register"}
         </button>

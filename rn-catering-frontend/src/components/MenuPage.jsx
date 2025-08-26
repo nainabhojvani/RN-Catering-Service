@@ -102,12 +102,14 @@ function Menu() {
       </h1>
 
       {/* Progress Bar */}
-      <div className="flex justify-between mb-6">
+      <div className="flex justify-between text-[#19522f] mb-6">
         {mealOrder.map((meal, i) => (
           <div
             key={meal}
             className={`flex-1 text-center py-2 rounded mx-1 ${
-              i === step ? "bg-[#fef8e0] font-bold" : "bg-gray-200"
+              i === step
+                ? "bg-[#19522f] text-[#fef8e0] font-bold"
+                : "bg-gray-200"
             }`}
           >
             {meal}
@@ -116,7 +118,7 @@ function Menu() {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 h-[100vh]">
+        <div className="grid grid-cols-2 md:grid-cols-3 text-[#19522f] gap-6 h-[100vh]">
           {/* Left: Current Meal Menu */}
           <div className="bg-white p-4 rounded-lg shadow overflow-y-auto md:col-span-2">
             <h2 className="text-xl font-semibold mb-4 text-[#306344]">
@@ -148,7 +150,7 @@ function Menu() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="bg-[#fef8e0] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-[#306344] hover:text-white"
+                                className="bg-[#fef8e0] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm cursor-move hover:bg-[#306344] hover:text-[#fef8e0]"
                                 style={{
                                   ...provided.draggableProps.style,
                                   display: hiddenItems[dish] ? "none" : "block",

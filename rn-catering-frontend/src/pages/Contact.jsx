@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import contactBanner from "../assets/images/contact.png";
 import {
@@ -7,6 +6,7 @@ import {
   FaClock,
   FaPhoneAlt,
 } from "react-icons/fa";
+
 import { toast } from "react-toastify";
 
 export default function ContactPage() {
@@ -26,7 +26,6 @@ export default function ContactPage() {
     },
   ];
 
-  // 🔹 Form state
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -35,14 +34,10 @@ export default function ContactPage() {
     message: "",
   });
 
-  // const [success, setSuccess] = useState(false);
-
-  // 🔹 Handle change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🔹 Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -63,7 +58,6 @@ export default function ContactPage() {
           phone: "",
           message: "",
         });
-        // setSuccess(true); // optional
       } else {
         toast.error(result.message || "Failed to send message");
       }
@@ -76,13 +70,13 @@ export default function ContactPage() {
   return (
     <div>
       {/* Header Banner */}
-      <div className="relative w-full h-[400px] opacity-70">
+      <div className="relative w-full h-[400px] opacity-80">
         <img
           src={contactBanner}
           alt="Contact Header"
           className="w-full h-full object-cover"
         />
-        <h1 className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-black font-bold text-6xl font-['Dancing_Script',cursive]">
+        <h1 className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[#19522F] font-bold text-6xl font-['Dancing_Script',cursive]">
           Contact Us
         </h1>
       </div>
@@ -94,7 +88,7 @@ export default function ContactPage() {
           onSubmit={handleSubmit}
           className="flex-1 min-w-[300px] max-w-[600px]"
         >
-          <h1 className="text-4xl font-['Dancing_Script',cursive] font-semibold mt-10 ml-5">
+          <h1 className="text-4xl font-['Dancing_Script',cursive] font-semibold mt-10 ml-5 text-[#19522F]">
             Get in Touch
           </h1>
 
@@ -105,7 +99,7 @@ export default function ContactPage() {
             onChange={handleChange}
             placeholder="Your Name"
             required
-            className="w-full text-[25px] bg-[#bee0eb] text-gray-700 rounded-[35px] p-4 my-2 shadow"
+            className="w-full text-[25px] bg-[#FEF8E0] text-[#19522F] rounded-[35px] p-4 my-2 shadow"
           />
           <input
             type="email"
@@ -114,7 +108,7 @@ export default function ContactPage() {
             onChange={handleChange}
             placeholder="Your Email"
             required
-            className="w-full text-[25px] bg-[#bee0eb] text-gray-700 rounded-[35px] p-4 my-2 shadow"
+            className="w-full text-[25px] bg-[#FEF8E0] text-[#19522F] rounded-[35px] p-4 my-2 shadow"
           />
           <input
             type="text"
@@ -123,7 +117,7 @@ export default function ContactPage() {
             onChange={handleChange}
             placeholder="Event Name"
             required
-            className="w-full text-[25px] bg-[#bee0eb] text-gray-700 rounded-[35px] p-4 my-2 shadow"
+            className="w-full text-[25px] bg-[#FEF8E0] text-[#19522F] rounded-[35px] p-4 my-2 shadow"
           />
           <input
             type="tel"
@@ -131,7 +125,7 @@ export default function ContactPage() {
             value={formData.phone}
             onChange={handleChange}
             placeholder="Your Phone (optional)"
-            className="w-full text-[25px] bg-[#bee0eb] text-gray-700 rounded-[35px] p-4 my-2 shadow"
+            className="w-full text-[25px] bg-[#FEF8E0] text-[#19522F] rounded-[35px] p-4 my-2 shadow"
           />
           <textarea
             name="message"
@@ -140,12 +134,12 @@ export default function ContactPage() {
             rows="5"
             placeholder="Your Message"
             required
-            className="w-full text-[25px] bg-[#bee0eb] text-gray-700 rounded-[35px] p-4 my-2 shadow"
+            className="w-full text-[25px] bg-[#FEF8E0] text-[#19522F] rounded-[35px] p-4 my-2 shadow"
           />
 
           <button
             type="submit"
-            className="bg-purple-700 hover:bg-purple-800 text-white text-[25px] py-3 px-10 rounded-full mt-5"
+            className="bg-[#19522f] text-[#fef8e0] text-[25px] py-3 px-10 rounded-full mt-5 hover:scale-105 transition-transform"
           >
             Submit
           </button>
@@ -153,23 +147,23 @@ export default function ContactPage() {
 
         {/* Contact Info */}
         <div className="flex-1 min-w-[300px] mt-[150px]">
-          <h2 className="text-4xl font-bold font-['Dancing_Script',cursive] mb-6">
+          <h2 className="text-4xl font-bold font-['Dancing_Script',cursive] mb-6 text-[#19522F]">
             Reach Us
           </h2>
           <div className="grid gap-6">
             {contactDetails.map((info, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 bg-[#f3f3f3] rounded-xl p-4 shadow-md max-w-[400px]"
+                className="flex items-center gap-4 bg-[#FFFD F3] rounded-xl p-4 shadow-md max-w-[400px]"
               >
-                <div className="text-purple-700 text-[28px] sm:text-[24px] flex items-center justify-center w-8 h-8">
+                <div className="text-[#19522F] text-[28px] sm:text-[24px] flex items-center justify-center w-8 h-8">
                   {info.icon}
                 </div>
                 <div>
-                  <strong className="text-[20px] sm:text-[18px] block">
+                  <strong className="text-[20px] sm:text-[18px] block text-[#306344]">
                     {info.label}
                   </strong>
-                  <span className="text-[15px] sm:text-[14px]">
+                  <span className="text-[15px] sm:text-[14px] text-[#306344]">
                     {info.text}
                   </span>
                 </div>
@@ -180,8 +174,8 @@ export default function ContactPage() {
       </section>
 
       {/* Map Section */}
-      <div className="bg-black pb-12">
-        <h1 className="text-white text-center pt-6 text-[45px] font-dancing sm:text-[28px]">
+      <div className="bg-[#19522F] pb-12">
+        <h1 className="text-[#FEF8E0] text-center pt-6 text-[45px] font-dancing sm:text-[28px]">
           Address map
         </h1>
         <iframe

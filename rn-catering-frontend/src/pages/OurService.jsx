@@ -75,7 +75,7 @@ function OurServicesHero() {
       <img
         src={servicesBanner}
         alt="Our Services"
-        className="w-full h-full object-cover"
+        className="w-full h-full opacity-70 object-cover"
       />
 
       {/* Dark overlay for text readability */}
@@ -85,17 +85,13 @@ function OurServicesHero() {
         <h1 className="font-['Dancing_Script',cursive] text-[50px] md:text-[42px]">
           Our Services
         </h1>
-        <p className="text-4xl md:text-2xl mt-3 max-w-xl font-['Dancing_Script',cursive]">
-          “We don’t just serve food, we create moments worth remembering.”
+        <p className="text-7xl md:text-2xl mt-3 max-w-xl font-['Dancing_Script',cursive]">
+          We don’t just serve food, we create moments worth remembering.
         </p>
 
         {/* Button */}
-        <Link
-          to="/menu"
-          state={{ eventName: "" }}
-          className="mt-6 px-6 py-2 bg-purple-800 text-white font-semibold z-10 rounded-md hover:bg-white hover:text-purple-800 transition"
-        >
-          View Full Menu
+        <Link to="/menu" state={{ eventName: "" }} className="btn p-2 m-2">
+          Explor Menu
         </Link>
       </div>
       <div className="absolute bottom-0 left-0 w-full z-30">
@@ -145,7 +141,7 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-purple-400 font-['Dancing_Script',cursive]">
+                <h2 className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-[#19522f] font-['Dancing_Script',cursive]">
                   {event.title}
                 </h2>
                 <p className="relative z-10 mb-6 text-lg leading-relaxed  items-center justify-center text-black">
@@ -158,7 +154,10 @@ const OurServicesScrollStory = () => {
                     navigate("/menu", { state: { eventName: event.title } })
                   }
                 >
-                  <span className="relative z-10 mt-4 inline-block px-8 py-3 bg-gradient-to-r from-purple-700 to-pink-600 text-white text-lg font-semibold rounded-full shadow-lg hover:scale-105 transition-transform">
+                  <span
+                    className="relative z-10 mt-4 inline-block px-8 py-3 bg-[#19522f] text-[#fef8e0] text-lg font-semibold rounded-full shadow-lg hover:scale-105 transition-transform
+"
+                  >
                     Book Now
                   </span>
                 </motion.button>

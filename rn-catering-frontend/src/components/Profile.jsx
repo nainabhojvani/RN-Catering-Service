@@ -287,7 +287,7 @@ const Profile = () => {
                 </h3>
                 <form
                   onSubmit={handleEditProfileSubmit}
-                  className="flex flex-col gap-6 max-w-xl"
+                  className="flex text-[#19522f] flex-col gap-6 max-w-xl"
                 >
                   <label className="flex flex-col">
                     Username:
@@ -320,7 +320,7 @@ const Profile = () => {
                   </label>
                   <button
                     type="submit"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded"
+                    className="bg-[#19522f] hover:bg-green-700 text-[#fef8e0] font-semibold py-3 rounded"
                   >
                     Save Changes
                   </button>
@@ -336,7 +336,7 @@ const Profile = () => {
                 </h3>
                 <form
                   onSubmit={handleChangePasswordSubmit}
-                  className="flex flex-col gap-6 max-w-xl"
+                  className="flex flex-col text-[#19522f] gap-6 max-w-xl"
                 >
                   <label className="flex flex-col">
                     Old Password:
@@ -370,7 +370,7 @@ const Profile = () => {
                   </label>
                   <button
                     type="submit"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded"
+                    className="bg-[#19522f] hover:bg-green-700 text-[#fef8e0] font-semibold py-3 rounded"
                   >
                     Change Password
                   </button>
