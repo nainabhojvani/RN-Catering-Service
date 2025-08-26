@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import RNLogo from "../assets/images/RN_logo(1).jpg";
+import RNLogo from "../assets/images/RN_logo(1).png";
 import personImg from "../assets/images/person.png";
 import useAuth from "../context/useAuth";
 import CenteredMessageBox from "./centerMsgbox";
