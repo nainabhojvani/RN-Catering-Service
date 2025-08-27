@@ -1,14 +1,45 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import bgImg from "../assets/images/bg.jpg";
 import img19 from "../assets/images/image (19).png";
 import img8 from "../assets/images/image (8).png";
 import img11 from "../assets/images/image (11).png";
 import personImg from "../assets/images/person.png";
-import { motion } from "framer-motion";
+
+
+function Counter({ target, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false }); // 👈 run every time it's visible
+
+  useEffect(() => {
+    if (!inView) return;
+
+    let start = 0;
+    const end = parseInt(target.replace(/\D/g, ""), 10); // remove "+" and other chars
+    const incrementTime = Math.floor(duration / end);
+
+    setCount(0); // reset counter each time
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [inView, target, duration]);
+
+  return (
+    <span ref={ref}>
+      {count}
+      {target.replace(/[0-9]/g, "") /* keeps "+" etc */}
+    </span>
+  );
+}
 
 function AboutHero() {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-hidden">
       <img src={bgImg} alt="Delicious food" className="w-full h-auto" />
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/70 via-[#306344]/40 to-[#759782]/20"></div>
@@ -28,7 +59,7 @@ function AboutHero() {
 function AboutSection({ title, paragraphs, image, reverse }) {
   return (
     <motion.section
-      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 ${reverse ? "flex-row-reverse" : ""}`}
+      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 overflow-hidden ${reverse ? "flex-row-reverse" : ""}`}
       initial={{ opacity: 0, x: reverse ? 100 : -100 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: false }}
@@ -79,7 +110,7 @@ function Founders() {
   return (
     <>
       <motion.h2
-        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] " style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
         initial={{ opacity: 0, y: -20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
@@ -90,7 +121,7 @@ function Founders() {
       {people.map((person, idx) => (
         <motion.section
           key={idx}
-          className="flex flex-wrap items-center justify-center gap-8 px-6 py-8 bg-[#FEF8E0] rounded-xl"
+          className="flex flex-wrap items-center justify-center gap-8 px-6 py-8 bg-[#FEF8E0] rounded-xl overflow-hidden"
           initial={{ opacity: 0, x: idx % 2 === 0 ? -100 : 100 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false }}
@@ -119,7 +150,7 @@ function PromiseSection() {
   ];
 
   return (
-    <section className="bg-[#19522F] text-[#FEF8E0] px-10 py-12">
+    <section className="bg-[#19522F] text-[#FEF8E0] px-10 py-12 overflow-hidden">
       <motion.h2
         className="text-3xl md:text-4xl font-['Dancing_Script',cursive] mb-8 text-center"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -151,7 +182,7 @@ function PromiseSection() {
 }
 
 function TeamStats() {
-  const stats = [
+   const stats = [
     { label: "Managers", count: "25+" },
     { label: "Professional Chefs", count: "100+" },
     { label: "Attendants", count: "200+" },
@@ -159,7 +190,7 @@ function TeamStats() {
   ];
 
   return (
-    <section className="py-16 px-6 text-center bg-[#FEF8E0]">
+    <section className="py-16 px-6 text-center bg-[#FEF8E0] overflow-hidden">
       <motion.h2
         className="text-4xl mb-10 font-['Dancing_Script',cursive] text-[#19522F]"
         initial={{ opacity: 0, y: -20 }}
@@ -180,8 +211,12 @@ function TeamStats() {
             viewport={{ once: false }}
             transition={{ delay: idx * 0.2, duration: 0.6, type: "spring" }}
           >
-            <h3 className="text-3xl text-[#19522F] font-bold mb-2">{item.count}</h3>
-            <p className="text-base font-semibold text-[#306344]">{item.label}</p>
+            <h3 className="text-3xl text-[#19522F] font-bold mb-2">
+              <Counter target={item.count} duration={2} />
+            </h3>
+            <p className="text-base font-semibold text-[#306344]">
+              {item.label}
+            </p>
           </motion.div>
         ))}
       </div>
