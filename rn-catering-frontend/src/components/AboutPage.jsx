@@ -1,10 +1,41 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import bgImg from "../assets/images/bg.jpg";
 import img19 from "../assets/images/image (19).png";
 import img8 from "../assets/images/image (8).png";
 import img11 from "../assets/images/image (11).png";
 import personImg from "../assets/images/person.png";
-import { motion } from "framer-motion";
+
+
+function Counter({ target, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: false }); // 👈 run every time it's visible
+
+  useEffect(() => {
+    if (!inView) return;
+
+    let start = 0;
+    const end = parseInt(target.replace(/\D/g, ""), 10); // remove "+" and other chars
+    const incrementTime = Math.floor(duration / end);
+
+    setCount(0); // reset counter each time
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+
+    return () => clearInterval(timer);
+  }, [inView, target, duration]);
+
+  return (
+    <span ref={ref}>
+      {count}
+      {target.replace(/[0-9]/g, "") /* keeps "+" etc */}
+    </span>
+  );
+}
 
 function AboutHero() {
   return (
@@ -79,7 +110,7 @@ function Founders() {
   return (
     <>
       <motion.h2
-        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] " style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
         initial={{ opacity: 0, y: -20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
@@ -151,7 +182,7 @@ function PromiseSection() {
 }
 
 function TeamStats() {
-  const stats = [
+   const stats = [
     { label: "Managers", count: "25+" },
     { label: "Professional Chefs", count: "100+" },
     { label: "Attendants", count: "200+" },
@@ -180,8 +211,12 @@ function TeamStats() {
             viewport={{ once: false }}
             transition={{ delay: idx * 0.2, duration: 0.6, type: "spring" }}
           >
-            <h3 className="text-3xl text-[#19522F] font-bold mb-2">{item.count}</h3>
-            <p className="text-base font-semibold text-[#306344]">{item.label}</p>
+            <h3 className="text-3xl text-[#19522F] font-bold mb-2">
+              <Counter target={item.count} duration={2} />
+            </h3>
+            <p className="text-base font-semibold text-[#306344]">
+              {item.label}
+            </p>
           </motion.div>
         ))}
       </div>
