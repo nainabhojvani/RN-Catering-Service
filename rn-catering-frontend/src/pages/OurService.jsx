@@ -124,7 +124,7 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <div className="w-70 h-70  relative z-10 rounded-full bg-white flex items-center justify-center shadow-xl">
+                <div className="w-70 h-70  relative z-10 rounded-full bg-[#FFFDF3] flex items-center justify-center shadow-xl">
                   <img
                     src={event.image}
                     alt={event.title}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-const API_URL = import.meta.env.VITE_API_URL;
 import { motion } from "framer-motion";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function ClientReviews() {
   const [reviews, setReviews] = useState([]);
@@ -9,7 +10,7 @@ export default function ClientReviews() {
   const [successMsg, setSuccessMsg] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // 🔹 Fetch from backend
+  // 🔹 Fetch reviews from backend
   useEffect(() => {
     fetch(`${API_URL}/api/reviews`)
       .then((res) => res.json())
@@ -42,6 +43,7 @@ export default function ClientReviews() {
       }
 
       const created = await res.json();
+
       // Prepend new review to top (newest first)
       setReviews((prev) => [created, ...prev]);
       setFormData({ name: "", type: "", text: "" });
@@ -54,9 +56,9 @@ export default function ClientReviews() {
   };
 
   return (
-     <section className="bg-[#fffdf3] py-14 px-5 text-center -mt-8">
+    <section className="bg-[#fffdf3] py-14 px-5 text-center -mt-8">
       <motion.h2
-        className="fade-in text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12"
+        className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -66,25 +68,11 @@ export default function ClientReviews() {
       </motion.h2>
 
       {/* Reviews Grid */}
-      <motion.div
-        className="flex flex-wrap justify-center gap-10"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.15 } },
-        }}
-      >
+      <div className="flex flex-wrap justify-center gap-10">
         {reviews.slice(0, visibleCount).map((review, idx) => (
-          <motion.div
+          <div
             key={review._id || idx}
             className="max-w-sm text-center relative pb-5 hover:-translate-y-2 transition duration-300"
-            variants={{
-              hidden: { opacity: 0, y: 30, scale: 0.95 },
-              visible: { opacity: 1, y: 0, scale: 1 },
-            }}
-            transition={{ duration: 0.6 }}
           >
             <div className="relative bg-[#ffffff] border-[2px] border-[#d9e45a] px-6 pt-10 pb-7 rounded-[18px] shadow-md mb-8">
               <span className="absolute top-4 left-4 text-[2.5rem] font-bold text-[#d9e45a] leading-none font-serif">
@@ -103,11 +91,11 @@ export default function ClientReviews() {
                 {review.type}
               </p>
             </div>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
 
-      {/* View More */}
+      {/* View More Button */}
       {visibleCount < reviews.length && (
         <button
           className="inline-block px-9 py-3 text-lg font-semibold bg-[#19522f] text-[#ffffff] rounded-full shadow-md hover:bg-[#306344] hover:scale-105 transition mt-6"
@@ -122,7 +110,11 @@ export default function ClientReviews() {
         <h3 className="text-[2.5rem] font-bold font-['Dancing_Script',cursive] text-[#19522f] mb-12">
           Add Your Review
         </h3>
-        <form onSubmit={handleSubmit} className="flex flex-col text-[#19522f] gap-4">
+
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col text-[#19522f] gap-4"
+        >
           <input
             type="text"
             placeholder="Your Name"
@@ -144,10 +136,8 @@ export default function ClientReviews() {
             className="border border-[#d1dcd5] px-4 py-2 rounded"
             rows="4"
           />
-          <button
-            type="submit"
-            className="btn"
-          >
+
+          <button type="submit" className="btn">
             Submit Review
           </button>
         </form>
@@ -157,6 +147,7 @@ export default function ClientReviews() {
             Thank you for your valuable feedback!
           </div>
         )}
+
         {errorMsg && (
           <div className="bg-[#d9e45a] text-left text-[#19522f] border px-4 py-3 rounded m-4 transition duration-300">
             {errorMsg}

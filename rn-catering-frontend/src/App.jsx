@@ -19,6 +19,8 @@ import PTOS from "./components/PTOS";
 import NotFound from "./components/NotFound";
 import BookingForm from "./components/BookingForm";
 import VerifiedSuccess from "./pages/VerifiedSuccess";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -63,6 +65,7 @@ function AppContent() {
         <Route path="/404" element={<NotFound />} />
         <Route path="*" element={<Navigate replace to="/404" />} />
       </Routes>
+      <ToastContainer position="bottom-right" autoClose={3000} />
       {showLayout && <Footer />}
     </>
   );
