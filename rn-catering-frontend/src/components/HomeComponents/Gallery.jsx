@@ -23,9 +23,9 @@ export default function Gallery() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.6 }} style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
       >
-      Moments We Capture..
+        Moments We Capture..
       </motion.h2>
 
       <div className="relative w-full h-[500px] flex justify-center items-center">
@@ -33,10 +33,11 @@ export default function Gallery() {
         <motion.img
           src={logo}
           alt="Logo"
-          className="absolute w-[200px] h-[200px] object-contain rounded-full border-4 border-purple-800 bg-white p-2 shadow-lg z-10"
+          className="absolute w-[200px] h-[200px] object-contain rounded-full border-4 border-[#19522f] bg-white p-2 shadow-lg z-10"
           initial={{ scale: 0 }}
           whileInView={{ scale: 1 }}
           transition={{ duration: 0.8, type: "spring", stiffness: 120, damping: 12 }}
+          style={{ boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }}
         />
 
         {/* Circular Images */}
@@ -47,27 +48,28 @@ export default function Gallery() {
 
           return (
             <motion.img
-  key={idx}
-  src={img}
-  alt={`Dish ${idx + 1}`}
-  className="absolute w-[180px] h-[180px] rounded-full object-cover shadow-lg"
-  initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
-  whileInView={{ x, y, opacity: 1, scale: 1 }}
-  viewport={{ once: true }}
-  transition={{
-    duration: 1,
-    type: "spring",
-    stiffness: 120,
-    damping: 12,
-    delay: idx * 0.15, // only for entrance animation
-  }}
-  whileHover={{
-    scale: 1.2,
-    rotate: 10,
-    borderRadius: "50%",
-    transition: { type: "spring", stiffness: 300, damping: 20 } // immediate hover
-  }}
-/>
+              key={idx}
+              src={img}
+              alt={`Dish ${idx + 1}`}
+              className="absolute w-[180px] h-[180px] rounded-full object-cover shadow-lg"
+              initial={{ x: 0, y: 0, opacity: 0, scale: 0.5 }}
+              whileInView={{ x, y, opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{
+                duration: 1,
+                type: "spring",
+                stiffness: 120,
+                damping: 12,
+                delay: idx * 0.15, // only for entrance animation
+              }}
+              whileHover={{
+                scale: 1.2,
+                rotate: 10,
+                borderRadius: "50%",
+                transition: { type: "spring", stiffness: 300, damping: 20 } // immediate hover
+              }}
+              style={{ boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }}
+            />
           );
         })}
       </div>

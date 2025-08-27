@@ -25,7 +25,7 @@ export default function WeServeSection() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.6 }} style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
       >
         We Serve Variety...
       </motion.h2>
@@ -34,7 +34,7 @@ export default function WeServeSection() {
         {serveItems.map((item, idx) => (
           <motion.div
             key={idx}
-            className="relative h-[220px] overflow-hidden rounded-xl shadow-md cursor-pointer"
+            className="relative h-[220px] overflow-hidden rounded-xl shadow-md cursor-pointer "
             initial={{ opacity: 0, scale: 0.5 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -53,14 +53,20 @@ export default function WeServeSection() {
               className="w-full h-full object-cover"
               initial={{ scale: 1 }}
               variants={{
-                hover: { scale: 1.1, filter: "brightness(70%)" },
+                hover: {
+                  scale: 1.1, filter: "brightness(70%)", background:
+                    "linear-gradient(to top, rgba(25,82,47,1), rgba(48,99,68,1), rgba(117,152,130,1))",
+                }
               }}
               transition={{ duration: 0.5 }}
             />
 
             {/* Label slides diagonally with glowing underline */}
             <motion.div
-              className="absolute bottom-4 left-4 text-white font-semibold text-lg"
+              className="absolute bottom-4 left-4 text-[#d9e45a] font-semibold text-lg" style={{
+                textShadow:
+                  "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+              }}
               initial={{ x: -50, y: 50, opacity: 0 }}
               variants={{
                 hover: { x: 0, y: 0, opacity: 1 },

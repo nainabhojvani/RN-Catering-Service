@@ -11,7 +11,7 @@ export default function WelcomeSection() {
         transition={{ duration: 0.8 }}
         className="text-center max-w-3xl px-6"
       >
-        <h2 className="text-3xl md:text-5xl font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in">
+        <h2 className="text-3xl md:text-5xl font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>
           Welcome to RN Catering
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed mb-6">

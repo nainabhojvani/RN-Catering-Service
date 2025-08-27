@@ -4,44 +4,64 @@ import img19 from "../assets/images/image (19).png";
 import img8 from "../assets/images/image (8).png";
 import img11 from "../assets/images/image (11).png";
 import personImg from "../assets/images/person.png";
+import { motion } from "framer-motion";
 
 function AboutHero() {
   return (
     <div className="relative w-full">
       <img src={bgImg} alt="Delicious food" className="w-full h-auto" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white font-bold text-center text-2xl md:text-6xl font-['Dancing_Script',cursive]">
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/70 via-[#306344]/40 to-[#759782]/20"></div>
+      <motion.div
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[#d9e45a] font-bold text-center text-2xl md:text-6xl font-['Dancing_Script',cursive]"
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.8 }}
+        style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}
+      >
         Welcome to RN Catering
-      </div>
+      </motion.div>
     </div>
   );
 }
 
 function AboutSection({ title, paragraphs, image, reverse }) {
   return (
-    <section
-      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 ${
-        reverse ? "flex-row-reverse" : ""
-      }`}
+    <motion.section
+      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 ${reverse ? "flex-row-reverse" : ""}`}
+      initial={{ opacity: 0, x: reverse ? 100 : -100 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: false }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
     >
       {image && (
-        <div className="max-w-sm w-full">
-          <img src={image} alt={title} className="w-full" />
-        </div>
+        <motion.div
+          className="max-w-sm w-full"
+          initial={{ scale: 0.8, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+
+        >
+          <img src={image} alt={title} className="w-full" style={{ borderRadius: "16px", boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }} />
+        </motion.div>
       )}
       <div className="max-w-xl text-left">
-        <h2 className="text-3xl mb-4 font-['Dancing_Script',cursive] text-[#19522F]">
-          {title}
-        </h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>{title}</h2>
         {paragraphs.map((para, idx) => (
-          <p
+          <motion.p
             key={idx}
             className="text-base leading-relaxed mb-4 text-[#306344]"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ delay: idx * 0.2, duration: 0.6 }}
           >
             {para}
-          </p>
+          </motion.p>
         ))}
       </div>
-    </section>
+    </motion.section>
   );
 }
 
@@ -58,24 +78,33 @@ function Founders() {
   ];
   return (
     <>
-      <h2 className="text-3xl md:text-4xl text-center px-6 font-['Dancing_Script',cursive] mb-4 text-[#19522F]">
+      <motion.h2
+        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8 }}
+      >
         Meet the Founders
-      </h2>
+      </motion.h2>
       {people.map((person, idx) => (
-        <section
+        <motion.section
           key={idx}
           className="flex flex-wrap items-center justify-center gap-8 px-6 py-8 bg-[#FEF8E0] rounded-xl"
+          initial={{ opacity: 0, x: idx % 2 === 0 ? -100 : 100 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: idx * 0.2 }}
+
         >
           <img src={personImg} alt={person.name} className="h-52" />
           <div className="max-w-2xl">
-            <h2 className="text-2xl mb-3 font-bold font-['Dancing_Script',cursive] text-[#19522F]">
+            <h2 className="text-2xl mb-3 font-bold font-['Dancing_Script',cursive] text-[#19522F]" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>
               {person.name}
             </h2>
-            <p className="text-base leading-relaxed text-[#306344]">
-              {person.desc}
-            </p>
+            <p className="text-base leading-relaxed text-[#306344]">{person.desc}</p>
           </div>
-        </section>
+        </motion.section>
       ))}
     </>
   );
@@ -88,23 +117,33 @@ function PromiseSection() {
     "✔ Custom menus for every occasion",
     "✔ On-time delivery and setup",
   ];
+
   return (
     <section className="bg-[#19522F] text-[#FEF8E0] px-10 py-12">
-      <h2 className="text-3xl md:text-4xl font-['Dancing_Script',cursive] mb-8 text-center">
+      <motion.h2
+        className="text-3xl md:text-4xl font-['Dancing_Script',cursive] mb-8 text-center"
+        initial={{ opacity: 0, scale: 0.9 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.6 }}
+      >
         What makes RN Catering special?
-      </h2>
+      </motion.h2>
       <ul className="space-y-6 max-w-3xl mx-auto">
         {items.map((text, idx) => (
-          <li
+          <motion.li
             key={idx}
-            className={`text-xl px-6 py-4 rounded-full text-center ${
-              idx % 2 === 0
+            className={`text-xl px-6 py-4 rounded-full text-center ${idx % 2 === 0
                 ? "bg-[#D9E45A] text-[#19522F]"
                 : "bg-[#FFFDF3] text-[#306344]"
-            }`}
+              }`}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ delay: idx * 0.2, duration: 0.6, type: "spring" }}
           >
             {text}
-          </li>
+          </motion.li>
         ))}
       </ul>
     </section>
@@ -118,24 +157,32 @@ function TeamStats() {
     { label: "Attendants", count: "200+" },
     { label: "Waiters", count: "1000+" },
   ];
+
   return (
     <section className="py-16 px-6 text-center bg-[#FEF8E0]">
-      <h2 className="text-4xl mb-10 font-['Dancing_Script',cursive] text-[#19522F]">
+      <motion.h2
+        className="text-4xl mb-10 font-['Dancing_Script',cursive] text-[#19522F]"
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8 }}
+        style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+      >
         Our Strength
-      </h2>
+      </motion.h2>
       <div className="flex flex-wrap justify-center gap-6">
         {stats.map((item, idx) => (
-          <div
+          <motion.div
             key={idx}
-            className="w-48 shadow-lg rounded-xl p-6 transition-transform hover:scale-105 bg-[#FFFD F3]"
+            className="w-48 shadow-lg rounded-xl p-6 transition-transform hover:scale-105 bg-[#FFFDF3]"
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ delay: idx * 0.2, duration: 0.6, type: "spring" }}
           >
-            <h3 className="text-3xl text-[#19522F] font-bold mb-2">
-              {item.count}
-            </h3>
-            <p className="text-base font-semibold text-[#306344]">
-              {item.label}
-            </p>
-          </div>
+            <h3 className="text-3xl text-[#19522F] font-bold mb-2">{item.count}</h3>
+            <p className="text-base font-semibold text-[#306344]">{item.label}</p>
+          </motion.div>
         ))}
       </div>
     </section>

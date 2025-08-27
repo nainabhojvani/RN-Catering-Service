@@ -47,24 +47,55 @@ export default function CategorySection() {
 
   return (
     <div className="px-6 md:px-16 py-16 bg-[#FFFDF3]">
-      <AnimateOnScroll>
-        <h2 className="fade-in text-center text-4xl md:text-5xl font-bold mb-12 font-['Dancing_Script',cursive] text-[#19522F]">
-          Delightful Events We Cater . . .
-        </h2>
-      </AnimateOnScroll>
+      {/* Title Animation */}
+      <motion.h2
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: false }}
+        className="text-center text-4xl md:text-5xl font-bold mb-12 font-['Dancing_Script',cursive] text-[#19522F]"
+        style={{
+          textShadow:
+            "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+        }}
+      >
+        Delightful Events We Cater . . .
+      </motion.h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 justify-items-center">
+      {/* Cards Grid */}
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 justify-items-center"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: false }}
+        variants={{
+          hidden: {},
+          visible: {
+            transition: {
+              staggerChildren: 0.2,
+            },
+          },
+        }}
+      >
         {events.map((event, idx) => (
-          <Card
+          <motion.div
             key={idx}
-            event={event}
-            index={idx}
-            flipped={flippedIndex === idx}
-            toggleFlip={() => toggleFlip(idx)}
-            navigate={navigate}
-          />
+            variants={{
+              hidden: { opacity: 0, scale: 0.9, y: 30 },
+              visible: { opacity: 1, scale: 1, y: 0 },
+            }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <Card
+              event={event}
+              index={idx}
+              flipped={flippedIndex === idx}
+              toggleFlip={() => toggleFlip(idx)}
+              navigate={navigate}
+            />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -85,19 +116,11 @@ function Card({ event, index, flipped, toggleFlip, navigate }) {
       style={{ rotateX, rotateY, perspective: 1000 }}
       className="w-[240px] h-[320px] cursor-pointer"
       onClick={toggleFlip}
-      onMouseMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        x.set(e.clientX - rect.left - rect.width / 2);
-        y.set(e.clientY - rect.top - rect.height / 2);
-      }}
-      onMouseLeave={() => {
-        x.set(0);
-        y.set(0);
-      }}
+
     >
       <div
         className={`relative w-full h-full transition-transform duration-700 ${flipped ? "rotate-y-180" : ""}`}
-        style={{ transformStyle: "preserve-3d" }}
+        style={{ transformStyle: "preserve-3d ", borderRadius: "16px", boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }}
       >
         {/* Front */}
         <div className="absolute w-full h-full rounded-2xl shadow-lg flex flex-col justify-center items-center p-5 text-center bg-white backface-hidden">
