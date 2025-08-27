@@ -106,11 +106,15 @@ export default function ContactPage() {
           alt="Contact Header"
           className="w-full h-full object-cover"
         />
+        {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#759782]/70 via-[#759782]/40 to-[#759782]/20"></div>
+
         <motion.h1
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[#19522F] font-bold text-6xl font-['Dancing_Script',cursive]"
+          className="absolute top-[40%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[#d9e45a] font-bold text-6xl font-['Dancing_Script',cursive]"
+          style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}
         >
           Contact us
         </motion.h1>

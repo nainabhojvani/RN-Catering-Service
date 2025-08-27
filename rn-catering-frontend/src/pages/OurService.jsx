@@ -72,28 +72,42 @@ const events = [
 function OurServicesHero() {
   return (
     <div className="relative w-full h-[500px]">
+      {/* Background Image */}
       <img
         src={servicesBanner}
         alt="Our Services"
-        className="w-full h-full opacity-70 object-cover"
+        className="w-full h-full object-cover"
       />
 
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 bg-black opacity-50 z-0"></div>
-      {/* Centered Text */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4 z-20">
-        <h1 className="font-['Dancing_Script',cursive] text-[50px] md:text-[42px]">
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/70 via-[#306344]/40 to-[#759782]/20"></div>
+
+      {/* Centered Text (motion only here) */}
+      <motion.div
+        className="absolute inset-0 flex flex-col items-center justify-center  text-center px-4 z-20"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        viewport={{ once: false }} // 👈 re-animates every scroll into view
+        
+      >
+        <h1 className="font-['Dancing_Script',cursive] text-[50px] md:text-[42px] text-[#d9e45a] font-bold text-center text-2xl md:text-6xl " style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}>
           Our Services
         </h1>
-        <p className="text-7xl md:text-2xl mt-3 max-w-xl font-['Dancing_Script',cursive]">
+        <p className="text-7xl md:text-2xl mt-3 max-w-xl font-['Dancing_Script',cursive] text-[#d9e45a]" style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}>
           We don’t just serve food, we create moments worth remembering.
         </p>
 
-        {/* Button */}
-        <Link to="/menu" state={{ eventName: "" }} className="btn p-2 m-2">
-          Explor Menu
+        <Link
+          to="/menu"
+          state={{ eventName: "" }}
+          className="btn p-2 m-2"
+        >
+          Explore Menu
         </Link>
-      </div>
+      </motion.div>
+
+      {/* Bottom Text Slider (no animation here) */}
       <div className="absolute bottom-0 left-0 w-full z-30">
         <TextSlider />
       </div>
@@ -124,7 +138,7 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <div className="w-70 h-70  relative z-10 rounded-full bg-[#FFFDF3] flex items-center justify-center shadow-xl">
+                <div className="w-70 h-70  relative z-10 rounded-full bg-[#FFFDF3] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }}>
                   <img
                     src={event.image}
                     alt={event.title}
@@ -141,7 +155,7 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-[#19522f] font-['Dancing_Script',cursive]">
+                <h2 className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-[#19522f] font-['Dancing_Script',cursive]" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>
                   {event.title}
                 </h2>
                 <p className="relative z-10 mb-6 text-lg leading-relaxed  items-center justify-center text-black">
@@ -155,7 +169,7 @@ const OurServicesScrollStory = () => {
                   }
                 >
                   <span
-                    className="relative z-10 mt-4 inline-block px-8 py-3 bg-[#19522f] text-[#fef8e0] text-lg font-semibold rounded-full shadow-lg hover:scale-105 transition-transform
+                    className="relative z-10 mt-4 inline-block px-8 py-3 bg-[#19522f] text-[#d9e45a] text-lg font-semibold rounded-full shadow-lg hover:bg-[#d9e45a] hover:text-[#19522f] hover:scale-105 transition-transform
 "
                   >
                     Book Now
@@ -165,7 +179,7 @@ const OurServicesScrollStory = () => {
             </div>
           </div>
           {index < events.length - 1 && (
-            <div className="border-t border-gray-300 w-11/12 mx-auto my-6"></div>
+            <div className="border-t border-[#19522f] w-11/12 mx-auto my-6"></div>
           )}
         </div>
       ))}

@@ -48,7 +48,7 @@ export default function Header() {
               { name: "Home", to: "/" },
               { name: "About", to: "/about" },
               { name: "Our Services", to: "/services" },
-              { name: "Venues", to: "/venues" },
+              { name: "Venues We've Served", to: "/venues" },
               { name: "Contact", to: "/contact" },
             ].map((link) => (
               <li key={link.name} className="relative">
