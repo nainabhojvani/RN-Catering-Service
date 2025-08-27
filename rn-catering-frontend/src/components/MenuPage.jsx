@@ -3,10 +3,14 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
 import initialMenuData from "./MenuData";
 import { motion, AnimatePresence } from "framer-motion";
+import useAuth from "../context/useAuth";
+import CenteredMessageBox from "./centerMsgbox";
 
 const mealOrder = ["Breakfast", "Lunch", "Evening Snacks", "Dinner"];
 
 function Menu() {
+  const { user } = useAuth();
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -14,6 +18,7 @@ function Menu() {
   const [menuDataState, setMenuData] = useState(initialMenuData);
   const [hiddenItems, setHiddenItems] = useState({});
   const [step, setStep] = useState(0); // current step index
+  const [message, setMessage] = useState("");
 
   const [mealPlan, setMealPlan] = useState(
     Object.fromEntries(
@@ -96,6 +101,23 @@ function Menu() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [step]);
 
+  const hasSelectedMeals = () => {
+    return Object.values(mealPlan).some((meal) =>
+      Object.values(meal).some((category) => category.length > 0),
+    );
+  };
+
+  const handleConfirm = () => {
+    if (!user) {
+      setMessage("Please login to book the menu!");
+      return;
+    }
+    if (!hasSelectedMeals()) {
+      setMessage("Please select at least one dish in your meal plan!");
+      return;
+    }
+    navigate("/bookingform", { state: { selectedEvent, mealPlan } });
+  };
   return (
     <div className="p-8 min-h-screen bg-[#fffdf3]">
       <h1 className="text-2xl font-bold mb-6 text-[#195237]">
@@ -274,17 +296,17 @@ function Menu() {
           </div>
 
           <div className="flex justify-end mt-6">
-            <button
-              onClick={() =>
-                navigate("/bookingform", { state: { selectedEvent, mealPlan } })
-              }
-              className="px-6 py-3 bg-[#195237] text-white rounded-lg shadow hover:bg-[#14472f]"
-            >
+            <button onClick={handleConfirm} className="btn">
               Confirm & Book
             </button>
           </div>
         </div>
       )}
+      <CenteredMessageBox
+        style={{ color: "red" }}
+        message={message}
+        onClose={() => setMessage("")}
+      />
     </div>
   );
 }

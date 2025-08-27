@@ -2,7 +2,7 @@
 
 import React from "react";
 
-const CenteredMessageBox = ({ message, onClose }) => {
+const CenteredMessageBox = ({ message, onClose, style }) => {
   if (!message) return null;
   return (
     <div
@@ -13,7 +13,9 @@ const CenteredMessageBox = ({ message, onClose }) => {
         className="bg-[#fef8e0] p-6 rounded shadow-lg w-[448px] text-center"
         onClick={(e) => e.stopPropagation()} // prevent closing when clicking inside box
       >
-        <p className="text-green-600 text-lg">{message}</p>
+        <p className="text-green-600 text-lg" style={style}>
+          {message}
+        </p>
         <button
           className="mt-4 px-4 py-2 bg-[#19522f] text-white rounded"
           onClick={onClose}

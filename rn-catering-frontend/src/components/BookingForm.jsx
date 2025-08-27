@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import useAuth from "../context/useAuth";
+import CenteredMessageBox from "./centerMsgbox";
 
 function BookingForm() {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ function BookingForm() {
     date: "",
     venue: "",
   });
-
+  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -68,8 +69,9 @@ function BookingForm() {
           },
         },
       );
-
-      navigate(`/profile/${user.username}`);
+      setMessage(
+        "Booking successful! We will contact you soon. You can check your booking in your profile.",
+      );
     } catch (err) {
       alert("Failed to submit booking");
       console.log(err);
@@ -78,7 +80,7 @@ function BookingForm() {
 
   return (
     <div className="flex items-center  justify-center min-h-screen bg-[#fcfaef]">
-      <div className="bg-white m-20 p-10 rounded-3xl shadow-lg w-full max-w-2xl border border-[#f5f2dd] relative">
+      <div className="bg-[#FFFDF3] m-20 p-10 rounded-3xl shadow-lg w-full max-w-2xl border border-[#f5f2dd] relative">
         {/* Heading */}
         <h2 className="text-3xl font-serif text-green-900 text-center mb-1 font-normal">
           Reserve Your Catering Service Today!
@@ -159,6 +161,7 @@ function BookingForm() {
               type="text"
               value={eventType}
               onChange={(e) => setEventType(e.target.value)}
+              placeholder="e.g. Birthday"
               className="w-full bg-[#fafdde] border-b border-[#d7e0c5] py-2 px-3 rounded-none focus:outline-none text-green-800 font-normal font-serif "
             />
             {errors.eventType && (
@@ -213,14 +216,19 @@ function BookingForm() {
 
         {/* Book now button */}
         <div className="w-full flex justify-center mt-8">
-          <button
-            onClick={handleBookingSubmit}
-            className="bg-[#e9ea9c] text-green-900 font-serif text-lg rounded-full px-10 py-2 shadow-md border-2 border-[#ece09a] hover:bg-[#f6eea2] active:bg-[#e3da7b] transition focus:outline-none"
-          >
+          <button onClick={handleBookingSubmit} className="btn">
             Book now
           </button>
         </div>
       </div>
+      <CenteredMessageBox
+        message={message}
+        onClose={() => {
+          setMessage(""); // hide box
+
+          navigate(`/profile/${user.username}`);
+        }}
+      />
     </div>
   );
 }
