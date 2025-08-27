@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState, useEffect } from "react";
 import initialMenuData from "./MenuData";
+import { motion, AnimatePresence } from "framer-motion";
 
 const mealOrder = ["Breakfast", "Lunch", "Evening Snacks", "Dinner"];
 
@@ -106,11 +107,13 @@ function Menu() {
         {mealOrder.map((meal, i) => (
           <div
             key={meal}
-            className={`flex-1 text-center py-2 rounded mx-1 ${
-              i === step
-                ? "bg-[#19522f] text-[#fef8e0] font-bold"
-                : "bg-gray-200"
-            }`}
+            className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
+        ${
+          i === step
+            ? "bg-[#19522f] text-[#fef8e0] font-bold"
+            : "bg-gray-200 hover:bg-gray-300"
+        }`}
+            onClick={() => setStep(i)}
           >
             {meal}
           </div>
@@ -200,7 +203,7 @@ function Menu() {
                             {...provided.draggableProps}
                             {...provided.dragHandleProps}
                             ref={provided.innerRef}
-                            className="flex items-center gap-2 bg-[#d9e45a] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm w-fit hover:bg-[#306344] hover:text-white"
+                            className="flex items-center gap-2 bg-[#d9e45a] border border-[#759782] rounded-full px-3 py-1 text-sm shadow-sm w-fit hover:bg-[#306344] hover:text-[#fef8e0]"
                           >
                             <span>{dish.name}</span>
                             <button
