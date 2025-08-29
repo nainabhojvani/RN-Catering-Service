@@ -79,7 +79,7 @@ function BookingForm() {
   };
 
   return (
-    <div className="flex items-center  justify-center min-h-screen bg-[#fcfaef]">
+    <div className="flex items-center  justify-center min-h-screen">
       <div className="bg-[#FFFDF3] m-20 p-10 rounded-3xl shadow-lg w-full max-w-2xl border border-[#f5f2dd] relative">
         {/* Heading */}
         <h2 className="text-3xl font-serif text-green-900 text-center mb-1 font-normal">
@@ -142,7 +142,7 @@ function BookingForm() {
                 setFormData({ ...formData, phone: e.target.value })
               }
               placeholder="Enter 10-digit phone number"
-              className={`w-full bg-[#fafdde] border-b py-2 px-3 rounded-none focus:outline-none text-green-900  ${
+              className={`w-full  border-b py-2 px-3 rounded-none focus:outline-none text-green-900  ${
                 errors.phone
                   ? "border-red-400 focus:ring-red-200"
                   : "border-[#d7e0c5] focus:ring-green-100"
@@ -162,7 +162,7 @@ function BookingForm() {
               value={eventType}
               onChange={(e) => setEventType(e.target.value)}
               placeholder="e.g. Birthday"
-              className="w-full bg-[#fafdde] border-b border-[#d7e0c5] py-2 px-3 rounded-none focus:outline-none text-green-800 font-normal font-serif "
+              className="w-full  border-b border-[#d7e0c5] py-2 px-3 rounded-none focus:outline-none text-green-800 font-normal font-serif "
             />
             {errors.eventType && (
               <p className="text-red-500 text-sm">{errors.eventType}</p>
@@ -179,7 +179,7 @@ function BookingForm() {
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
               }
-              className={`w-full bg-[#fafdde] border-b py-2 px-3 rounded-none focus:outline-none text-green-900 font-serif font-normal ${
+              className={`w-full  border-b py-2 px-3 rounded-none focus:outline-none text-green-900 font-serif font-normal ${
                 errors.date
                   ? "border-red-400 focus:ring-red-200"
                   : "border-[#d7e0c5] focus:ring-green-100"
@@ -202,7 +202,7 @@ function BookingForm() {
                 setFormData({ ...formData, venue: e.target.value })
               }
               placeholder="Enter venue"
-              className={`w-full bg-[#fafdde] border-b py-2 px-3 rounded-none focus:outline-none text-green-900 font-serif font-normal ${
+              className={`w-full  border-b py-2 px-3 rounded-none focus:outline-none text-green-900 font-serif font-normal ${
                 errors.venue
                   ? "border-red-400 focus:ring-red-200"
                   : "border-[#d7e0c5] focus:ring-green-100"

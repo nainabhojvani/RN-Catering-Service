@@ -11,7 +11,8 @@ const router = express.Router();
 router.get("/check-username", async (req, res) => {
   try {
     const { username } = req.query;
-    if (!username) return res.status(400).json({ message: "Username required" });
+    if (!username)
+      return res.status(400).json({ message: "Username required" });
 
     const user = await User.findOne({ username });
     res.json({ exists: !!user });
@@ -49,7 +50,9 @@ router.post("/register", async (req, res) => {
 
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser)
-      return res.status(400).json({ message: "Username or email already exists" });
+      return res
+        .status(400)
+        .json({ message: "Username or email already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -72,9 +75,10 @@ router.post("/register", async (req, res) => {
       "Verify Your RN Catering Account ✅",
       `<h2>Hello ${fullName},</h2>
        <p>Thank you for registering! Click the link below to verify your email:</p>
-       <p><a href="${verificationLink}" target="_blank" style="color: blue; text-decoration: underline;">
+       <p><a href="${verificationLink}" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #ffffff; 
+               text-decoration: none; border-radius: 6px; font-weight: bold;">
          Verify Email
-       </a></p>`
+       </a></p>`,
     );
 
     res.status(201).json({
