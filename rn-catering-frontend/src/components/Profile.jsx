@@ -208,8 +208,8 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 md:px-10">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#fef8e0] py-12 px-4 md:px-10">
+      <div className="max-w-7xl mx-auto bg-[#fffdf3] shadow-lg rounded-3xl overflow-hidden">
         <div className="grid md:grid-cols-4 gap-10">
           {/* Left Sidebar with profile and buttons */}
           <div className="bg-white p-8 rounded-tl-3xl rounded-bl-3xl flex flex-col items-center shadow-sm border border-gray-200">
