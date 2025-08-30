@@ -131,27 +131,32 @@ function BookingForm() {
             />
           </div>
           {/* --- Phone --- */}
-          <div>
-            <label className="block text-base text-green-900 mb-1 font-serif font-light">
-              Phone
-            </label>
-            <input
-              type="text"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
-              placeholder="Enter 10-digit phone number"
-              className={`w-full  border-b py-2 px-3 rounded-none focus:outline-none text-green-900  ${
-                errors.phone
-                  ? "border-red-400 focus:ring-red-200"
-                  : "border-[#d7e0c5] focus:ring-green-100"
-              }`}
-            />
-            {errors.phone && (
-              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
-            )}
-          </div>
+         {/* --- Phone --- */}
+<div>
+  <label className="block text-base text-green-900 mb-1 font-serif font-light">
+    Phone
+  </label>
+  <input
+    type="text"
+    value={formData.phone}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        phone: e.target.value.replace(/[^0-9]/g, ""), // only numbers allowed
+      })
+    }
+    placeholder="Enter 10-digit phone number"
+    className={`w-full  border-b py-2 px-3 rounded-none focus:outline-none text-green-900  ${
+      errors.phone
+        ? "border-red-400 focus:ring-red-200"
+        : "border-[#d7e0c5] focus:ring-green-100"
+    }`}
+  />
+  {errors.phone && (
+    <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+  )}
+</div>
+
           {/* --- Event Type (if any, demo) --- */}
           <div>
             <label className="block text-base text-green-900 mb-1 font-serif font-light">
