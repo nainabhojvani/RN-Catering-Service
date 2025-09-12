@@ -1,39 +1,22 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function ManageEvents({ setBookingsCount }) {
   const statuses = ["Draft", "Active", "Complete"];
-
-  // Load local status map from localStorage or start empty
+  const [bookings, setBookings] = useState([]);
+  const [editData, setEditData] = useState({});
+  const [draftDataMap, setDraftDataMap] = useState({});
+  const [expandedBookingId, setExpandedBookingId] = useState(null);
+  const [activeTab, setActiveTab] = useState("Draft");
   const [localStatusMap, setLocalStatusMap] = useState(() => {
     const saved = localStorage.getItem("bookingStatusMap");
     return saved ? JSON.parse(saved) : {};
   });
 
-  const [bookings, setBookings] = useState([]);
-
-  const [editData, setEditData] = useState({});
-
-  const [expanded, setExpanded] = useState({
-    Draft: [],
-    Active: [],
-    Complete: [],
-  });
-
-  const headerColors = {
-    Draft: "bg-yellow-100",
-    Active: "bg-blue-100",
-    Complete: "bg-green-100",
-  };
-  const badgeColors = {
-    Draft: "bg-yellow-200 text-yellow-800",
-    Active: "bg-blue-200 text-blue-800",
-    Complete: "bg-green-200 text-green-800",
-  };
-
-  // Fetch backend bookings and merge with local status on mount
+  // Fetch bookings and initialize edit data
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -42,97 +25,59 @@ function ManageEvents({ setBookingsCount }) {
           ...b,
           status: localStatusMap[b._id] || "Draft",
         }));
+
         setBookings(bookingsWithStatus);
 
-        const initialData = {};
-        bookingsWithStatus.forEach((booking) => {
-          initialData[booking._id] = {
-            finalPrice: booking.finalPrice || "",
-            guests: booking.guests || "",
-            paymentStatus: booking.paymentStatus || "Pending",
-          };
+        // Initialize editData only if empty (first load)
+        setEditData((prev) => {
+          if (Object.keys(prev).length === 0) {
+            const initialData = {};
+            bookingsWithStatus.forEach((booking) => {
+              initialData[booking._id] = {
+                finalPrice: "",
+                guests: "",
+                paymentStatus: "Pending",
+                eventStatus: "Pending",
+              };
+            });
+            return initialData;
+          }
+          return prev;
         });
-        setEditData(initialData);
       } catch (error) {
         console.error("Failed to fetch bookings:", error);
       }
     };
+
     fetchBookings();
   }, []);
 
-  // Save bookings status locally and persist
-  const saveChanges = (id) => {
-    const bookingIndex = bookings.findIndex((b) => b._id === id);
-    if (bookingIndex === -1) return;
-
-    const booking = bookings[bookingIndex];
-    const edits = editData[id] || {};
-    const currentStatus = booking.status || "Draft";
-
-    if (
-      currentStatus === "Draft" &&
-      (edits.finalPrice === "" || edits.guests === "")
-    ) {
-      alert("Please fill Final Price and Guests to activate booking.");
-      return;
-    }
-
-    let newStatus;
-    if (currentStatus === "Draft") newStatus = "Active";
-    else if (currentStatus === "Active" && edits.paymentStatus === "Paid")
-      newStatus = "Complete";
-    else newStatus = currentStatus;
-
-    // Update localStatusMap and persist to localStorage
-    setLocalStatusMap((prev) => {
-      const updatedMap = { ...prev, [id]: newStatus };
-      localStorage.setItem("bookingStatusMap", JSON.stringify(updatedMap));
-      return updatedMap;
-    });
-
-    const updatedBooking = {
-      ...booking,
-      finalPrice: edits.finalPrice,
-      guests: edits.guests,
-      paymentStatus: edits.paymentStatus,
-      status: newStatus,
-    };
-
-    setBookings((prev) => {
-      const newBookings = [...prev];
-      newBookings[bookingIndex] = updatedBooking;
-      return newBookings;
-    });
-
-    if (newStatus === "Complete") {
-      setEditData((prev) => {
-        const newEditData = { ...prev };
-        delete newEditData[id];
-        return newEditData;
-      });
-
-      setExpanded({ Draft: [], Active: [], Complete: [] });
-    }
-  };
+  // Update draft count
   useEffect(() => {
     const draftCount = bookings.filter((b) => (b.status || "Draft") === "Draft").length;
     setBookingsCount(draftCount);
   }, [bookings, setBookingsCount]);
 
-  const toggleExpand = (section, id) => {
-    setExpanded((prev) => {
-      const sectionExpanded = prev[section] || [];
-      const isAlreadyExpanded = sectionExpanded.includes(id);
-      return {
-        ...prev,
-        [section]: isAlreadyExpanded
-          ? sectionExpanded.filter((i) => i !== id)
-          : [...sectionExpanded, id],
-      };
-    });
-  };
-
-  const isExpanded = (section, id) => expanded[section]?.includes(id);
+  // Prefill Active tab when bookings move from Draft → Active
+  useEffect(() => {
+    if (activeTab === "Active") {
+      const newEditData = { ...editData };
+      bookings
+        .filter((b) => b.status === "Active")
+        .forEach((b) => {
+          if (draftDataMap[b._id]) {
+            newEditData[b._id] = {
+              finalPrice: draftDataMap[b._id].finalPrice,
+              guests: draftDataMap[b._id].guests,
+              paymentStatus:
+                editData[b._id]?.paymentStatus || draftDataMap[b._id].paymentStatus,
+              eventStatus: "Confirm",
+            };
+          }
+        });
+      setEditData(newEditData);
+    }
+  }, [activeTab, bookings, draftDataMap]);
 
   const handleInputChange = (id, field, value) => {
     setEditData((prev) => ({
@@ -144,145 +89,310 @@ function ManageEvents({ setBookingsCount }) {
     }));
   };
 
+  const saveChanges = (id) => {
+    const bookingIndex = bookings.findIndex((b) => b._id === id);
+    if (bookingIndex === -1) return;
+
+    const booking = bookings[bookingIndex];
+    const edits = editData[id] || {};
+    const currentStatus = booking.status || "Draft";
+
+    let newStatus = currentStatus;
+
+    // Draft → Active
+    if (edits.eventStatus === "Confirm" && edits.finalPrice && edits.guests) {
+      newStatus = "Active";
+    }
+    // Active → Complete
+    else if (edits.eventStatus === "Completed" && edits.paymentStatus === "Paid") {
+      newStatus = "Complete";
+    }
+
+    // Compute updated draft map
+    const newDraftMap = {
+      ...draftDataMap,
+      [id]: {
+        finalPrice: edits.finalPrice,
+        guests: edits.guests,
+        paymentStatus: edits.paymentStatus || "Pending",
+        // Force eventStatus to "Confirm" when moving to Active
+        eventStatus: newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
+      },
+    };
+
+    // Update draftDataMap state
+    setDraftDataMap(newDraftMap);
+
+    // Prefill Active using the computed newDraftMap
+    if (newStatus === "Active") {
+      setEditData((prevEdit) => ({
+        ...prevEdit,
+        [id]: {
+          finalPrice: newDraftMap[id].finalPrice,
+          guests: newDraftMap[id].guests,
+          paymentStatus: edits.paymentStatus || newDraftMap[id].paymentStatus,
+          eventStatus: "Confirm",
+        },
+      }));
+    } else {
+      // Save edits normally for Draft/Complete
+      setEditData((prevEdit) => ({
+        ...prevEdit,
+        [id]: {
+          ...prevEdit[id],
+          ...edits,
+        },
+      }));
+    }
+
+    // Update bookings state
+    const updatedBooking = { ...booking, ...edits, status: newStatus };
+    setBookings((prev) => {
+      const newBookings = [...prev];
+      newBookings[bookingIndex] = updatedBooking;
+      return newBookings;
+    });
+
+    // Update localStorage
+    setLocalStatusMap((prev) => {
+      const updatedMap = { ...prev, [id]: newStatus };
+      localStorage.setItem("bookingStatusMap", JSON.stringify(updatedMap));
+      return updatedMap;
+    });
+
+    // Collapse if moved to another tab
+    if (currentStatus !== newStatus) {
+      setExpandedBookingId(null);
+
+    }
+  }
+
+  const deleteBooking = async (id) => {
+    try {
+      // Call backend API to delete booking
+      await axios.delete(`${API_URL}/api/bookings/${id}`);
+
+      // Remove booking from frontend state immediately
+      setBookings((prev) => prev.filter((b) => b._id !== id));
+
+      // Remove from draft map & editData to avoid stale state
+      setDraftDataMap((prev) => {
+        const newMap = { ...prev };
+        delete newMap[id];
+        return newMap;
+      });
+      setEditData((prev) => {
+        const newEdit = { ...prev };
+        delete newEdit[id];
+        return newEdit;
+      });
+
+      // Collapse right panel if deleted booking was expanded
+      if (expandedBookingId === id) {
+        setExpandedBookingId(null);
+      }
+
+      console.log("Event deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+  };
+
+  const toggleExpand = (id) => {
+    setExpandedBookingId((prev) => (prev === id ? null : id));
+  };
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">Manage Bookings</h1>
+    <div className="p-8 min-h-screen bg-[#fef8e0]">
+      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">Manage Events</h2>
+      {/* Tabs as Progress Bar */}
+      <div className="flex justify-between mb-6">
+        {statuses.map((status, i) => (
+          <div
+            key={status}
+            className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
+        ${activeTab === status
+                ? "bg-[#19522f] text-[#fef8e0] font-bold"
+                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+              }`}
+            onClick={() => setActiveTab(status)}
+          >
+            {status} ({bookings.filter((b) => (b.status || "Draft") === status).length})
+          </div>
+        ))}
+      </div>
 
-      <div className="flex flex-wrap gap-6 justify-center">
-        {statuses.map((status) => {
-          const filtered = bookings.filter((b) => (b.status || "Draft") === status);
+      <div className="flex gap-6">
+        {/* Left Panel */}
+        <div className="w-1/3 bg-[#fffdf3] rounded-lg shadow p-4 max-h-[80vh] overflow-y-auto space-y-3">
+          {bookings
+            .filter((b) => (b.status || "Draft") === activeTab)
+            .map((b) => {
+              const isExpanded = expandedBookingId === b._id;
+              return (
+                <motion.div
+                  key={b._id}
+                  layout
+                  initial={{ borderRadius: 10 }}
+                  className="border bg-[#fef8e0] border-gray-200 rounded-lg overflow-hidden shadow-sm cursor-pointer"
+                >
+                  <div
+                    onClick={() => toggleExpand(b._id)}
+                    className={`p-3 flex justify-between items-center cursor-pointer ${isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""}`}
+                  >
+                    <p className="font-semibold">{b.customerName || "No Name"}</p>
+                    <span className="bg-[#19522f] text-[#fef8e0] px-3 py-1 rounded-full text-sm">
+                      {b.event || "Unknown Event"}
+                    </span>
+                  </div>
 
-          return (
-            <div
-              key={status}
-              className={`flex-1 min-w-[280px] max-w-[400px] p-5 rounded-3xl shadow-lg min-h-[auto] ${status === "Draft"
-                ? "bg-yellow-50"
-                : status === "Active"
-                  ? "bg-blue-50"
-                  : "bg-green-50"
-                } ${filtered.length === 0 ? "h-40" : "min-h-[400px]"}`}
-            >
-              <div className="flex justify-between items-center mb-5">
-                <h2 className="text-2xl font-semibold text-gray-900">{status}</h2>
-                <span className="px-4 py-1 rounded-full bg-gray-200 text-gray-800 font-semibold text-sm">{filtered.length}</span>
-              </div>
-              <div className="space-y-4">
-                {filtered.length === 0 && <p className="text-center text-gray-600">No bookings here.</p>}
-                {filtered.map((booking) => {
-                  const id = booking._id;
-                  const edits = editData[id] || {};
-                  return (
-                    <div
-                      key={id}
-                      className="rounded-2xl shadow-md border border-gray-200 bg-white overflow-hidden cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
-                    >
-                      <div
-                        onClick={() => toggleExpand(status, id)}
-                        className={`${headerColors[status]} p-5 flex justify-between items-center rounded-t-2xl cursor-pointer`}
+                  <AnimatePresence>
+                    {isExpanded && activeTab !== "Complete" && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4 }}
+                        className="p-3 space-y-3 bg-[#fef8e0] border-t border-gray-500 rounded-b-lg"
                       >
-                        <span className="font-bold text-gray-900 truncate max-w-[60%]">{booking.customerName || "No Name"}</span>
-                        <span
-                          className={`${badgeColors[status]} text-sm font-semibold px-3 py-1 rounded-full shadow-sm truncate max-w-[35%] text-center`}
-                        >
-                          {booking.event || "Unknown Event"}
-                        </span>
-                      </div>
-                      <div
-                        className={`overflow-hidden transition-all duration-500 px-5 border-t border-gray-200 overflow-y-auto ${isExpanded(status, id) ? "max-h-96 py-4 opacity-100" : "max-h-0 py-0 opacity-0"
-                          }`}
-                      >
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          {Object.entries(booking)
-                            .filter(([key]) =>
-                              ["phone", "email", "venue", "date", "mealPlan"].includes(key)
-                            )
-                            .map(([key, value]) => {
-                              if (key === "mealPlan" && value) {
-                                return (
-                                  <div key={key} className="bg-gray-50 p-3 rounded-lg shadow-sm col-span-2">
-                                    <p className="text-gray-700 font-medium capitalize mb-2">Meal Plan</p>
-                                    {Object.entries(value).map(([mealTime, categories]) => (
-                                      <div key={mealTime} className="mb-3">
-                                        <p className="font-semibold text-blue-700">{mealTime}</p>
-                                        {Object.entries(categories).map(([category, items]) => (
-                                          <div key={category} className="ml-4 mb-2">
-                                            <p className="font-medium">{category}</p>
-                                            {items.length > 0 ? (
-                                              <ul className="list-disc list-inside text-gray-700">
-                                                {items.map((item) => (
-                                                  <li key={item.id}>{item.name}</li>
-                                                ))}
-                                              </ul>
-                                            ) : (
-                                              <p className="italic text-gray-500">No items</p>
-                                            )}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    ))}
-                                  </div>
-                                );
-                              }
-                              return (
-                                <div key={key} className="bg-gray-50 p-3 rounded-lg shadow-sm">
-                                  <p className="text-gray-700 font-medium capitalize">
-                                    {key === "date" ? "Date" : key.charAt(0).toUpperCase() + key.slice(1)}
-                                  </p>
-                                  <p className="text-gray-900">
-                                    {key === "date" && value ? new Date(value).toLocaleDateString("en-GB") : value?.toString() || "-"}
-                                  </p>
-                                </div>
-                              );
-                            })}
-                        </div>
-                        {status !== "Complete" && (
-                          <div className="space-y-4">
-                            <div>
-                              <label className="block text-gray-700 font-medium">Final Price</label>
-                              <input
-                                type="number"
-                                value={edits.finalPrice}
-                                onChange={(e) => handleInputChange(id, "finalPrice", e.target.value)}
-                                className="w-28 border rounded px-3 py-2"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-gray-700 font-medium">Guests</label>
-                              <input
-                                type="number"
-                                value={edits.guests}
-                                onChange={(e) => handleInputChange(id, "guests", e.target.value)}
-                                className="w-28 border rounded px-3 py-2"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-gray-700 font-medium">Payment Status</label>
-                              <select
-                                value={edits.paymentStatus}
-                                onChange={(e) => handleInputChange(id, "paymentStatus", e.target.value)}
-                                className="w-28 border rounded px-3 py-2"
-                              >
-                                <option value="Pending">Pending</option>
-                                <option value="Paid">Paid</option>
-                                <option value="Failed">Failed</option>
-                              </select>
-                            </div>
+                        <div className="grid grid-cols-2 gap-6">
+                          {/* Final Price */}
+                          <div className="flex flex-col">
+                            <label className="text-gray-600 text-sm mb-1">Final Price</label>
+                            <input
+                              type="number"
+                              placeholder="Enter Final Price"
+                              value={editData[b._id]?.finalPrice || ""}
+                              disabled={b.status === "Active"}
+                              onChange={(e) => handleInputChange(b._id, "finalPrice", e.target.value)}
+                              className={`w-full border-b border-gray-400 focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                            />
+                          </div>
+
+                          {/* Guests */}
+                          <div className="flex flex-col">
+                            <label className="text-gray-600 text-sm mb-1">Guests</label>
+                            <input
+                              type="number"
+                              placeholder="Enter Guests"
+                              value={editData[b._id]?.guests || ""}
+                              disabled={b.status === "Active"}
+                              onChange={(e) => handleInputChange(b._id, "guests", e.target.value)}
+                              className={`border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent placeholder-gray-400`}
+                            />
+                          </div>
+
+                          {/* Payment Status */}
+                          <div className="flex flex-col">
+                            <label className="text-gray-600 text-sm mb-1">Payment Status</label>
+                            <select
+                              value={editData[b._id]?.paymentStatus || "Pending"}
+                              onChange={(e) => handleInputChange(b._id, "paymentStatus", e.target.value)}
+                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Paid">Paid</option>
+                              <option value="Failed">Failed</option>
+                            </select>
+                          </div>
+
+                          {/* Event Status */}
+                          <div className="flex flex-col">
+                            <label className="text-gray-600 text-sm mb-1">Event Status</label>
+                            <select
+                              value={editData[b._id]?.eventStatus || "Pending"}
+                              onChange={(e) => handleInputChange(b._id, "eventStatus", e.target.value)}
+                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Confirm">Confirm</option>
+                              <option value="Completed">Completed</option>
+                            </select>
+                          </div>
+
+                          {/* Buttons */}
+                          <div className="col-span-2 flex gap-2 justify-start mt-4">
                             <button
-                              onClick={() => saveChanges(id)}
-                              className="mt-6 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
+                              onClick={() => saveChanges(b._id)}
+                              className="px-4 py-2 bg-[#19522f] text-white rounded-lg font-semibold hover:bg-[#143f17] w-full"
                             >
                               Save Changes
                             </button>
+                            <button
+                              onClick={() => deleteBooking(b._id)}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-800 w-full"
+                            >
+                              Delete Event
+                            </button>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              );
+            })}
+        </div>
+
+        {/* Right Panel */}
+        <div className="w-2/3 bg-[#fffdf3] rounded-lg shadow p-6 max-h-[80vh] overflow-y-auto">
+          {expandedBookingId ? (
+            (() => {
+              const selectedBooking = bookings.find((b) => b._id === expandedBookingId);
+              if (!selectedBooking) return null;
+
+              return (
+                <div className="grid grid-cols-2 gap-4">
+                  {Object.entries(selectedBooking)
+                    .filter(
+                      ([key, value]) =>
+                        value &&
+                        !["_id", "status", "finalPrice", "guests", "paymentStatus", "eventStatus", "user", "createdAt", "updatedAt"].includes(key)
+                    )
+                    .map(([key, value]) => {
+                      if (key === "mealPlan") {
+                        return (
+                          <div key={key} className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm">
+                            <p className="text-[#19522f] font-medium mb-2">Meal Plan</p>
+                            {Object.entries(value).map(([mealTime, categories]) => (
+                              <div key={mealTime} className="mb-3">
+                                {Object.entries(categories)
+                                  .filter(([, items]) => items.length > 0)
+                                  .map(([category, items]) => (
+                                    <div key={category} className="ml-4 mb-2">
+                                      <p className="font-medium">{category}</p>
+                                      <ul className="list-disc list-inside text-[#19522f]">
+                                        {items.map((item) => (
+                                          <li key={item.id}>{item.name}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  ))}
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm">
+                          <p className="text-[#19522f] font-medium capitalize">
+                            {key === "date" ? "Date" : key}
+                          </p>
+                          <p className="text-[#19522f]">
+                            {key === "date" ? new Date(value).toLocaleDateString("en-GB") : value}
+                          </p>
+                        </div>
+                      );
+                    })}
+                </div>
+              );
+            })()
+          ) : (
+            <p className="text-[#19522f] text-center mt-20">
+              Select a booking from the left to view details.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );

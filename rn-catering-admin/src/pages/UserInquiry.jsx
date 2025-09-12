@@ -6,7 +6,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 function UserInquiry({ setInquiriesCount }) {
   const sections = ["Pending", "Reviewed"];
 
-  // Local status map with persistence
   const [localStatusMap, setLocalStatusMap] = useState(() => {
     const saved = localStorage.getItem("inquiryStatusMap");
     return saved ? JSON.parse(saved) : {};
@@ -18,7 +17,6 @@ function UserInquiry({ setInquiriesCount }) {
     Reviewed: [],
   });
 
-  // Toggle expand for inquiry cards
   const toggleExpand = (section, idx) => {
     setExpanded((prev) => {
       const sectionExpanded = prev[section] || [];
@@ -48,85 +46,80 @@ function UserInquiry({ setInquiriesCount }) {
       }
     };
     fetchInquiries();
-  }, []); // Run once on mount
+  }, []);
+
   useEffect(() => {
     const pendingCount = inquiries.filter((i) => (i.status || "Pending") === "Pending").length;
     setInquiriesCount(pendingCount);
   }, [inquiries, setInquiriesCount]);
 
-  // Fetch inquiries, merge with local status
-
-  // Group inquiries by status property
   const inquiriesByStatus = {
     Pending: inquiries.filter((inq) => (inq.status || "Pending") === "Pending"),
     Reviewed: inquiries.filter((inq) => (inq.status || "Pending") === "Reviewed"),
   };
 
-
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 bg-[#fef8e0] min-h-screen">
       <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">User Inquiries</h1>
+        <h1 className="text-4xl font-bold text-[#19522f]">User Inquiries</h1>
       </div>
 
       <div className="flex flex-wrap gap-6 items-start justify-center">
         {sections.map((section) => {
           const sectionIcon = section === "Pending" ? "⏳" : "✅";
-          const sectionBg = section === "Pending" ? "bg-yellow-50" : "bg-green-50";
+          const sectionBg = section === "Pending" ? "bg-[#fffdf3]" : "bg-[#d1dcd5]";
           const filteredInquiries = inquiriesByStatus[section] || [];
-
 
           return (
             <div
               key={section}
               className={`flex-1 min-w-[280px] max-w-[400px] p-5 rounded-3xl shadow-lg ${sectionBg}`}
             >
-              <div className="flex items-center justify-between p-4 rounded-xl bg-opacity-50 mb-5">
+              <div className="flex items-center justify-between p-4 rounded-xl mb-5 bg-[#fef8e0]">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{sectionIcon}</span>
-                  <h2 className="text-2xl font-semibold">{section}</h2>
+                  <h2 className="text-2xl font-semibold text-[#19522f]">{section}</h2>
                 </div>
-                <span className="px-4 py-1 rounded-full font-semibold text-sm bg-yellow-200 text-yellow-800">
+                <span className="px-4 py-1 rounded-full font-semibold text-sm bg-[#d9e45a] text-[#19522f]">
                   {filteredInquiries.length}
                 </span>
               </div>
 
               <div className="space-y-4">
                 {filteredInquiries.length === 0 && (
-                  <p className="text-center text-gray-600">No inquiries here.</p>
+                  <p className="text-center text-[#759782]">No inquiries here.</p>
                 )}
 
                 {filteredInquiries.map((inq, idx) => (
                   <div
                     key={inq._id}
-                    className="rounded-2xl shadow-md overflow-hidden border border-gray-200 transition-all transform hover:scale-105 hover:shadow-xl cursor-pointer bg-white"
+                    className="rounded-2xl shadow-md overflow-hidden border border-[#d1dcd5] transition-all transform hover:scale-105 hover:shadow-xl cursor-pointer bg-[#fffdf3]"
                   >
                     <div
                       onClick={() => toggleExpand(section, idx)}
-                      className={`p-5 flex justify-between items-center ${section === "Pending" ? "bg-yellow-100" : "bg-green-100"
-                        }`}
+                      className={`p-5 flex justify-between items-center ${
+                        section === "Pending" ? "bg-[#d9e45a]/40" : "bg-[#759782]/40"
+                      }`}
                     >
-                      <span className="font-bold text-gray-900 text-lg md:text-xl">{inq.name}</span>
+                      <span className="font-bold text-[#19522f] text-lg md:text-xl">
+                        {inq.name}
+                      </span>
 
                       {(localStatusMap[inq._id] || "Pending") === "Pending" ? (
                         <select
                           value={localStatusMap[inq._id] || "Pending"}
                           onChange={(e) => {
                             const newStatus = e.target.value;
-
-                            // Update local status map with persistence
                             setLocalStatusMap((prev) => {
                               const updated = { ...prev, [inq._id]: newStatus };
                               localStorage.setItem("inquiryStatusMap", JSON.stringify(updated));
                               return updated;
                             });
-
-                            // Update inquiries state to reflect UI immediately
                             setInquiries((prev) =>
-                              prev.map((i) => (i._id === inq._id ? { ...i, status: newStatus } : i))
+                              prev.map((i) =>
+                                i._id === inq._id ? { ...i, status: newStatus } : i
+                              )
                             );
-
-                            // Optionally collapse expanded card here if needed
                             setExpanded((prev) => {
                               const sectionExpanded = prev[section] || [];
                               return {
@@ -135,42 +128,38 @@ function UserInquiry({ setInquiriesCount }) {
                               };
                             });
                           }}
-                          className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border bg-white cursor-pointer max-w-[120px]"
+                          className="text-sm font-semibold px-3 py-1 rounded-full shadow-sm border border-[#d1dcd5] bg-[#fffdf3] cursor-pointer max-w-[120px]"
                         >
                           <option value="Pending">Pending</option>
                           <option value="Reviewed">Reviewed</option>
                         </select>
                       ) : (
-                        <span className="text-green-700 font-semibold px-3 py-1 rounded-full bg-green-100 border border-green-300 max-w-[120px] inline-block text-center cursor-default">
+                        <span className="text-[#19522f] font-semibold px-3 py-1 rounded-full bg-[#759782]/30 border border-[#759782] max-w-[120px] inline-block text-center cursor-default">
                           Reviewed
                         </span>
                       )}
                     </div>
 
                     <div
-                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-gray-200 ${isExpanded(section, idx)
-                        ? "max-h-96 opacity-100 py-4"
-                        : "max-h-0 opacity-0 py-0"
-                        }`}
+                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-[#d1dcd5] ${
+                        isExpanded(section, idx)
+                          ? "max-h-96 py-4 opacity-100"
+                          : "max-h-0 py-0 opacity-0"
+                      }`}
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                          <p className="text-gray-700 font-medium">Phone</p>
-                          <p className="text-gray-900">{inq.phone || "-"}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm">
-                          <p className="text-gray-700 font-medium">Email</p>
-                          <p className="text-blue-600 underline break-words w-full cursor-pointer">
-                            {inq.email || "-"}
-                          </p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm col-span-full">
-                          <p className="text-gray-700 font-medium">Event Name</p>
-                          <p>{inq.eventName || "-"}</p>
-                        </div>
-                        <div className="bg-gray-50 p-4 rounded-lg shadow-sm col-span-full">
-                          <p className="text-gray-700 font-medium">Message</p>
-                          <p>{inq.message || "-"}</p>
+                      <div className="grid grid-cols-2 gap-4">
+                        {["email", "phone"].map((field) => (
+                          <div
+                            key={field}
+                            className="bg-[#fef8e0] p-3 rounded-lg shadow-sm"
+                          >
+                            <p className="text-[#19522f] font-medium capitalize">{field}</p>
+                            <p className="text-[#306344]">{inq[field]}</p>
+                          </div>
+                        ))}
+                        <div className="bg-[#fef8e0] p-3 rounded-lg shadow-sm col-span-2">
+                          <p className="text-[#19522f] font-medium">Message</p>
+                          <p className="text-[#306344]">{inq.message}</p>
                         </div>
                       </div>
                     </div>

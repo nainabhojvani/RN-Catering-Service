@@ -1,45 +1,57 @@
+// App.jsx
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import ManageEvents from "./pages/ManageEvents";
 import UserInquiry from "./pages/UserInquiry";
+import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function App() {
-  // Initialize counts from localStorage or 0
-  const [bookingsCount, setBookingsCount] = useState(() => {
-    const saved = localStorage.getItem("bookingsCount");
-    return saved ? Number(saved) : 0;
-  });
+  const [bookings, setBookings] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
 
-  const [inquiriesCount, setInquiriesCount] = useState(() => {
-    const saved = localStorage.getItem("inquiriesCount");
-    return saved ? Number(saved) : 0;
-  });
+  // counts for draft bookings & pending inquiries
+  const [bookingsCount, setBookingsCount] = useState(0);
+  const [inquiriesCount, setInquiriesCount] = useState(0);
 
-  // Persist bookingsCount to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem("bookingsCount", bookingsCount);
-  }, [bookingsCount]);
+  const fetchData = async () => {
+    try {
+      const bookingsRes = await axios.get(`${API_URL}/api/admin/bookings`);
+      const inquiriesRes = await axios.get(`${API_URL}/api/inquiries/contacts`);
 
-  // Persist inquiriesCount to localStorage when it changes
-  useEffect(() => {
-    localStorage.setItem("inquiriesCount", inquiriesCount);
-  }, [inquiriesCount]);
+      setBookings(bookingsRes.data);
+      setInquiries(inquiriesRes.data);
+
+      // ✅ also set counts right here
+      setBookingsCount(
+        bookingsRes.data.filter((b) => (b.status || "Draft") === "Draft").length
+      );
+      setInquiriesCount(
+        inquiriesRes.data.filter((i) => (i.status || "Pending") === "Pending").length
+      );
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    }
+  };
+  fetchData();
+}, []);
 
   return (
     <Router>
-      <div className="flex min-h-screen bg-gray-100">
+      <div className="flex min-h-screen bg-[#fef8e0]">
         <Sidebar />
-
         <div className="flex-1">
           <Routes>
             <Route
               path="/"
               element={
                 <Dashboard
-                  totalEvents={bookingsCount}
-                  totalInquiries={inquiriesCount}
+                  totalEvents={bookingsCount}     // controlled by ManageEvents
+                  totalInquiries={inquiriesCount} // controlled by UserInquiry
                 />
               }
             />
