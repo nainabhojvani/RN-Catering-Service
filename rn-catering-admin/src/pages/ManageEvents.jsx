@@ -54,7 +54,9 @@ function ManageEvents({ setBookingsCount }) {
 
   // Update draft count
   useEffect(() => {
-    const draftCount = bookings.filter((b) => (b.status || "Draft") === "Draft").length;
+    const draftCount = bookings.filter(
+      (b) => (b.status || "Draft") === "Draft",
+    ).length;
     setBookingsCount(draftCount);
   }, [bookings, setBookingsCount]);
 
@@ -70,7 +72,8 @@ function ManageEvents({ setBookingsCount }) {
               finalPrice: draftDataMap[b._id].finalPrice,
               guests: draftDataMap[b._id].guests,
               paymentStatus:
-                editData[b._id]?.paymentStatus || draftDataMap[b._id].paymentStatus,
+                editData[b._id]?.paymentStatus ||
+                draftDataMap[b._id].paymentStatus,
               eventStatus: "Confirm",
             };
           }
@@ -104,7 +107,10 @@ function ManageEvents({ setBookingsCount }) {
       newStatus = "Active";
     }
     // Active → Complete
-    else if (edits.eventStatus === "Completed" && edits.paymentStatus === "Paid") {
+    else if (
+      edits.eventStatus === "Completed" &&
+      edits.paymentStatus === "Paid"
+    ) {
       newStatus = "Complete";
     }
 
@@ -116,7 +122,8 @@ function ManageEvents({ setBookingsCount }) {
         guests: edits.guests,
         paymentStatus: edits.paymentStatus || "Pending",
         // Force eventStatus to "Confirm" when moving to Active
-        eventStatus: newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
+        eventStatus:
+          newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
       },
     };
 
@@ -163,9 +170,8 @@ function ManageEvents({ setBookingsCount }) {
     // Collapse if moved to another tab
     if (currentStatus !== newStatus) {
       setExpandedBookingId(null);
-
     }
-  }
+  };
 
   const deleteBooking = async (id) => {
     try {
@@ -204,20 +210,24 @@ function ManageEvents({ setBookingsCount }) {
 
   return (
     <div className="p-8 min-h-screen bg-[#fef8e0]">
-      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">Manage Events</h2>
+      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">
+        Manage Events
+      </h2>
       {/* Tabs as Progress Bar */}
       <div className="flex justify-between mb-6">
         {statuses.map((status, i) => (
           <div
             key={status}
             className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
-        ${activeTab === status
-                ? "bg-[#19522f] text-[#fef8e0] font-bold"
-                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-              }`}
+        ${
+          activeTab === status
+            ? "bg-[#19522f] text-[#fef8e0] font-bold"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+        }`}
             onClick={() => setActiveTab(status)}
           >
-            {status} ({bookings.filter((b) => (b.status || "Draft") === status).length})
+            {status} (
+            {bookings.filter((b) => (b.status || "Draft") === status).length})
           </div>
         ))}
       </div>
@@ -238,9 +248,13 @@ function ManageEvents({ setBookingsCount }) {
                 >
                   <div
                     onClick={() => toggleExpand(b._id)}
-                    className={`p-3 flex justify-between items-center cursor-pointer ${isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""}`}
+                    className={`p-3 flex justify-between items-center cursor-pointer ${
+                      isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""
+                    }`}
                   >
-                    <p className="font-semibold">{b.customerName || "No Name"}</p>
+                    <p className="font-semibold">
+                      {b.customerName || "No Name"}
+                    </p>
                     <span className="bg-[#19522f] text-[#fef8e0] px-3 py-1 rounded-full text-sm">
                       {b.event || "Unknown Event"}
                     </span>
@@ -258,37 +272,63 @@ function ManageEvents({ setBookingsCount }) {
                         <div className="grid grid-cols-2 gap-6">
                           {/* Final Price */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">Final Price</label>
+                            <label className="text-gray-600 text-sm mb-1">
+                              Final Price
+                            </label>
                             <input
                               type="number"
                               placeholder="Enter Final Price"
                               value={editData[b._id]?.finalPrice || ""}
                               disabled={b.status === "Active"}
-                              onChange={(e) => handleInputChange(b._id, "finalPrice", e.target.value)}
-                              className={`w-full border-b border-gray-400 focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  b._id,
+                                  "finalPrice",
+                                  e.target.value,
+                                )
+                              }
+                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
                             />
                           </div>
 
                           {/* Guests */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">Guests</label>
+                            <label className="text-gray-600 text-sm mb-1">
+                              Guests
+                            </label>
                             <input
                               type="number"
                               placeholder="Enter Guests"
                               value={editData[b._id]?.guests || ""}
                               disabled={b.status === "Active"}
-                              onChange={(e) => handleInputChange(b._id, "guests", e.target.value)}
-                              className={`border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent placeholder-gray-400`}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  b._id,
+                                  "guests",
+                                  e.target.value,
+                                )
+                              }
+                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
                             />
                           </div>
 
                           {/* Payment Status */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">Payment Status</label>
+                            <label className="text-gray-600 text-sm mb-1">
+                              Payment Status
+                            </label>
                             <select
-                              value={editData[b._id]?.paymentStatus || "Pending"}
-                              onChange={(e) => handleInputChange(b._id, "paymentStatus", e.target.value)}
-                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                              value={
+                                editData[b._id]?.paymentStatus || "Pending"
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  b._id,
+                                  "paymentStatus",
+                                  e.target.value,
+                                )
+                              }
+                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Paid">Paid</option>
@@ -298,11 +338,19 @@ function ManageEvents({ setBookingsCount }) {
 
                           {/* Event Status */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">Event Status</label>
+                            <label className="text-gray-600 text-sm mb-1">
+                              Event Status
+                            </label>
                             <select
                               value={editData[b._id]?.eventStatus || "Pending"}
-                              onChange={(e) => handleInputChange(b._id, "eventStatus", e.target.value)}
-                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                              onChange={(e) =>
+                                handleInputChange(
+                                  b._id,
+                                  "eventStatus",
+                                  e.target.value,
+                                )
+                              }
+                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirm">Confirm</option>
@@ -338,7 +386,9 @@ function ManageEvents({ setBookingsCount }) {
         <div className="w-2/3 bg-[#fffdf3] rounded-lg shadow p-6 max-h-[80vh] overflow-y-auto">
           {expandedBookingId ? (
             (() => {
-              const selectedBooking = bookings.find((b) => b._id === expandedBookingId);
+              const selectedBooking = bookings.find(
+                (b) => b._id === expandedBookingId,
+              );
               if (!selectedBooking) return null;
 
               return (
@@ -347,39 +397,63 @@ function ManageEvents({ setBookingsCount }) {
                     .filter(
                       ([key, value]) =>
                         value &&
-                        !["_id", "status", "finalPrice", "guests", "paymentStatus", "eventStatus", "user", "createdAt", "updatedAt"].includes(key)
+                        ![
+                          "_id",
+                          "status",
+                          "finalPrice",
+                          "guests",
+                          "paymentStatus",
+                          "eventStatus",
+                          "user",
+                          "createdAt",
+                          "updatedAt",
+                        ].includes(key),
                     )
                     .map(([key, value]) => {
                       if (key === "mealPlan") {
                         return (
-                          <div key={key} className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm">
-                            <p className="text-[#19522f] font-medium mb-2">Meal Plan</p>
-                            {Object.entries(value).map(([mealTime, categories]) => (
-                              <div key={mealTime} className="mb-3">
-                                {Object.entries(categories)
-                                  .filter(([, items]) => items.length > 0)
-                                  .map(([category, items]) => (
-                                    <div key={category} className="ml-4 mb-2">
-                                      <p className="font-medium">{category}</p>
-                                      <ul className="list-disc list-inside text-[#19522f]">
-                                        {items.map((item) => (
-                                          <li key={item.id}>{item.name}</li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  ))}
-                              </div>
-                            ))}
+                          <div
+                            key={key}
+                            className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm"
+                          >
+                            <p className="text-[#19522f] font-medium mb-2">
+                              Meal Plan
+                            </p>
+                            {Object.entries(value).map(
+                              ([mealTime, categories]) => (
+                                <div key={mealTime} className="mb-3">
+                                  {Object.entries(categories)
+                                    .filter(([, items]) => items.length > 0)
+                                    .map(([category, items]) => (
+                                      <div key={category} className="ml-4 mb-2">
+                                        <p className="font-medium">
+                                          {category}
+                                        </p>
+                                        <ul className="list-disc list-inside text-[#19522f]">
+                                          {items.map((item) => (
+                                            <li key={item.id}>{item.name}</li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    ))}
+                                </div>
+                              ),
+                            )}
                           </div>
                         );
                       }
                       return (
-                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm">
+                        <div
+                          key={key}
+                          className="bg-[#fef8e0] p-3 rounded-lg shadow-sm"
+                        >
                           <p className="text-[#19522f] font-medium capitalize">
                             {key === "date" ? "Date" : key}
                           </p>
                           <p className="text-[#19522f]">
-                            {key === "date" ? new Date(value).toLocaleDateString("en-GB") : value}
+                            {key === "date"
+                              ? new Date(value).toLocaleDateString("en-GB")
+                              : value}
                           </p>
                         </div>
                       );

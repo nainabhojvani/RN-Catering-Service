@@ -8,50 +8,46 @@ function Sidebar() {
   const menuItems = [
     { path: "/", label: "Dashboard", icon: <Home size={20} /> },
     { path: "/events", label: "Manage Events", icon: <Calendar size={20} /> },
-    { path: "/inquiries", label: "User Inquiries", icon: <MessageSquare size={20} /> },
+    {
+      path: "/inquiries",
+      label: "User Inquiries",
+      icon: <MessageSquare size={20} />,
+    },
   ];
 
   return (
     <div className="w-64 h-screen bg-[#19522f] text-[#fffdf3] flex flex-col shadow-2xl sticky top-0">
-  {/* Logo Section */}
-  <div className="p-6 flex flex-col items-center border-b border-[#306344] bg-[#306344]/90">
-    <div className="h-24 w-24 rounded-2xl flex items-center justify-center bg-white shadow-xl mb-4">
-      <img src={logo} alt="Logo" className="h-20 w-20 object-contain" />
-    </div>
-    <h1 className="text-2xl font-bold text-[#fffdf3]">RN Catering</h1>
-    <p className="text-sm text-[#d1dcd5] mt-1">Admin Dashboard</p>
-  </div>
+      {/* Logo Section */}
+      <div className="p-6 flex flex-col items-center border-b border-[#306344] bg-[#306344]/90">
+        <div className="h-24 w-24 rounded-2xl flex items-center justify-center bg-white shadow-xl mb-4">
+          <img src={logo} alt="Logo" className="h-20 w-20 object-contain" />
+        </div>
+        <h1 className="text-2xl font-bold text-[#fffdf3]">RN Catering</h1>
+        <p className="text-sm text-[#d1dcd5] mt-1">Admin Dashboard</p>
+      </div>
 
-  {/* Menu Section */}
-  <nav className="flex-1 px-4 py-6 space-y-3">
-    {menuItems.map((item) => {
-      const isActive = location.pathname === item.path;
-      return (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-base border transition-all duration-200 
+      {/* Menu Section */}
+      <nav className="flex-1 px-4 py-6 space-y-3">
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-base border transition-all duration-200 
             ${
               isActive
                 ? "bg-[#306344] text-white border-[#19522f] shadow-md"
                 : "bg-[#fffdf3]/70 text-[#19522f] border-[#d1dcd5] hover:bg-[#759782] hover:text-white hover:border-[#19522f]"
             }`}
-        >
-          {item.icon}
-          <span>{item.label}</span>
-        </Link>
-      );
-    })}
-  </nav>
-
-  {/* Logout Button */}
-  <div className="p-4 border-t border-[#306344]">
-    <button className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl bg-[#d9e45a] hover:bg-[#759782] text-[#19522f] font-semibold shadow-md transition">
-      <LogOut size={20} />
-      Logout
-    </button>
-  </div>
-</div>
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
   );
 }
 

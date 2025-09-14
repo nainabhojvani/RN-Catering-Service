@@ -89,20 +89,25 @@ function OurServicesHero() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: false }} // 👈 re-animates every scroll into view
-        
       >
-        <h1 className="font-['Dancing_Script',cursive] text-[50px] md:text-[42px] text-[#d9e45a] font-bold text-center text-2xl md:text-6xl " style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}>
+        <h1
+          className="font-['Dancing_Script',cursive] text-[50px] md:text-[42px] text-[#d9e45a] font-bold text-center text-2xl md:text-6xl "
+          style={{
+            textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f",
+          }}
+        >
           Our Services
         </h1>
-        <p className="text-7xl md:text-2xl mt-3 max-w-xl font-['Dancing_Script',cursive] text-[#d9e45a]" style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}>
+        <p
+          className="text-2xl md:text-3xl mt-3 max-w-xl font-['Dancing_Script',cursive] text-[#d9e45a]"
+          style={{
+            textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f",
+          }}
+        >
           We don’t just serve food, we create moments worth remembering.
         </p>
 
-        <Link
-          to="/menu"
-          state={{ eventName: "" }}
-          className="btn p-2 m-2"
-        >
+        <Link to="/menu" state={{ eventName: "" }} className="btn p-2 m-2">
           Explore Menu
         </Link>
       </motion.div>
@@ -138,7 +143,13 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <div className="w-70 h-70  relative z-10 rounded-full bg-[#FFFDF3] flex items-center justify-center shadow-xl" style={{ boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }}>
+                <div
+                  className="w-70 h-70  relative z-10 rounded-full bg-[#FFFDF3] flex items-center justify-center shadow-xl"
+                  style={{
+                    boxShadow:
+                      "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)",
+                  }}
+                >
                   <img
                     src={event.image}
                     alt={event.title}
@@ -155,7 +166,13 @@ const OurServicesScrollStory = () => {
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
               >
-                <h2 className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-[#19522f] font-['Dancing_Script',cursive]" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>
+                <h2
+                  className="relative z-10 text-4xl font-bold mb-4 items-center justify-center text-[#19522f] font-['Dancing_Script',cursive]"
+                  style={{
+                    textShadow:
+                      "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+                  }}
+                >
                   {event.title}
                 </h2>
                 <p className="relative z-10 mb-6 text-lg leading-relaxed  items-center justify-center text-black">

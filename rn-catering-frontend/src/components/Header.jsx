@@ -7,6 +7,8 @@ import CenteredMessageBox from "./centerMsgbox";
 import SignInForm from "./HeaderComponents/SignInForm";
 import SignUpForm from "./HeaderComponents/SignUpForm";
 
+const ADMIN_URL = import.meta.env.VITE_ADMIN_URL;
+
 export default function Header() {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,6 +19,7 @@ export default function Header() {
 
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const toggleMobile = () => setShowMobileNav(!showMobileNav);
+  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   // Close popup when clicking outside
   const popupRef = useRef();
@@ -34,14 +37,14 @@ export default function Header() {
   return (
     <>
       {/* Header */}
-      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2  shadow-md sticky top-0 z-60">
+      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-60">
         <div className="flex items-center">
           <Link to="/">
             <img src={RNLogo} alt="logo" className="h-[70px]" />
           </Link>
         </div>
 
-        {/* Nav */}
+        {/* Nav (Desktop) */}
         <nav className="hidden md:flex flex-1 justify-center">
           <ul className="flex gap-6 items-center list-none">
             {[
@@ -58,8 +61,8 @@ export default function Header() {
                     `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
                     ${
                       isActive
-                        ? "bg-[#19522f] text-[#d9e45a]" // active dark green bg
-                        : "text-[#19522f] " // normal & hover (yellow-green highlight)
+                        ? "bg-[#19522f] text-[#d9e45a]"
+                        : "text-[#19522f]"
                     }
                     after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-[#19522f] after:via-[#759782] after:to-[#d9e45a]
                     hover:after:w-full ${isActive ? "after:w-full" : ""}`
@@ -69,10 +72,17 @@ export default function Header() {
                 </NavLink>
               </li>
             ))}
+            {isAdmin && (
+              <a href={ADMIN_URL} target="_blank" rel="noopener noreferrer">
+                <button className="px-4 py-2 bg-green-600 hover:bg-green-800 text-white rounded hover:cursor-pointer">
+                  Admin Panel
+                </button>
+              </a>
+            )}
           </ul>
         </nav>
 
-        {/* Right */}
+        {/* Right (Desktop) */}
         <div className="hidden md:flex items-center justify-end gap-4">
           {!user ? (
             <button onClick={toggleDropdown} className="btn">
@@ -91,12 +101,82 @@ export default function Header() {
 
         {/* Mobile menu button */}
         <div
-          className="md:hidden text-3xl cursor-pointer ml-auto text-[#fffdf3]"
+          className="md:hidden text-3xl cursor-pointer ml-auto text-green-800 "
           onClick={toggleMobile}
         >
-          ☰
+          {showMobileNav ? "X" : "☰"}
         </div>
       </header>
+
+      {/* Mobile Nav */}
+      {showMobileNav && (
+        <nav className="md:hidden bg-[#fef8e0] shadow-md border-t border-[#d1dcd5]">
+          <ul className="flex flex-col gap-4 p-4">
+            {[
+              { name: "Home", to: "/" },
+              { name: "About", to: "/about" },
+              { name: "Our Services", to: "/services" },
+              { name: "Venues We've Served", to: "/venues" },
+              { name: "Contact", to: "/contact" },
+            ].map((link) => (
+              <li key={link.name}>
+                <NavLink
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
+                    ${
+                      isActive
+                        ? "bg-[#19522f] text-[#d9e45a]"
+                        : "text-[#19522f]"
+                    }
+                    after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-[#19522f] after:via-[#759782] after:to-[#d9e45a]
+                    hover:after:w-full ${isActive ? "after:w-full" : ""}`
+                  }
+                  onClick={() => setShowMobileNav(false)}
+                >
+                  {link.name}
+                </NavLink>
+              </li>
+            ))}
+
+            {!user ? (
+              <li>
+                <button
+                  onClick={() => {
+                    toggleDropdown();
+                    setShowMobileNav(false);
+                  }}
+                  className="w-full px-3 py-2 bg-green-700 text-white rounded"
+                >
+                  Sign In
+                </button>
+              </li>
+            ) : (
+              <li>
+                <Link
+                  to={`/profile/${user.username}`}
+                  onClick={() => setShowMobileNav(false)}
+                  className="block px-3 py-2 font-semibold text-[#19522f]"
+                >
+                  Profile
+                </Link>
+              </li>
+            )}
+            {isAdmin && (
+              <li>
+                <a
+                  href={ADMIN_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-3 py-2 font-semibold text-white bg-green-600 rounded text-center"
+                >
+                  Admin Panel
+                </a>
+              </li>
+            )}
+          </ul>
+        </nav>
+      )}
 
       {/* Auth Popup */}
       {showDropdown && (

@@ -13,6 +13,11 @@ export const AuthProvider = ({ children }) => {
     // 🔐 persist both
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
+    if (userData.username === "naina_8080") {
+      localStorage.setItem("isAdmin", "true");
+    } else {
+      localStorage.setItem("isAdmin", "false");
+    }
   };
 
   const logout = () => {
