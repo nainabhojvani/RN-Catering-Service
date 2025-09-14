@@ -16,7 +16,6 @@ function ManageEvents({ setBookingsCount }) {
     return saved ? JSON.parse(saved) : {};
   });
 
-  // Fetch bookings and initialize edit data
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -28,7 +27,6 @@ function ManageEvents({ setBookingsCount }) {
 
         setBookings(bookingsWithStatus);
 
-        // Initialize editData only if empty (first load)
         setEditData((prev) => {
           if (Object.keys(prev).length === 0) {
             const initialData = {};
@@ -52,7 +50,6 @@ function ManageEvents({ setBookingsCount }) {
     fetchBookings();
   }, []);
 
-  // Update draft count
   useEffect(() => {
     const draftCount = bookings.filter(
       (b) => (b.status || "Draft") === "Draft",
@@ -60,7 +57,6 @@ function ManageEvents({ setBookingsCount }) {
     setBookingsCount(draftCount);
   }, [bookings, setBookingsCount]);
 
-  // Prefill Active tab when bookings move from Draft → Active
   useEffect(() => {
     if (activeTab === "Active") {
       const newEditData = { ...editData };
@@ -72,8 +68,7 @@ function ManageEvents({ setBookingsCount }) {
               finalPrice: draftDataMap[b._id].finalPrice,
               guests: draftDataMap[b._id].guests,
               paymentStatus:
-                editData[b._id]?.paymentStatus ||
-                draftDataMap[b._id].paymentStatus,
+                editData[b._id]?.paymentStatus || draftDataMap[b._id].paymentStatus,
               eventStatus: "Confirm",
             };
           }
@@ -114,7 +109,6 @@ function ManageEvents({ setBookingsCount }) {
       newStatus = "Complete";
     }
 
-    // Compute updated draft map
     const newDraftMap = {
       ...draftDataMap,
       [id]: {
@@ -122,15 +116,12 @@ function ManageEvents({ setBookingsCount }) {
         guests: edits.guests,
         paymentStatus: edits.paymentStatus || "Pending",
         // Force eventStatus to "Confirm" when moving to Active
-        eventStatus:
-          newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
+        eventStatus: newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
       },
     };
 
-    // Update draftDataMap state
     setDraftDataMap(newDraftMap);
 
-    // Prefill Active using the computed newDraftMap
     if (newStatus === "Active") {
       setEditData((prevEdit) => ({
         ...prevEdit,
@@ -142,7 +133,6 @@ function ManageEvents({ setBookingsCount }) {
         },
       }));
     } else {
-      // Save edits normally for Draft/Complete
       setEditData((prevEdit) => ({
         ...prevEdit,
         [id]: {
@@ -152,7 +142,6 @@ function ManageEvents({ setBookingsCount }) {
       }));
     }
 
-    // Update bookings state
     const updatedBooking = { ...booking, ...edits, status: newStatus };
     setBookings((prev) => {
       const newBookings = [...prev];
@@ -160,14 +149,12 @@ function ManageEvents({ setBookingsCount }) {
       return newBookings;
     });
 
-    // Update localStorage
     setLocalStatusMap((prev) => {
       const updatedMap = { ...prev, [id]: newStatus };
       localStorage.setItem("bookingStatusMap", JSON.stringify(updatedMap));
       return updatedMap;
     });
 
-    // Collapse if moved to another tab
     if (currentStatus !== newStatus) {
       setExpandedBookingId(null);
     }
@@ -175,13 +162,10 @@ function ManageEvents({ setBookingsCount }) {
 
   const deleteBooking = async (id) => {
     try {
-      // Call backend API to delete booking
       await axios.delete(`${API_URL}/api/bookings/${id}`);
 
-      // Remove booking from frontend state immediately
       setBookings((prev) => prev.filter((b) => b._id !== id));
 
-      // Remove from draft map & editData to avoid stale state
       setDraftDataMap((prev) => {
         const newMap = { ...prev };
         delete newMap[id];
@@ -193,7 +177,6 @@ function ManageEvents({ setBookingsCount }) {
         return newEdit;
       });
 
-      // Collapse right panel if deleted booking was expanded
       if (expandedBookingId === id) {
         setExpandedBookingId(null);
       }
@@ -210,20 +193,17 @@ function ManageEvents({ setBookingsCount }) {
 
   return (
     <div className="p-8 min-h-screen bg-[#fef8e0]">
-      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">
-        Manage Events
-      </h2>
+      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">Manage Events</h2>
       {/* Tabs as Progress Bar */}
-      <div className="flex justify-between mb-6">
-        {statuses.map((status, i) => (
+      <div className="flex justify-between mb-6 max-w-md mx-auto md:max-w-none md:mx-0">
+        {statuses.map((status) => (
           <div
             key={status}
             className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
-        ${
-          activeTab === status
-            ? "bg-[#19522f] text-[#fef8e0] font-bold"
-            : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-        }`}
+        ${activeTab === status
+                ? "bg-[#19522f] text-[#fef8e0] font-bold"
+                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+              }`}
             onClick={() => setActiveTab(status)}
           >
             {status} (
@@ -232,13 +212,14 @@ function ManageEvents({ setBookingsCount }) {
         ))}
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-row gap-3 overflow-x-auto">
         {/* Left Panel */}
-        <div className="w-1/3 bg-[#fffdf3] rounded-lg shadow p-4 max-h-[80vh] overflow-y-auto space-y-3">
+        <div className="min-w-[160px] md:w-1/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
           {bookings
             .filter((b) => (b.status || "Draft") === activeTab)
             .map((b) => {
               const isExpanded = expandedBookingId === b._id;
+
               return (
                 <motion.div
                   key={b._id}
@@ -248,13 +229,9 @@ function ManageEvents({ setBookingsCount }) {
                 >
                   <div
                     onClick={() => toggleExpand(b._id)}
-                    className={`p-3 flex justify-between items-center cursor-pointer ${
-                      isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""
-                    }`}
+                    className={`p-3 flex justify-between items-center cursor-pointer ${isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""}`}
                   >
-                    <p className="font-semibold">
-                      {b.customerName || "No Name"}
-                    </p>
+                    <p className="font-semibold">{b.customerName || "No Name"}</p>
                     <span className="bg-[#19522f] text-[#fef8e0] px-3 py-1 rounded-full text-sm">
                       {b.event || "Unknown Event"}
                     </span>
@@ -267,68 +244,42 @@ function ManageEvents({ setBookingsCount }) {
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.4 }}
-                        className="p-3 space-y-3 bg-[#fef8e0] border-t border-gray-500 rounded-b-lg"
+                        className="p-3 bg-[#fef8e0] border-t border-gray-500 rounded-b-lg"
                       >
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="flex flex-wrap gap-4">
                           {/* Final Price */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">
-                              Final Price
-                            </label>
+                            <label className="text-gray-600 text-sm mb-1">Final Price</label>
                             <input
                               type="number"
                               placeholder="Enter Final Price"
                               value={editData[b._id]?.finalPrice || ""}
                               disabled={b.status === "Active"}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  b._id,
-                                  "finalPrice",
-                                  e.target.value,
-                                )
-                              }
-                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              onChange={(e) => handleInputChange(b._id, "finalPrice", e.target.value)}
+                              className={`w-full border-b border-gray-400 focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
                             />
                           </div>
 
                           {/* Guests */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">
-                              Guests
-                            </label>
+                            <label className="text-gray-600 text-sm mb-1">Guests</label>
                             <input
                               type="number"
                               placeholder="Enter Guests"
                               value={editData[b._id]?.guests || ""}
                               disabled={b.status === "Active"}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  b._id,
-                                  "guests",
-                                  e.target.value,
-                                )
-                              }
-                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              onChange={(e) => handleInputChange(b._id, "guests", e.target.value)}
+                              className={`border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent placeholder-gray-400`}
                             />
                           </div>
 
                           {/* Payment Status */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">
-                              Payment Status
-                            </label>
+                            <label className="text-gray-600 text-sm mb-1">Payment Status</label>
                             <select
-                              value={
-                                editData[b._id]?.paymentStatus || "Pending"
-                              }
-                              onChange={(e) =>
-                                handleInputChange(
-                                  b._id,
-                                  "paymentStatus",
-                                  e.target.value,
-                                )
-                              }
-                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              value={editData[b._id]?.paymentStatus || "Pending"}
+                              onChange={(e) => handleInputChange(b._id, "paymentStatus", e.target.value)}
+                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
                             >
                               <option value="Pending">Pending</option>
                               <option value="Paid">Paid</option>
@@ -338,19 +289,11 @@ function ManageEvents({ setBookingsCount }) {
 
                           {/* Event Status */}
                           <div className="flex flex-col">
-                            <label className="text-gray-600 text-sm mb-1">
-                              Event Status
-                            </label>
+                            <label className="text-gray-600 text-sm mb-1">Event Status</label>
                             <select
                               value={editData[b._id]?.eventStatus || "Pending"}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  b._id,
-                                  "eventStatus",
-                                  e.target.value,
-                                )
-                              }
-                              className={`w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              onChange={(e) => handleInputChange(b._id, "eventStatus", e.target.value)}
+                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirm">Confirm</option>
@@ -359,16 +302,16 @@ function ManageEvents({ setBookingsCount }) {
                           </div>
 
                           {/* Buttons */}
-                          <div className="col-span-2 flex gap-2 justify-start mt-4">
+                          <div className="w-full flex flex-col gap-2 mt-4 sm:flex-row">
                             <button
                               onClick={() => saveChanges(b._id)}
-                              className="px-4 py-2 bg-[#19522f] text-white rounded-lg font-semibold hover:bg-[#143f17] w-full"
+                              className="px-4 py-2 bg-[#19522f] text-white rounded-lg font-semibold hover:bg-[#143f17] flex-1"
                             >
                               Save Changes
                             </button>
                             <button
                               onClick={() => deleteBooking(b._id)}
-                              className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-800 w-full"
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-800 flex-1"
                             >
                               Delete Event
                             </button>
@@ -383,7 +326,7 @@ function ManageEvents({ setBookingsCount }) {
         </div>
 
         {/* Right Panel */}
-        <div className="w-2/3 bg-[#fffdf3] rounded-lg shadow p-6 max-h-[80vh] overflow-y-auto">
+        <div className="min-w-[220px] md:w-2/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
           {expandedBookingId ? (
             (() => {
               const selectedBooking = bookings.find(
@@ -391,8 +334,9 @@ function ManageEvents({ setBookingsCount }) {
               );
               if (!selectedBooking) return null;
 
+              // Vertical stack mobile, two columns desktop
               return (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                   {Object.entries(selectedBooking)
                     .filter(
                       ([key, value]) =>
@@ -412,41 +356,29 @@ function ManageEvents({ setBookingsCount }) {
                     .map(([key, value]) => {
                       if (key === "mealPlan") {
                         return (
-                          <div
-                            key={key}
-                            className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm"
-                          >
-                            <p className="text-[#19522f] font-medium mb-2">
-                              Meal Plan
-                            </p>
-                            {Object.entries(value).map(
-                              ([mealTime, categories]) => (
-                                <div key={mealTime} className="mb-3">
-                                  {Object.entries(categories)
-                                    .filter(([, items]) => items.length > 0)
-                                    .map(([category, items]) => (
-                                      <div key={category} className="ml-4 mb-2">
-                                        <p className="font-medium">
-                                          {category}
-                                        </p>
-                                        <ul className="list-disc list-inside text-[#19522f]">
-                                          {items.map((item) => (
-                                            <li key={item.id}>{item.name}</li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    ))}
-                                </div>
-                              ),
-                            )}
+                          <div key={key} className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm">
+                            <p className="text-[#19522f] font-medium mb-2">Meal Plan</p>
+                            {Object.entries(value).map(([mealTime, categories]) => (
+                              <div key={mealTime} className="mb-3">
+                                {Object.entries(categories)
+                                  .filter(([, items]) => items.length > 0)
+                                  .map(([category, items]) => (
+                                    <div key={category} className="ml-4 mb-2">
+                                      <p className="font-medium">{category}</p>
+                                      <ul className="list-disc list-inside text-[#19522f]">
+                                        {items.map((item) => (
+                                          <li key={item.id}>{item.name}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  ))}
+                              </div>
+                            ))}
                           </div>
                         );
                       }
                       return (
-                        <div
-                          key={key}
-                          className="bg-[#fef8e0] p-3 rounded-lg shadow-sm"
-                        >
+                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm">
                           <p className="text-[#19522f] font-medium capitalize">
                             {key === "date" ? "Date" : key}
                           </p>
@@ -462,11 +394,10 @@ function ManageEvents({ setBookingsCount }) {
               );
             })()
           ) : (
-            <p className="text-[#19522f] text-center mt-20">
-              Select a booking from the left to view details.
-            </p>
+            <p className="text-[#19522f] text-center mt-20">Select a booking from the left to view details.</p>
           )}
         </div>
+
       </div>
     </div>
   );
