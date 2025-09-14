@@ -51,9 +51,7 @@ function ManageEvents({ setBookingsCount }) {
   }, []);
 
   useEffect(() => {
-    const draftCount = bookings.filter(
-      (b) => (b.status || "Draft") === "Draft",
-    ).length;
+    const draftCount = bookings.filter((b) => (b.status || "Draft") === "Draft").length;
     setBookingsCount(draftCount);
   }, [bookings, setBookingsCount]);
 
@@ -67,8 +65,7 @@ function ManageEvents({ setBookingsCount }) {
             newEditData[b._id] = {
               finalPrice: draftDataMap[b._id].finalPrice,
               guests: draftDataMap[b._id].guests,
-              paymentStatus:
-                editData[b._id]?.paymentStatus || draftDataMap[b._id].paymentStatus,
+              paymentStatus: editData[b._id]?.paymentStatus || draftDataMap[b._id].paymentStatus,
               eventStatus: "Confirm",
             };
           }
@@ -102,10 +99,7 @@ function ManageEvents({ setBookingsCount }) {
       newStatus = "Active";
     }
     // Active → Complete
-    else if (
-      edits.eventStatus === "Completed" &&
-      edits.paymentStatus === "Paid"
-    ) {
+    else if (edits.eventStatus === "Completed" && edits.paymentStatus === "Paid") {
       newStatus = "Complete";
     }
 
@@ -115,7 +109,6 @@ function ManageEvents({ setBookingsCount }) {
         finalPrice: edits.finalPrice,
         guests: edits.guests,
         paymentStatus: edits.paymentStatus || "Pending",
-        // Force eventStatus to "Confirm" when moving to Active
         eventStatus: newStatus === "Active" ? "Confirm" : edits.eventStatus || "Pending",
       },
     };
@@ -192,22 +185,23 @@ function ManageEvents({ setBookingsCount }) {
   };
 
   return (
-    <div className="p-8 min-h-screen bg-[#fef8e0]">
-      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center">Manage Events</h2>
+    <div className="min-h-screen bg-[#fef8e0] px-4 md:px-8">
+      <h2 className="text-3xl font-bold text-[#19522f] mb-6 text-center ">
+        Manage Events
+      </h2>
+
       {/* Tabs as Progress Bar */}
       <div className="flex justify-between mb-6 max-w-md mx-auto md:max-w-none md:mx-0">
         {statuses.map((status) => (
           <div
             key={status}
-            className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
-        ${activeTab === status
-                ? "bg-[#19522f] text-[#fef8e0] font-bold"
-                : "bg-gray-200 hover:bg-gray-300 text-gray-700"
+            className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300 ${activeTab === status
+              ? "bg-[#19522f] text-[#fef8e0] font-bold"
+              : "bg-gray-200 hover:bg-gray-300 text-gray-700"
               }`}
             onClick={() => setActiveTab(status)}
           >
-            {status} (
-            {bookings.filter((b) => (b.status || "Draft") === status).length})
+            {status} ({bookings.filter((b) => (b.status || "Draft") === status).length})
           </div>
         ))}
       </div>
@@ -229,11 +223,14 @@ function ManageEvents({ setBookingsCount }) {
                 >
                   <div
                     onClick={() => toggleExpand(b._id)}
-                    className={`p-3 flex justify-between items-center cursor-pointer ${isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""}`}
+                    className={`p-3 flex flex-col md:flex-row md:items-center md:justify-between cursor-pointer ${isExpanded ? "bg-[#fef8e0] border-[#19522f]" : ""
+                      }`}
                   >
-                    <p className="font-semibold">{b.customerName || "No Name"}</p>
-                    <span className="bg-[#19522f] text-[#fef8e0] px-3 py-1 rounded-full text-sm">
-                      {b.event || "Unknown Event"}
+                    <p className="font-semibold truncate text-[#19522f] max-w-[50%]">
+                      {b.customerName || "No Name"}
+                    </p>
+                    <span className="truncate self-start md:self-auto bg-[#19522f] text-[#fefefe] px-3 py-1 rounded-full text-sm whitespace-nowrap max-w-[50%] text-center md:text-left">
+                      {b.event || "Unknown"}
                     </span>
                   </div>
 
@@ -246,9 +243,9 @@ function ManageEvents({ setBookingsCount }) {
                         transition={{ duration: 0.4 }}
                         className="p-3 bg-[#fef8e0] border-t border-gray-500 rounded-b-lg"
                       >
-                        <div className="flex flex-wrap gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                           {/* Final Price */}
-                          <div className="flex flex-col">
+                          <div className="w-full">
                             <label className="text-gray-600 text-sm mb-1">Final Price</label>
                             <input
                               type="number"
@@ -256,12 +253,14 @@ function ManageEvents({ setBookingsCount }) {
                               value={editData[b._id]?.finalPrice || ""}
                               disabled={b.status === "Active"}
                               onChange={(e) => handleInputChange(b._id, "finalPrice", e.target.value)}
-                              className={`w-full border-b border-gray-400 focus:outline-none transition-all duration-300 py-2 text-[#19522F]`}
+                              className={"w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]"
+                              }
+
                             />
                           </div>
 
                           {/* Guests */}
-                          <div className="flex flex-col">
+                          <div className="w-full">
                             <label className="text-gray-600 text-sm mb-1">Guests</label>
                             <input
                               type="number"
@@ -269,17 +268,17 @@ function ManageEvents({ setBookingsCount }) {
                               value={editData[b._id]?.guests || ""}
                               disabled={b.status === "Active"}
                               onChange={(e) => handleInputChange(b._id, "guests", e.target.value)}
-                              className={`border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent placeholder-gray-400`}
+                              className="w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]"
                             />
                           </div>
 
                           {/* Payment Status */}
-                          <div className="flex flex-col">
+                          <div className="w-full">
                             <label className="text-gray-600 text-sm mb-1">Payment Status</label>
                             <select
                               value={editData[b._id]?.paymentStatus || "Pending"}
                               onChange={(e) => handleInputChange(b._id, "paymentStatus", e.target.value)}
-                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                              className="w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]"
                             >
                               <option value="Pending">Pending</option>
                               <option value="Paid">Paid</option>
@@ -288,12 +287,12 @@ function ManageEvents({ setBookingsCount }) {
                           </div>
 
                           {/* Event Status */}
-                          <div className="flex flex-col">
+                          <div className="w-full">
                             <label className="text-gray-600 text-sm mb-1">Event Status</label>
                             <select
                               value={editData[b._id]?.eventStatus || "Pending"}
                               onChange={(e) => handleInputChange(b._id, "eventStatus", e.target.value)}
-                              className="border-b border-gray-300 focus:border-[#19522f] focus:outline-none px-0 py-2 w-full bg-transparent"
+                              className="w-full bg-transparent border-0 border-b border-gray-400 focus:border-[#19522F] focus:outline-none transition-all duration-300 py-2 text-[#19522F]"
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirm">Confirm</option>
@@ -302,7 +301,7 @@ function ManageEvents({ setBookingsCount }) {
                           </div>
 
                           {/* Buttons */}
-                          <div className="w-full flex flex-col gap-2 mt-4 sm:flex-row">
+                          <div className="col-span-1 md:col-span-2 flex flex-col md:flex-row gap-2 mt-4">
                             <button
                               onClick={() => saveChanges(b._id)}
                               className="px-4 py-2 bg-[#19522f] text-white rounded-lg font-semibold hover:bg-[#143f17] flex-1"
@@ -329,9 +328,7 @@ function ManageEvents({ setBookingsCount }) {
         <div className="min-w-[220px] md:w-2/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
           {expandedBookingId ? (
             (() => {
-              const selectedBooking = bookings.find(
-                (b) => b._id === expandedBookingId,
-              );
+              const selectedBooking = bookings.find((b) => b._id === expandedBookingId);
               if (!selectedBooking) return null;
 
               // Vertical stack mobile, two columns desktop
@@ -341,22 +338,12 @@ function ManageEvents({ setBookingsCount }) {
                     .filter(
                       ([key, value]) =>
                         value &&
-                        ![
-                          "_id",
-                          "status",
-                          "finalPrice",
-                          "guests",
-                          "paymentStatus",
-                          "eventStatus",
-                          "user",
-                          "createdAt",
-                          "updatedAt",
-                        ].includes(key),
+                        !["_id", "status", "finalPrice", "guests", "paymentStatus", "eventStatus", "user", "createdAt", "updatedAt"].includes(key)
                     )
                     .map(([key, value]) => {
                       if (key === "mealPlan") {
                         return (
-                          <div key={key} className="col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm">
+                          <div key={key} className="col-span-1 md:col-span-2 bg-[#fef8e0] p-3 rounded-lg shadow-sm">
                             <p className="text-[#19522f] font-medium mb-2">Meal Plan</p>
                             {Object.entries(value).map(([mealTime, categories]) => (
                               <div key={mealTime} className="mb-3">
@@ -378,14 +365,10 @@ function ManageEvents({ setBookingsCount }) {
                         );
                       }
                       return (
-                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm">
-                          <p className="text-[#19522f] font-medium capitalize">
-                            {key === "date" ? "Date" : key}
-                          </p>
+                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm min-w-[150px]">
+                          <p className="text-[#19522f] font-medium capitalize">{key === "date" ? "Date" : key}</p>
                           <p className="text-[#19522f]">
-                            {key === "date"
-                              ? new Date(value).toLocaleDateString("en-GB")
-                              : value}
+                            {key === "date" ? new Date(value).toLocaleDateString("en-GB") : value}
                           </p>
                         </div>
                       );
