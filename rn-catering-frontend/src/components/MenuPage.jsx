@@ -130,16 +130,35 @@ function Menu() {
           <div
             key={meal}
             className={`flex-1 text-center py-2 rounded mx-1 cursor-pointer transition-all duration-300
-        ${
-          i === step
-            ? "bg-[#19522f] text-[#fef8e0] font-bold"
-            : "bg-gray-200 hover:bg-gray-300"
-        }`}
+        ${i === step
+                ? "bg-[#19522f] text-[#fef8e0] font-bold"
+                : "bg-gray-200 hover:bg-gray-300"
+              }`}
             onClick={() => setStep(i)}
           >
             {meal}
           </div>
         ))}
+      </div>
+
+      {/* Tutorial Box */}
+      <div className=" mx-auto bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-6">
+        <div className="flex items-start gap-3">
+          {/* Icon / Step marker */}
+          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-[#19522f] text-white rounded-full text-sm font-bold">
+            i
+          </div>
+
+          {/* Text content */}
+          <div>
+            <p className="text-[#19522f] font-semibold">
+              Drag items from the left and drop them into your meal plan on the right.
+            </p>
+            <p className="text-[#19522f] text-sm mt-1">
+              Simply drag a dish from the list and drop it into your plan.
+            </p>
+          </div>
+        </div>
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>

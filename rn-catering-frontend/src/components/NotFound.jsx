@@ -23,7 +23,7 @@ const NotFound = () => {
       <h1 className="text-3xl md:text-4xl mt-6 font-semibold text-gray-700 animate-pulse">
         Oops! Page Not Found
       </h1>
-      <p className="mt-2 text-center max-w-md text-gray-600">
+      <p className="mt-2 text-center mb-3 max-w-md text-gray-600">
         The page you are looking for might have been removed or is temporarily
         unavailable.
       </p>
@@ -34,7 +34,7 @@ const NotFound = () => {
           console.log("Button clicked, navigating home");
           navigate("/");
         }}
-        className="mt-6 px-6 py-3 bg-purple-600 text-white font-bold rounded-lg shadow-lg hover:bg-purple-700 transition transform hover:scale-105"
+        className="btn"
       >
         Go Back Home
       </button>
