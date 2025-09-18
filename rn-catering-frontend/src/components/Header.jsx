@@ -13,7 +13,7 @@ export default function Header() {
   const [showMobileNav, setShowMobileNav] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [authForm, setAuthForm] = useState("signin");
-  const [centeredMsg, setCenteredMsg] = useState("");
+  const [centeredMsg, setCenteredMsg] = useState(""); const mobilePopupRef = useRef(); const desktopPopupRef = useRef();
 
   const { user, login } = useAuth();
 
@@ -41,7 +41,7 @@ export default function Header() {
   return (
     <>
       {/* Header */}
-      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-50">
+      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-60">
         <div className="flex items-center">
           <Link to="/">
             <img loading="lazy" src={RNLogo} alt="logo" className="h-[70px]" />
@@ -114,7 +114,7 @@ export default function Header() {
 
       {/* Mobile Nav */}
       {showMobileNav && (
-        <nav className="md:hidden bg-[#fef8e0] sticky shadow-md border-t border-[#d1dcd5]">
+        <nav className="md:hidden bg-[#fef8e0] shadow-md border-t border-[#d1dcd5]">
           <ul className="flex flex-col gap-4 p-4">
             {[
               { name: "Home", to: "/" },
@@ -150,7 +150,7 @@ export default function Header() {
                     setShowDropdown(true);   // open modal
                     setShowMobileNav(false); // close mobile nav
                   }}
-                  className="w-full px-3 py-2 bg-green-700 text-white rounded"
+                  className="w-full px-3 py-2 bg-[#19522f] text-white rounded"
                 >
                   Sign In
                 </button>
@@ -172,7 +172,7 @@ export default function Header() {
                   href={ADMIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block px-3 py-2 font-semibold text-white bg-green-600 rounded text-center"
+                  className="block px-3 py-2 font-semibold text-white bg-[#19522f] rounded text-center"
                 >
                   Admin Panel
                 </a>
@@ -187,13 +187,14 @@ export default function Header() {
         <>
           {/* Mobile Overlay */}
           <div
-            className="md:hidden sticky top-16 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm"
-            onClick={() => setShowDropdown(false)} // close only if clicking backdrop
+            className="md:hidden fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowDropdown(false)}
           >
             <div
-              ref={popupRef}
-              className="w-[90%] max-w-md bg-[#fffdf3] p-6 mt-20 rounded-lg shadow-lg border border-[#d1dcd5]"
-              onClick={(e) => e.stopPropagation()} // prevent close when clicking inside
+              ref={mobilePopupRef}
+              key={authForm} // forces remount when switching forms
+              className="w-[90%] max-w-md bg-[#fffdf3] mt-20 p-6 rounded-lg shadow-lg border border-[#d1dcd5]"
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="space-y-6 text-[#19522f]">
                 {authForm === "signin" ? (
@@ -214,10 +215,10 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Desktop (dropdown style, no overlay) */}
-          <div className="hidden md:flex absolute top-16 right-10 z-40">
+          {/* Desktop */}
+          <div className="hidden md:flex absolute top-16 right-10 z-50">
             <div
-              ref={popupRef}
+              ref={desktopPopupRef}
               className="w-[28rem] bg-[#fffdf3] p-6 mt-8 rounded-lg shadow-lg border border-[#d1dcd5]"
             >
               <div className="space-y-6 text-[#19522f]">
