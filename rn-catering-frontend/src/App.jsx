@@ -21,6 +21,19 @@ import BookingForm from "./components/BookingForm";
 import VerifiedSuccess from "./pages/VerifiedSuccess";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import withPageLoader from "./components/withPageLoader";
+
+const HomeWithLoader = withPageLoader(Home);
+const AboutWithLoader = withPageLoader(About);
+const VenueWithLoader = withPageLoader(VenuePage);
+const ContactWithLoader = withPageLoader(ContactPage);
+const ServicesWithLoader = withPageLoader(OurServicesPage);
+const MenuWithLoader = withPageLoader(MenuPage);
+const BookingWithLoader = withPageLoader(BookingForm);
+const ProfileWithLoader = withPageLoader(Profile);
+const PTOSWithLoader = withPageLoader(PTOS);
+const VerifiedSuccessWithLoader = withPageLoader(VerifiedSuccess);
+const NotFoundWithLoader = withPageLoader(NotFound);
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -35,6 +48,7 @@ const ScrollToTop = () => {
 function AppContent() {
   const location = useLocation();
   const [showLayout, setShowLayout] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Routes where header/footer should be hidden
@@ -47,26 +61,43 @@ function AppContent() {
     }
   }, [location]);
 
+  // Listen to loader events from withPageLoader
+  useEffect(() => {
+    const handleLoadingStart = () => setIsLoading(true);
+    const handleLoadingEnd = () => setIsLoading(false);
+
+    window.addEventListener("page-loading-start", handleLoadingStart);
+    window.addEventListener("page-loading-end", handleLoadingEnd);
+
+    return () => {
+      window.removeEventListener("page-loading-start", handleLoadingStart);
+      window.removeEventListener("page-loading-end", handleLoadingEnd);
+    };
+  }, []);
+
   return (
     <>
-      {showLayout && <Header />}
+      {!isLoading && showLayout && <Header />}
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/venues" element={<VenuePage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/services" element={<OurServicesPage />} />
-        <Route path="/menu" element={<MenuPage />} />
-        <Route path="/bookingform" element={<BookingForm />} />
-        <Route path="/profile/:username" element={<Profile />} />
-        <Route path="/privacyTos" element={<PTOS />} />
-        <Route path="/verified-success" element={<VerifiedSuccess />} />
-        <Route path="/404" element={<NotFound />} />
+        <Route path="/" element={<HomeWithLoader />} />
+        <Route path="/about" element={<AboutWithLoader />} />
+        <Route path="/venues" element={<VenueWithLoader />} />
+        <Route path="/contact" element={<ContactWithLoader />} />
+        <Route path="/services" element={<ServicesWithLoader />} />
+        <Route path="/menu" element={<MenuWithLoader />} />
+        <Route path="/bookingform" element={<BookingWithLoader />} />
+        <Route path="/profile/:username" element={<ProfileWithLoader />} />
+        <Route path="/privacyTos" element={<PTOSWithLoader />} />
+        <Route
+          path="/verified-success"
+          element={<VerifiedSuccessWithLoader />}
+        />
+        <Route path="/404" element={<NotFoundWithLoader />} />
         <Route path="*" element={<Navigate replace to="/404" />} />
       </Routes>
       <ToastContainer position="bottom-right" autoClose={3000} />
-      {showLayout && <Footer />}
+      {!isLoading && showLayout && <Footer />}
     </>
   );
 }
