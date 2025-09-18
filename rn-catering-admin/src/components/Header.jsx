@@ -3,18 +3,17 @@ import logo from "../assets/RN_logo(1).png";
 
 function Header({ sidebarOpen, toggleSidebar }) {
     return (
-        <header className="min-w-screen h-16 bg-[#306344]/90 flex items-center justify-between p-2 shadow-lg md:hidden z-50">
+        <header className="fixed top-0 left-0 right-0 h-16 bg-[#306344] flex items-center justify-between shadow-lg z-50 md:hidden">
             <div className="flex items-center gap-3">
                 <img
-                    loading="lazy"
                     src={logo}
                     alt="Logo"
-                    className="h-10 w-10 object-contain p-1 rounded-full bg-white shadow"
+                    className="h-10 ml-2 w-10 object-contain p-1 rounded-full bg-white shadow"
                 />
                 <span className="text-xl font-bold text-[#e4df5a]">RN Catering</span>
             </div>
             <button
-                className="text-[#fffdf3] bg-[#19522f]/80 p-2 rounded-lg"
+                className="text-[#e4df5a] bg-[#306344] p-2 border-none rounded-lg"
                 onClick={toggleSidebar}
                 aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
             >

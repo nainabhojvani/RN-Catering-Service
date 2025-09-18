@@ -49,24 +49,26 @@ function AppContent() {
 
   return (
     <>
-      {showLayout && <Header />}
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/venues" element={<VenuePage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/services" element={<OurServicesPage />} />
-        <Route path="/menu" element={<MenuPage />} />
-        <Route path="/bookingform" element={<BookingForm />} />
-        <Route path="/profile/:username" element={<Profile />} />
-        <Route path="/privacyTos" element={<PTOS />} />
-        <Route path="/verified-success" element={<VerifiedSuccess />} />
-        <Route path="/404" element={<NotFound />} />
-        <Route path="*" element={<Navigate replace to="/404" />} />
-      </Routes>
-      <ToastContainer position="bottom-right" autoClose={3000} />
-      {showLayout && <Footer />}
+      <div className="overflow-x-hidden">
+        {showLayout && <Header />}
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/venues" element={<VenuePage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/services" element={<OurServicesPage />} />
+          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/bookingform" element={<BookingForm />} />
+          <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/privacyTos" element={<PTOS />} />
+          <Route path="/verified-success" element={<VerifiedSuccess />} />
+          <Route path="/404" element={<NotFound />} />
+          <Route path="*" element={<Navigate replace to="/404" />} />
+        </Routes>
+        <ToastContainer position="bottom-right" autoClose={3000} />
+        {showLayout && <Footer />}
+      </div>
     </>
   );
 }

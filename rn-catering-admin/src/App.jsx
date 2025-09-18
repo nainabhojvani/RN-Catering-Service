@@ -72,7 +72,7 @@ function App() {
         )}
 
         {/* Main Content */}
-        <main className=" md:ml-64 pt-16 p-2 md:p-6 transition-all">
+        <main className=" pt-16 md:ml-64 p-2 md:p-6 min-h-screen">
           <Routes>
             <Route
               path="/"

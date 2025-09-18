@@ -25,19 +25,23 @@ export default function Header() {
   const popupRef = useRef();
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setShowDropdown(false);
+      if (window.innerWidth >= 768) { // only apply on desktop
+        if (popupRef.current && !popupRef.current.contains(event.target)) {
+          setShowDropdown(false);
+        }
       }
     };
-    if (showDropdown)
-      document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showDropdown]);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
       {/* Header */}
-      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-60">
+      <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-50">
         <div className="flex items-center">
           <Link to="/">
             <img loading="lazy" src={RNLogo} alt="logo" className="h-[70px]" />
@@ -59,10 +63,9 @@ export default function Header() {
                   to={link.to}
                   className={({ isActive }) =>
                     `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
-                    ${
-                      isActive
-                        ? "bg-[#19522f] text-[#d9e45a]"
-                        : "text-[#19522f]"
+                    ${isActive
+                      ? "bg-[#19522f] text-[#d9e45a]"
+                      : "text-[#19522f]"
                     }
                     after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-[#19522f] after:via-[#759782] after:to-[#d9e45a]
                     hover:after:w-full ${isActive ? "after:w-full" : ""}`
@@ -111,7 +114,7 @@ export default function Header() {
 
       {/* Mobile Nav */}
       {showMobileNav && (
-        <nav className="md:hidden bg-[#fef8e0] shadow-md border-t border-[#d1dcd5]">
+        <nav className="md:hidden bg-[#fef8e0] sticky shadow-md border-t border-[#d1dcd5]">
           <ul className="flex flex-col gap-4 p-4">
             {[
               { name: "Home", to: "/" },
@@ -125,10 +128,9 @@ export default function Header() {
                   to={link.to}
                   className={({ isActive }) =>
                     `relative block px-5 py-2 font-semibold text-base rounded-sm transition-all duration-300 ease-in-out
-                    ${
-                      isActive
-                        ? "bg-[#19522f] text-[#d9e45a]"
-                        : "text-[#19522f]"
+                    ${isActive
+                      ? "bg-[#19522f] text-[#d9e45a]"
+                      : "text-[#19522f]"
                     }
                     after:content-[''] after:absolute after:left-0 after:bottom-[-8px] after:w-0 after:h-0.5 after:rounded-full after:transition-all after:duration-500 after:bg-gradient-to-r after:from-[#19522f] after:via-[#759782] after:to-[#d9e45a]
                     hover:after:w-full ${isActive ? "after:w-full" : ""}`
@@ -144,8 +146,9 @@ export default function Header() {
               <li>
                 <button
                   onClick={() => {
-                    toggleDropdown();
-                    setShowMobileNav(false);
+                    setAuthForm("signin");   // force Sign In form
+                    setShowDropdown(true);   // open modal
+                    setShowMobileNav(false); // close mobile nav
                   }}
                   className="w-full px-3 py-2 bg-green-700 text-white rounded"
                 >
@@ -181,35 +184,61 @@ export default function Header() {
 
       {/* Auth Popup */}
       {showDropdown && (
-        <div className="relative z-50">
+        <>
+          {/* Mobile Overlay */}
           <div
-            ref={popupRef}
-            className="fixed right-10 mt-2 w-[30rem] max-h-[90vh] overflow-y-auto scrollbar-thin 
-                       p-6 bg-[#fffdf3] rounded-lg shadow-lg border border-[#d1dcd5]"
+            className="md:hidden sticky top-16 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowDropdown(false)} // close only if clicking backdrop
           >
-            <div className="relative z-10">
-              {authForm === "signin" && (
-                <div className="space-y-6 text-[#19522f]">
+            <div
+              ref={popupRef}
+              className="w-[90%] max-w-md bg-[#fffdf3] p-6 mt-20 rounded-lg shadow-lg border border-[#d1dcd5]"
+              onClick={(e) => e.stopPropagation()} // prevent close when clicking inside
+            >
+              <div className="space-y-6 text-[#19522f]">
+                {authForm === "signin" ? (
                   <SignInForm
                     setAuthForm={setAuthForm}
                     setShowDropdown={setShowDropdown}
                     setCenteredMsg={setCenteredMsg}
                     login={login}
                   />
-                </div>
-              )}
-              {authForm === "signup" && (
-                <div className="space-y-6 text-[#19522f]">
+                ) : (
                   <SignUpForm
                     setAuthForm={setAuthForm}
                     setShowDropdown={setShowDropdown}
                     setCenteredMsg={setCenteredMsg}
                   />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
+
+          {/* Desktop (dropdown style, no overlay) */}
+          <div className="hidden md:flex absolute top-16 right-10 z-40">
+            <div
+              ref={popupRef}
+              className="w-[28rem] bg-[#fffdf3] p-6 mt-8 rounded-lg shadow-lg border border-[#d1dcd5]"
+            >
+              <div className="space-y-6 text-[#19522f]">
+                {authForm === "signin" ? (
+                  <SignInForm
+                    setAuthForm={setAuthForm}
+                    setShowDropdown={setShowDropdown}
+                    setCenteredMsg={setCenteredMsg}
+                    login={login}
+                  />
+                ) : (
+                  <SignUpForm
+                    setAuthForm={setAuthForm}
+                    setShowDropdown={setShowDropdown}
+                    setCenteredMsg={setCenteredMsg}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {/* Message Box */}

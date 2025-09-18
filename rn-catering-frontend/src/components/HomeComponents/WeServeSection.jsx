@@ -34,7 +34,7 @@ export default function WeServeSection() {
         {serveItems.map((item, idx) => (
           <motion.div
             key={idx}
-            className="relative h-[220px] overflow-hidden rounded-xl shadow-md cursor-pointer "
+            className="relative h-[220px] overflow-hidden rounded-xl shadow-md cursor-pointer"
             initial={{ opacity: 0, scale: 0.5 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -46,37 +46,35 @@ export default function WeServeSection() {
             }}
             whileHover="hover"
           >
-            {/* Image dims & zooms on hover */}
+            {/* Image: mobile = dimmed always, desktop = bright then dims on hover */}
             <motion.img
               src={item.img}
               alt={item.label}
               className="w-full h-full object-cover"
-              initial={{ scale: 1 }}
+              initial={{ scale: 1, filter: "brightness(100%)" }} // default bright
               variants={{
-                hover: {
-                  scale: 1.1, filter: "brightness(70%)", background:
-                    "linear-gradient(to top, rgba(25,82,47,1), rgba(48,99,68,1), rgba(117,152,130,1))",
-                }
+                hover: { scale: 1.1, filter: "brightness(70%)" }, // dims on hover
               }}
               transition={{ duration: 0.5 }}
             />
 
-            {/* Label slides diagonally with glowing underline */}
+            {/* Label: visible on mobile, hidden until hover on desktop */}
             <motion.div
-              className="absolute bottom-4 left-4 text-[#d9e45a] font-semibold text-lg" style={{
+              className="absolute bottom-4 left-4 text-[#d9e45a] font-semibold text-lg 
+               opacity-100 md:opacity-0" // mobile always visible, desktop hidden until hover
+              style={{
                 textShadow:
                   "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
               }}
-              initial={{ x: -50, y: 50, opacity: 0 }}
               variants={{
-                hover: { x: 0, y: 0, opacity: 1 },
+                hover: { opacity: 1, x: 0, y: 0 },
               }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               {item.label}
               <motion.div
-                className="h-[2px] bg-[#d9e45a] mt-1 rounded-lg shadow-[0_0_10px_#d9e45a]"
-                initial={{ width: 0 }}
+                className="h-[2px] bg-[#d9e45a] mt-1 rounded-lg shadow-[0_0_10px_#d9e45a] 
+                 w-full md:w-0" // full width on mobile, animates on desktop
                 variants={{
                   hover: { width: "100%" },
                 }}
