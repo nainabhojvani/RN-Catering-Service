@@ -439,26 +439,35 @@ const Profile = () => {
                               Meal Plan:
                             </p>
                             {Object.entries(b.mealPlan).map(
-                              ([mealType, categories]) => (
-                                <div key={mealType} className="ml-6 mt-1">
-                                  <strong className="text-indigo-600">
-                                    {mealType}:
-                                  </strong>
-                                  <ul className="list-disc list-inside text-gray-600 text-sm">
-                                    {Object.entries(categories).map(
-                                      ([category, items]) =>
-                                        items.length > 0 ? (
-                                          <li key={category}>
-                                            {category}:{" "}
-                                            {items
-                                              .map((item) => item.name)
-                                              .join(", ")}
-                                          </li>
-                                        ) : null,
-                                    )}
-                                  </ul>
-                                </div>
-                              ),
+                              ([mealType, categories]) => {
+                                // Flatten items inside this mealType
+                                const allItems =
+                                  Object.values(categories).flat();
+
+                                // If no items in this mealType, don't render anything
+                                if (allItems.length === 0) return null;
+
+                                return (
+                                  <div key={mealType} className="ml-6 mt-1">
+                                    <strong className="text-indigo-600">
+                                      {mealType}:
+                                    </strong>
+                                    <ul className="list-disc list-inside text-gray-600 text-sm">
+                                      {Object.entries(categories).map(
+                                        ([category, items]) =>
+                                          items.length > 0 ? (
+                                            <li key={category}>
+                                              {category}:{" "}
+                                              {items
+                                                .map((item) => item.name)
+                                                .join(", ")}
+                                            </li>
+                                          ) : null,
+                                      )}
+                                    </ul>
+                                  </div>
+                                );
+                              },
                             )}
                           </div>
 

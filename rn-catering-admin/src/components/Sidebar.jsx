@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Calendar, MessageSquare, LogOut } from "lucide-react";
-import logo from "../assets/RN_logo.png";
+import logo from "../assets/RN_logo(1).png";
 
 function Sidebar() {
   const location = useLocation();
