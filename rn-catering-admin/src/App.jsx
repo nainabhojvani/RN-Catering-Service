@@ -47,7 +47,11 @@ function App() {
     <Router>
       <div className={`relative min-h-screen bg-[#fef8e0] ${sidebarOpen ? 'overflow-hidden' : ''}`}>
         {/* Header (mobile) */}
-        <Header sidebarOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+        <Header
+          className="fixed top-0 left-0 right-0 z-50"
+          sidebarOpen={sidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
 
         {/* Desktop sidebar */}
         <div className="hidden md:block fixed left-0 top-0 h-full w-64 z-40">
@@ -68,7 +72,7 @@ function App() {
         )}
 
         {/* Main Content */}
-        <main className="pt-16 md:ml-64 p-2 md:p-6 transition-all">
+        <main className=" md:ml-64 pt-16 p-2 md:p-6 transition-all">
           <Routes>
             <Route
               path="/"

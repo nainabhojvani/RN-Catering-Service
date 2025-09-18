@@ -1,6 +1,6 @@
 function Dashboard({ totalEvents, totalInquiries }) {
   return (
-    <div className="px-9 md:px-6 bg-[#fef8e0] min-h-screen ">
+    <div className="px-9 md:px-6 bg-[#fef8e0] min-h-screen">
       <div className="mb-6 md:mb-8 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-[#19522f]">Dashboard</h2>
       </div>

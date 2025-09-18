@@ -206,9 +206,9 @@ function ManageEvents({ setBookingsCount }) {
         ))}
       </div>
 
-      <div className="flex flex-row gap-3 overflow-x-auto">
+      <div className="flex gap-3 overflow-x-auto">
         {/* Left Panel */}
-        <div className="min-w-[160px] md:w-1/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
+        <div className="w-full md:w-1/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
           {bookings
             .filter((b) => (b.status || "Draft") === activeTab)
             .map((b) => {
@@ -325,7 +325,7 @@ function ManageEvents({ setBookingsCount }) {
         </div>
 
         {/* Right Panel */}
-        <div className="min-w-[220px] md:w-2/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
+        <div className="w-full md:w-2/3 bg-[#fffdf3] rounded-lg shadow p-2 space-y-2 ">
           {expandedBookingId ? (
             (() => {
               const selectedBooking = bookings.find((b) => b._id === expandedBookingId);
@@ -365,9 +365,9 @@ function ManageEvents({ setBookingsCount }) {
                         );
                       }
                       return (
-                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm min-w-[150px]">
+                        <div key={key} className="bg-[#fef8e0] p-3 rounded-lg shadow-sm min-w-[100px]">
                           <p className="text-[#19522f] font-medium capitalize">{key === "date" ? "Date" : key}</p>
-                          <p className="text-[#19522f]">
+                          <p className="text-[#19522f] break-all">
                             {key === "date" ? new Date(value).toLocaleDateString("en-GB") : value}
                           </p>
                         </div>

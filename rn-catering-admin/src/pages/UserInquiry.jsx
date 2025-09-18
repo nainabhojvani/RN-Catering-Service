@@ -97,9 +97,8 @@ function UserInquiry({ setInquiriesCount }) {
                   >
                     <div
                       onClick={() => toggleExpand(section, idx)}
-                      className={`p-5 flex justify-between items-center ${
-                        section === "Pending" ? "bg-[#d9e45a]/40" : "bg-[#759782]/40"
-                      }`}
+                      className={`p-5 flex justify-between items-center ${section === "Pending" ? "bg-[#d9e45a]/40" : "bg-[#759782]/40"
+                        }`}
                     >
                       <span className="font-bold text-[#19522f] text-lg md:text-xl">
                         {inq.name}
@@ -141,11 +140,10 @@ function UserInquiry({ setInquiriesCount }) {
                     </div>
 
                     <div
-                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-[#d1dcd5] ${
-                        isExpanded(section, idx)
+                      className={`overflow-hidden transition-all duration-500 px-5 border-t border-[#d1dcd5] ${isExpanded(section, idx)
                           ? "max-h-96 py-4 opacity-100"
                           : "max-h-0 py-0 opacity-0"
-                      }`}
+                        }`}
                     >
                       <div className="grid grid-cols-2 gap-4">
                         {["email", "phone"].map((field) => (
@@ -153,13 +151,13 @@ function UserInquiry({ setInquiriesCount }) {
                             key={field}
                             className="bg-[#fef8e0] p-3 rounded-lg shadow-sm"
                           >
-                            <p className="text-[#19522f] font-medium capitalize">{field}</p>
-                            <p className="text-[#306344]">{inq[field]}</p>
+                            <p className="text-[#19522f] font-medium break-all capitalize">{field}</p>
+                            <p className="text-[#306344] break-all">{inq[field]}</p>
                           </div>
                         ))}
                         <div className="bg-[#fef8e0] p-3 rounded-lg shadow-sm col-span-2">
                           <p className="text-[#19522f] font-medium">Message</p>
-                          <p className="text-[#306344]">{inq.message}</p>
+                          <p className="text-[#306344] break-all">{inq.message}</p>
                         </div>
                       </div>
                     </div>
