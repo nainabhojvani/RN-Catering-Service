@@ -38,6 +38,7 @@ export default function HeroSlider() {
             ${index === current ? "opacity-100 z-10" : "opacity-0 z-0"}`}
         >
           <img
+            loading="lazy"
             src={slide.image}
             alt={`Slide ${index + 1}`}
             className="w-full h-full object-cover scale-105 animate-slowZoom"
@@ -54,11 +55,15 @@ export default function HeroSlider() {
               text-[#d9e45a]
               bg-[length:200%_200%] animate-gradient-x
               transition-all duration-1000
-              ${index === current
-                          ? "opacity-100 translate-y-0 animate-fadeSlideUp"
-                          : "opacity-0 translate-y-6 animate-fadeSlideOut"
-                        }`}style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}
-              
+              ${
+                index === current
+                  ? "opacity-100 translate-y-0 animate-fadeSlideUp"
+                  : "opacity-0 translate-y-6 animate-fadeSlideOut"
+              }`}
+              style={{
+                textShadow:
+                  "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f",
+              }}
             >
               {slide.text}
             </h1>
@@ -72,10 +77,11 @@ export default function HeroSlider() {
           <button
             key={index}
             onClick={() => setCurrent(index)}
-            className={`h-3 w-3 rounded-full transition-all duration-300 ${index === current
+            className={`h-3 w-3 rounded-full transition-all duration-300 ${
+              index === current
                 ? "bg-[#d9e45a] scale-125"
                 : "bg-[#d1dcd5] hover:bg-[#759782]"
-              }`}
+            }`}
           ></button>
         ))}
       </div>

@@ -111,6 +111,7 @@ export default function ServicesCard() {
               {/* Front */}
               <div className="absolute w-full h-full backface-hidden bg-white rounded-2xl shadow-xl flex flex-col justify-center items-center p-4 text-center">
                 <img
+                  loading="lazy"
                   src={flippedIndex === idx ? event.hoverImg : event.defaultImg}
                   alt={event.title}
                   className="w-20 h-20 mb-3 transition-transform duration-300"

@@ -17,6 +17,7 @@ export default function Footer() {
         <div className="flex-1 min-w-[250px]">
           <Link to="/">
             <img
+              loading="lazy"
               src={FooterLogo}
               alt="footer logo"
               className="w-[130px] mb-5"

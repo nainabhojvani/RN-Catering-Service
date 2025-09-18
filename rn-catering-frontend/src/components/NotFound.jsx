@@ -15,6 +15,7 @@ const NotFound = () => {
       </div>
 
       <img
+        loading="lazy"
         src={cartoon}
         alt="Cartoon"
         className="w-48 h-48 mt-4 animate-bounce-slow"

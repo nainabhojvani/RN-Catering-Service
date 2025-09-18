@@ -74,6 +74,7 @@ function OurServicesHero() {
     <div className="relative w-full h-[500px]">
       {/* Background Image */}
       <img
+        loading="lazy"
         src={servicesBanner}
         alt="Our Services"
         className="w-full h-full object-cover"
@@ -151,6 +152,7 @@ const OurServicesScrollStory = () => {
                   }}
                 >
                   <img
+                    loading="lazy"
                     src={event.image}
                     alt={event.title}
                     className="w-40 h-40 object-contain"

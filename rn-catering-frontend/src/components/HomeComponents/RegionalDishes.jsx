@@ -152,9 +152,9 @@ export default function RegionalDishes() {
 
   const directions = [
     { y: -150, x: 0 }, // from top
-    { y: 0, x: 150 },  // from right
+    { y: 0, x: 150 }, // from right
     { y: 0, x: -150 }, // from left
-    { y: 150, x: 0 },  // from bottom
+    { y: 150, x: 0 }, // from bottom
   ];
 
   return (
@@ -165,7 +165,10 @@ export default function RegionalDishes() {
         initial={{ opacity: 0, y: -50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
-        transition={{ duration: 0.8, ease: "easeOut" }} style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        style={{
+          textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+        }}
       >
         Popular Vegetarian Dishes Across India
       </motion.h2>
@@ -182,10 +185,11 @@ export default function RegionalDishes() {
           <button
             key={region}
             onClick={() => setActive(region)}
-            className={`px-6 py-2 rounded-full font-semibold text-lg transition-all duration-300 ${active === region
+            className={`px-6 py-2 rounded-full font-semibold text-lg transition-all duration-300 ${
+              active === region
                 ? "bg-[#19522f] text-white shadow-md"
                 : "bg-[#d9e45a] text-[#19522f] hover:bg-[#759782] hover:text-white"
-              }`}
+            }`}
           >
             {region.charAt(0).toUpperCase() + region.slice(1)}
           </button>
@@ -240,6 +244,7 @@ export default function RegionalDishes() {
               {/* Image */}
               <div className="w-[55%] h-full overflow-hidden">
                 <img
+                  loading="lazy"
                   src={dish.img}
                   alt={dish.title}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
@@ -259,10 +264,7 @@ export default function RegionalDishes() {
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
         key={`btn-${active}`}
       >
-        <a
-          href="/menu"
-          className="btn"
-        >
+        <a href="/menu" className="btn">
           View Full Menu
         </a>
       </motion.div>

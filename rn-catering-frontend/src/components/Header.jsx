@@ -40,7 +40,7 @@ export default function Header() {
       <header className="flex flex-wrap items-center bg-[#fef8e0] justify-between px-10 py-2 shadow-md sticky top-0 z-60">
         <div className="flex items-center">
           <Link to="/">
-            <img src={RNLogo} alt="logo" className="h-[70px]" />
+            <img loading="lazy" src={RNLogo} alt="logo" className="h-[70px]" />
           </Link>
         </div>
 
@@ -91,6 +91,7 @@ export default function Header() {
           ) : (
             <Link to={`/profile/${user.username}`}>
               <img
+                loading="lazy"
                 src={personImg}
                 className="w-8 h-8 rounded-full border-[#d9e45a] border-2"
                 alt="Profile"

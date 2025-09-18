@@ -214,6 +214,7 @@ const Profile = () => {
           {/* Left Sidebar with profile and buttons */}
           <div className="bg-white p-8 rounded-tl-3xl rounded-bl-3xl flex flex-col items-center shadow-sm border border-gray-200">
             <img
+              loading="lazy"
               src={personImg}
               alt="Profile"
               className="w-32 h-32 rounded-full border-2 border-gray-300 shadow-md object-cover"

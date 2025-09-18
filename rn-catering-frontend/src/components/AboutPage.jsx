@@ -6,7 +6,6 @@ import img8 from "../assets/images/image (8).png";
 import img11 from "../assets/images/image (11).png";
 import personImg from "../assets/images/person.png";
 
-
 function Counter({ target, duration = 2000 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -40,7 +39,12 @@ function Counter({ target, duration = 2000 }) {
 function AboutHero() {
   return (
     <div className="relative w-full overflow-hidden">
-      <img src={bgImg} alt="Delicious food" className="w-full h-auto" />
+      <img
+        loading="lazy"
+        src={bgImg}
+        alt="Delicious food"
+        className="w-full h-auto"
+      />
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#19522f]/70 via-[#306344]/40 to-[#759782]/20"></div>
       <motion.div
@@ -48,7 +52,9 @@ function AboutHero() {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.8 }}
-        style={{ textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f" }}
+        style={{
+          textShadow: "0 0 10px #19522f, 0 0 20px #19522f, 0 0 30px #19522f",
+        }}
       >
         Welcome to RN Catering
       </motion.div>
@@ -59,7 +65,9 @@ function AboutHero() {
 function AboutSection({ title, paragraphs, image, reverse }) {
   return (
     <motion.section
-      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 overflow-hidden ${reverse ? "flex-row-reverse" : ""}`}
+      className={`flex flex-wrap items-center justify-center gap-10 px-6 py-12 overflow-hidden ${
+        reverse ? "flex-row-reverse" : ""
+      }`}
       initial={{ opacity: 0, x: reverse ? 100 : -100 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: false }}
@@ -72,13 +80,29 @@ function AboutSection({ title, paragraphs, image, reverse }) {
           whileInView={{ scale: 1, opacity: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-
         >
-          <img src={image} alt={title} className="w-full" style={{ borderRadius: "16px", boxShadow: "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)" }} />
+          <img
+            loading="lazy"
+            src={image}
+            alt={title}
+            className="w-full"
+            style={{
+              borderRadius: "16px",
+              boxShadow:
+                "0 4px 10px rgba(0,0,0,0.2), 0 8px 20px rgba(117,152,130,0.25), 0 12px 30px rgba(25,82,47,0.3)",
+            }}
+          />
         </motion.div>
       )}
       <div className="max-w-xl text-left">
-        <h2 className="text-3xl md:text-5xl font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>{title}</h2>
+        <h2
+          className="text-3xl md:text-5xl font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] fade-in"
+          style={{
+            textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+          }}
+        >
+          {title}
+        </h2>
         {paragraphs.map((para, idx) => (
           <motion.p
             key={idx}
@@ -110,7 +134,10 @@ function Founders() {
   return (
     <>
       <motion.h2
-        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] " style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        className="text-3xl md:text-5xl text-center font-bold text-[#19522F] mb-4 font-['Dancing_Script',cursive] "
+        style={{
+          textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+        }}
         initial={{ opacity: 0, y: -20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
@@ -126,14 +153,26 @@ function Founders() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: idx * 0.2 }}
-
         >
-          <img src={personImg} alt={person.name} className="h-52" />
+          <img
+            loading="lazy"
+            src={personImg}
+            alt={person.name}
+            className="h-52"
+          />
           <div className="max-w-2xl">
-            <h2 className="text-2xl mb-3 font-bold font-['Dancing_Script',cursive] text-[#19522F]" style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}>
+            <h2
+              className="text-2xl mb-3 font-bold font-['Dancing_Script',cursive] text-[#19522F]"
+              style={{
+                textShadow:
+                  "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+              }}
+            >
               {person.name}
             </h2>
-            <p className="text-base leading-relaxed text-[#306344]">{person.desc}</p>
+            <p className="text-base leading-relaxed text-[#306344]">
+              {person.desc}
+            </p>
           </div>
         </motion.section>
       ))}
@@ -164,10 +203,11 @@ function PromiseSection() {
         {items.map((text, idx) => (
           <motion.li
             key={idx}
-            className={`text-xl px-6 py-4 rounded-full text-center ${idx % 2 === 0
+            className={`text-xl px-6 py-4 rounded-full text-center ${
+              idx % 2 === 0
                 ? "bg-[#D9E45A] text-[#19522F]"
                 : "bg-[#FFFDF3] text-[#306344]"
-              }`}
+            }`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
@@ -182,7 +222,7 @@ function PromiseSection() {
 }
 
 function TeamStats() {
-   const stats = [
+  const stats = [
     { label: "Managers", count: "25+" },
     { label: "Professional Chefs", count: "100+" },
     { label: "Attendants", count: "200+" },
@@ -197,7 +237,9 @@ function TeamStats() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8 }}
-        style={{ textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782" }}
+        style={{
+          textShadow: "0 0 10px #759782, 0 0 20px #759782, 0 0 30px #759782",
+        }}
       >
         Our Strength
       </motion.h2>
